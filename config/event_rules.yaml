@@ -1,0 +1,62 @@
+# Deterministic event evidence (layer 1 and 2 of the hybrid classifier).
+# Layer 1: SEC 8-K item numbers -> event class. Items 7.01, 8.01 and 9.01 are generic and map to nothing
+# (the text classifier decides). When a filing has several items, the class with the highest severity
+# prior in taxonomy.yaml wins.
+item_map:
+  "1.01": {class: Other, subtype: material_agreement}
+  "1.02": {class: Other, subtype: agreement_terminated}
+  "1.03": {class: Credit Event, subtype: bankruptcy}
+  "1.05": {class: Cyber/Operational, subtype: cybersecurity_incident}
+  "2.01": {class: Merger/Acquisition, subtype: acquisition_completed}
+  "2.02": {class: Earnings, subtype: results}
+  "2.03": {class: Other, subtype: debt_issued}
+  "2.04": {class: Credit Event, subtype: accelerated_obligation}
+  "2.05": {class: Other, subtype: restructuring}
+  "2.06": {class: Other, subtype: impairment}
+  "3.01": {class: Regulatory/Legal, subtype: delisting_notice}
+  "4.01": {class: Other, subtype: auditor_change}
+  "4.02": {class: Regulatory/Legal, subtype: non_reliance_on_financials}
+  "5.01": {class: Merger/Acquisition, subtype: change_of_control}
+  "5.02": {class: Management Change, subtype: officer_change}
+
+# Layer 2: high-precision text rules (case-insensitive regex on title + lead). Precision over recall:
+# anything not matched goes to the ML classifier. Each rule id is reported as evidence.
+rules:
+  - {id: bankruptcy, class: Credit Event, subtype: bankruptcy,
+     pattern: "chapter (7|11)\\b|files? for bankruptcy|bankruptcy (filing|protection)|enters? receivership|insolven"}
+  - {id: default, class: Credit Event, subtype: default_or_covenant_breach,
+     pattern: "\\bdefault(s|ed)? on\\b|missed (a |an )?(interest|coupon|debt) payment|covenant (breach|waiver)|going[- ]concern"}
+  - {id: downgrade, class: Credit Event, subtype: rating_downgrade,
+     pattern: "(downgrade[sd]?|cuts?) .{0,40}(credit )?rating|rating .{0,30}(downgrade|cut to|lowered)|outlook (to|revised to) negative"}
+  - {id: bank_run, class: Credit Event, subtype: liquidity_stress,
+     pattern: "bank run|deposit (outflows?|flight)|liquidity (crisis|crunch|shortfall)|seized by regulators"}
+  - {id: sanctions, class: Geopolitical, subtype: sanctions,
+     pattern: "\\bsanction(s|ed)?\\b|export (controls?|ban)|embargo"}
+  - {id: tariffs, class: Geopolitical, subtype: trade_restriction,
+     pattern: "\\btariffs?\\b|trade war|retaliatory (duties|tariffs)"}
+  - {id: conflict, class: Geopolitical, subtype: armed_conflict,
+     pattern: "\\b(invasion|invades|airstrikes?|missile (strike|attack)s?|military (strike|offensive)|ceasefire collapses)\\b"}
+  - {id: central_bank, class: Macroeconomic, subtype: central_bank_decision,
+     pattern: "(fed|federal reserve|fomc|ecb|bank of england|bank of japan|rbi|reserve bank).{0,40}(rate|rates|hike|cut|holds|pause|policy)|repo rate|monetary policy"}
+  - {id: macro_data, class: Macroeconomic, subtype: macro_data_surprise,
+     pattern: "\\b(cpi|inflation|payrolls|jobs report|unemployment rate|gdp|recession|pmi)\\b"}
+  - {id: mna, class: Merger/Acquisition, subtype: deal,
+     pattern: "\\b(to acquire|acquires|acquisition of|agrees? to buy|to buy .{0,40} for \\$|merger|merge with|takeover|buyout|tender offer|spin[- ]?off)\\b"}
+  - {id: legal, class: Regulatory/Legal, subtype: litigation_or_enforcement,
+     pattern: "\\b(sued|lawsuit|class action|settle[sd]? .{0,30}(charges|claims|lawsuit|probe)|fined|penalty|antitrust|indicted|subpoena|probe|investigation)\\b"}
+  - {id: approval, class: Regulatory/Legal, subtype: regulatory_decision,
+     pattern: "\\b(fda|ftc|doj|sec|cfpb|occ|eu commission) (approves|clears|rejects|blocks|sues|charges)\\b"}
+  - {id: cyber, class: Cyber/Operational, subtype: cyber_or_outage,
+     pattern: "\\b(data breach|cyber ?attack|ransomware|hack(ed|ers)?|outage|systems? (down|failure))\\b"}
+  - {id: operations, class: Cyber/Operational, subtype: operational_disruption,
+     pattern: "\\b(recall(s|ed)?|strike (by|at)|workers strike|plant (fire|explosion|shutdown)|grounded)\\b"}
+  - {id: disaster, class: Natural Disaster/Supply Chain, subtype: disaster,
+     pattern: "\\b(hurricane|typhoon|earthquake|wildfires?|floods?|flooding|tornado|pandemic)\\b"}
+  - {id: supply, class: Natural Disaster/Supply Chain, subtype: supply_disruption,
+     pattern: "supply (chain )?(disruption|shortage|crunch)|chip shortage|port (closure|congestion)"}
+  - {id: earnings, class: Earnings, subtype: results,
+     pattern: "\\b(q[1-4]|first|second|third|fourth)[- ]quarter (results|earnings|profit|loss|revenue)|(beats?|miss(es)?) (estimates|expectations)|(raises|cuts|lowers|reaffirms) (its )?(guidance|outlook|forecast)|earnings (beat|miss)"}
+  - {id: management, class: Management Change, subtype: officer_change,
+     pattern: "\\b(ceo|cfo|chief executive|chairman|president) .{0,40}(steps down|resigns|to retire|departs|ousted|fired)|(names|appoints|hires) .{0,40}(ceo|cfo|chief executive)|new (ceo|cfo)"}
+  - {id: launch, class: Product Launch, subtype: launch,
+     pattern: "\\b(launches|unveils|introduces|rolls out|debuts)\\b"}

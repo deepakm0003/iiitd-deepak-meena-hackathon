@@ -1,0 +1,157 @@
+from datetime import UTC, datetime
+
+import pytest
+
+from tripwire.models import Document
+from tripwire.nlp.events import EventRules
+from tripwire.nlp.frame import extract_frame, factuality
+from tripwire.nlp.linking import EntityLinker
+from tripwire.nlp.text import split_sentences, strip_filing_leakage
+from tripwire.universe import load_universe
+
+
+@pytest.fixture(scope="module")
+def linker():
+    return EntityLinker(load_universe())
+
+
+@pytest.fixture(scope="module")
+def rules():
+    return EventRules()
+
+
+def d(title, lead="", source="finnhub", hints=None):
+    return Document(raw_id=1, dedup_key="k", source=source, source_type="news", title=title, lead=lead,
+                    published_at=datetime(2026, 10, 1, tzinfo=UTC), hints=hints or {})
+
+
+# ---------------------------------------------------------------- linking
+def test_subject_of_headline_is_primary_with_high_confidence(linker):
+    ents = linker.link(d("JPMorgan Chase posts record profit as Wells Fargo lags"))
+    assert [e.ticker for e in ents][:2] == ["JPM", "WFC"]
+    assert ents[0].link_confidence >= 0.95 and ents[0].relevance > ents[1].relevance
+
+
+def test_ambiguous_alias_needs_corporate_context(linker):
+    assert linker.link(d("Analysts raise price target on stocks")) == []          # lowercase 'target' never links
+    weak = linker.link(d("Target practice: a guide for archers"))
+    assert weak and weak[0].link_confidence == pytest.approx(0.60)                  # capitalised but no context
+    strong = linker.link(d("Target shares slide after retailer cuts guidance"))
+    assert strong[0].ticker == "TGT" and strong[0].link_confidence == pytest.approx(0.85)
+
+
+def test_platform_mentions_are_weak_links(linker):
+    # Real case: a court story about Facebook posts was linked to META with full confidence.
+    [meta] = linker.link(d("Facebook posts revealed in judge 'bias' abuse appeal"))
+    assert meta.link_confidence == pytest.approx(0.60)
+    assert linker.link(d("Meta Platforms shares jump after earnings"))[0].link_confidence >= 0.95
+
+
+def test_acronyms_are_case_sensitive(linker):
+    assert linker.link(d("Markets saw ups and downs this week")) == []
+    assert linker.link(d("UPS cuts 12,000 jobs"))[0].ticker == "UPS"
+
+
+def test_filer_always_wins_and_is_fully_relevant(linker):
+    doc = d("JPMORGAN CHASE & CO files 8-K: Item 2.02 Results", source="edgar", hints={"ticker": "JPM"})
+    [jpm] = linker.link(doc)
+    assert (jpm.link_confidence, jpm.relevance, jpm.method) == (1.0, 1.0, "filer")
+
+
+def test_finnhub_related_hint_alone_is_nil(linker):
+    # Observed in real data: a Home Depot story tagged WMT by Finnhub.
+    ents = linker.link(d("How risky is Home Depot stock?", hints={"related": ["WMT"]}))
+    assert [e.ticker for e in ents] == ["HD"]
+
+
+def test_gdelt_boilerplate_org_hint_is_ignored_unless_named(linker):
+    # Real case: GDELT tagged 'Google' on a road-safety page (share buttons), which linked it to GOOGL.
+    page = d("Ontario highways add 110 km/h speed limits", source="gdelt", hints={"matched_tickers": ["GOOGL"]})
+    assert linker.link(page) == []
+    named = d("Google fined by EU regulators", source="gdelt", hints={"matched_tickers": ["GOOGL"]})
+    assert linker.link(named)[0].ticker == "GOOGL"
+
+
+def test_hint_only_link_is_never_the_subject(linker):
+    # A non-boilerplate GDELT org hint without any text mention: linked, but not central.
+    [jpm] = linker.link(d("Banks rally as yields fall", source="gdelt", hints={"matched_tickers": ["JPM"]}))
+    assert jpm.relevance <= 0.30
+
+
+def test_cashtags_and_lead_only_mentions(linker):
+    ents = linker.link(d("Loading up on $BAC today", lead="Also watching Citigroup closely."))
+    assert ents[0].ticker == "BAC" and ents[0].method == "cashtag"
+    citi = next(e for e in ents if e.ticker == "C")
+    assert not citi.in_title and citi.relevance < ents[0].relevance
+
+
+# ---------------------------------------------------------------- text
+def test_strip_filing_leakage_removes_item_headings_and_cover():
+    text = ("UNITED STATES SECURITIES AND EXCHANGE COMMISSION Washington, D.C. 20549 FORM 8-K CURRENT REPORT\n"
+            "Item 2.02 Results of Operations and Financial Condition\nNet revenue fell 12% in the quarter.")
+    cleaned = strip_filing_leakage(text)
+    assert "Item 2.02" not in cleaned and "Results of Operations" not in cleaned
+    assert "Net revenue fell 12%" in cleaned
+
+
+def test_split_sentences():
+    assert split_sentences("Shares fell 4%. Analysts cut targets.\nNew line here") == [
+        "Shares fell 4%.", "Analysts cut targets.", "New line here"]
+
+
+# ---------------------------------------------------------------- events
+@pytest.mark.parametrize("title, expected", [
+    ("Regional lender files for Chapter 11 bankruptcy protection", ("Credit Event", "bankruptcy")),
+    ("Moody's downgrades Ford credit rating to junk", ("Credit Event", "rating_downgrade")),
+    ("US imposes new sanctions on Russian banks", ("Geopolitical", "sanctions")),
+    ("Fed holds rates steady, signals two cuts", ("Macroeconomic", "central_bank_decision")),
+    ("Pfizer agrees to buy biotech for $10 billion", ("Merger/Acquisition", "deal")),
+    ("Meta fined $1.3 billion by EU regulators", ("Regulatory/Legal", "litigation_or_enforcement")),
+    ("Hurricane forces refinery shutdowns along Gulf Coast", ("Natural Disaster/Supply Chain", "disaster")),
+    ("Nike beats estimates, raises guidance", ("Earnings", "results")),
+    ("Boeing CEO steps down amid safety crisis", ("Management Change", "officer_change")),
+    ("Apple unveils new iPhone", ("Product Launch", "launch")),
+])
+def test_rules(rules, title, expected):
+    decision = rules.decide(rules.evidence(d(title)))
+    assert (decision.event_type, decision.subtype) == expected
+
+
+def test_8k_items_map_and_most_severe_item_wins(rules):
+    doc = d("X files 8-K", source="edgar", hints={"items": ["2.02", "2.04", "9.01"]})
+    decision = rules.decide(rules.evidence(doc, text=""))
+    assert (decision.event_type, decision.source) == ("Credit Event", "8k_item:2.04")
+
+
+def test_generic_8k_item_yields_to_specific_text_rule(rules):
+    doc = d("X enters material agreement", source="edgar", hints={"items": ["1.01"]})
+    decision = rules.decide(rules.evidence(doc, text="X agrees to acquire Y for $2 billion"))
+    assert decision.event_type == "Merger/Acquisition"
+
+
+def test_no_evidence_means_no_rule_decision(rules):
+    assert rules.decide(rules.evidence(d("Company hosts annual investor day"))) is None
+
+
+# ---------------------------------------------------------------- frame / factuality
+@pytest.mark.parametrize("title, lead, label", [
+    ("3 bank stocks to buy now", "", "opinion"),
+    ("Is Tesla stock a buy after the selloff?", "", "opinion"),
+    ("Company denies report it is exploring a sale", "", "denied"),
+    ("Pfizer reportedly in talks to acquire biotech", "", "rumour"),
+    ("Pfizer agrees to acquire biotech", "", "announced"),
+    ("Regional lender files for bankruptcy", "", "confirmed"),
+    ("Retailer posts loss", "People familiar said a sale could follow.", "rumour"),
+    ("Earnings due in May for retailer", "", "confirmed"),
+    ("Why Citi's strategist is still betting on stocks", "", "opinion"),
+    ("Bank makes fresh call on quantum stock", "Shares could rise further, it said.", "confirmed"),
+])
+def test_factuality(title, lead, label):
+    assert factuality(title, lead)[0] == label
+
+
+def test_frame_slots():
+    frame = extract_frame("Pfizer agrees to acquire Seagen for $43 billion, shares up 4.5%", "", "PFE")
+    assert frame.actor == "PFE" and frame.target == "Seagen"
+    assert frame.amounts == ["$43 billion"] and frame.percentages == ["4.5%"]
+    assert frame.factuality == "announced"

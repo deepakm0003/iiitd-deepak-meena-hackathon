@@ -91,3 +91,15 @@ assumptions:
     used_in: stress engine (Part 5)
     rationale: Instantaneous single-event shocks; replaced by historical-analog levels where measured.
     status: proposed
+  - id: A-16
+    name: Entity-link confidence scheme
+    value: "filer 1.0, cashtag 0.98, long alias 0.95, acronym 0.90, ambiguous 0.60 (0.85 in corporate context), NIL below 0.50"
+    used_in: config/linking.yaml, nlp/linking
+    rationale: Ordered by how unambiguous each kind of evidence is; checked against gold-set precision/recall.
+    status: proposed
+  - id: A-17
+    name: Relevance heuristic weights
+    value: "in title 0.45, title position 0.15, lead sentence share 0.25, repeat mentions 0.15"
+    used_in: config/linking.yaml, nlp/linking
+    rationale: RavenPack-style idea that the subject of the headline matters more than a passing mention.
+    status: proposed

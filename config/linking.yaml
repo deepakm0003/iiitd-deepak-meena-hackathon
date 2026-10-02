@@ -1,0 +1,34 @@
+# Entity-linking confidence scheme (assumption A-16) and relevance weights (assumption A-17).
+# Link confidence = how sure we are the text refers to this company. Relevance = how central it is to the item.
+assumption_id: A-16
+link_confidence:
+  filer: 1.00             # EDGAR filing by this company
+  cashtag: 0.98           # $JPM
+  long_alias: 0.95        # multi-word or 6+ character alias / SEC legal name ("JPMorgan Chase", "Wells Fargo")
+  acronym: 0.90           # all-caps alias, matched case-sensitively ("UPS", "AMD")
+  ambiguous: 0.60         # alias that is also a common word or name ("Target", "Apple", "Ford")
+  ambiguous_in_context: 0.85   # ambiguous alias with corporate/financial context in the same sentence
+  gdelt_org: 0.75         # GDELT's own NER tagged the organisation, but our text does not mention it
+  source_hint: 0.40       # Finnhub 'related' ticker without a text mention (observed to be unreliable)
+  extra_mention_bonus: 0.03
+  nil_threshold: 0.50     # below this the entity is not linked (NIL)
+# Aliases that are common words or names: matched only with exact capitalisation, low base confidence.
+# Merck is a real ambiguity in finance news: Merck & Co (MRK) vs Germany's Merck KGaA.
+# "Facebook" is usually the platform ("Facebook posts revealed in court"), not news about Meta the company.
+ambiguous_aliases: [Target, Apple, Amazon, Oracle, Intel, Ford, Lilly, Merck, Facebook]
+# Words that make an ambiguous alias clearly corporate when in the same sentence.
+corporate_context: [inc, corp, corporation, co, company, shares, stock, stocks, earnings, ceo, cfo, revenue, profit,
+                    quarter, investors, analysts, retailer, automaker, drugmaker, chipmaker, bank, lender, nyse,
+                    nasdaq, guidance, dividend, acquisition, lawsuit, sec]
+# GDELT tags these companies from page boilerplate (Google/Facebook share buttons, Apple/Amazon app links), so
+# a GDELT organisation hint for them is ignored unless the headline or lead names the company.
+gdelt_boilerplate_tickers: [GOOGL, META, AAPL, AMZN, MSFT]
+relevance:
+  assumption_id: A-17
+  in_title: 0.45
+  title_position: 0.15     # x (1 - position of first mention / title length): earlier is more central
+  lead_sentence_share: 0.25  # x share of lead sentences that mention the entity
+  repeat_mentions: 0.15    # x min(extra mentions, 2) / 2
+  lead_only_base: 0.20
+  hint_only_cap: 0.30      # links with no text mention can never be the subject (primary needs 0.35)
+  filer: 1.00
