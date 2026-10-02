@@ -1,0 +1,50 @@
+# Author-written seed examples (SYNTHETIC training data, disclosed in docs/model_card.md).
+# Only for classes that weak labels barely cover (large-cap 8-Ks rarely report bankruptcies, disasters or
+# sanctions). Written generically: no company in the test period, no text copied from any captured source.
+# Never used for evaluation.
+Credit Event:
+  - Regional lender files for Chapter 11 bankruptcy protection after deposit outflows
+  - Moody's downgrades the company's senior unsecured debt to junk, citing weak cash flow
+  - Retailer misses interest payment on its bonds and enters a grace period
+  - Auditor raises substantial doubt about the firm's ability to continue as a going concern
+  - Lenders accelerate repayment of the term loan after a covenant breach
+  - Bank shares plunge as regulators seize the lender amid a run on deposits
+  - S&P cuts the insurer's credit rating outlook to negative on rising losses
+  - Developer defaults on dollar bonds as liquidity crunch deepens
+  - Airline seeks court protection from creditors after talks with bondholders fail
+  - Chemical maker skips coupon payment and hires restructuring advisers
+  - Fitch downgrades the bank two notches after large commercial real estate losses
+  - Company warns it may breach loan covenants next quarter
+Geopolitical:
+  - United States imposes new sanctions on major state-owned banks
+  - Government announces sweeping tariffs on imported steel and aluminium
+  - Missile strikes on key port disrupt shipping routes in the region
+  - Export controls tightened on advanced semiconductors to rival nation
+  - Trade talks collapse and both countries announce retaliatory duties
+  - Military escalation at the border sends oil prices sharply higher
+  - Western allies freeze central bank reserves in response to the invasion
+  - Election result sparks fears of capital controls and currency turmoil
+  - Shipping companies reroute vessels after attacks in a strategic strait
+  - Sanctions bar the company from selling equipment to the region
+Natural Disaster/Supply Chain:
+  - Hurricane makes landfall, shutting refineries along the Gulf Coast
+  - Earthquake halts production at several chip fabrication plants
+  - Wildfires force evacuation of towns and close mining operations
+  - Severe flooding damages factories and disrupts rail freight
+  - Global shortage of memory chips forces automakers to cut output
+  - Port closures leave thousands of containers stranded for weeks
+  - Drought cuts hydropower output and raises electricity prices
+  - Typhoon damages crops and disrupts exports from the region
+  - Pandemic lockdowns close supplier factories and delay shipments
+  - Fire at a key supplier's plant halts production of critical components
+Cyber/Operational:
+  - Hackers breach the bank's systems and steal millions of customer records
+  - Ransomware attack forces the pipeline operator to shut down operations
+  - Nationwide outage leaves card payments failing for several hours
+  - Automaker recalls hundreds of thousands of vehicles over brake defects
+  - Workers at the company's largest plant go on strike over pay
+  - Explosion at the refinery halts output for at least a month
+  - Cloud service outage disrupts trading platforms across the market
+  - Regulators ground the aircraft model after a second safety incident
+  - Data breach exposes personal information of millions of users
+  - Software glitch causes the exchange to halt trading

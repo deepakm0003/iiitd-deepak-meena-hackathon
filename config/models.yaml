@@ -1,0 +1,18 @@
+# Models used by the NLP engine. All open-source; none produces the Impact Score (which is a formula).
+# Resolved revisions are recorded in each signal's model_versions for reproducibility.
+sentiment:
+  name: ProsusAI/finbert            # BERT fine-tuned on Financial PhraseBank (never evaluate on PhraseBank)
+  max_length: 128
+  batch_size: 32
+embedding:
+  name: sentence-transformers/all-MiniLM-L6-v2   # 22M params; clustering, novelty, SetFit body
+zero_shot:
+  name: MoritzLaurer/deberta-v3-base-zeroshot-v2.0   # 184M params; fallback classifier for unseen classes
+  hypothesis_template: "This financial news item is about {}."
+ner:
+  name: urchade/gliner_multi-v2.1   # zero-shot NER, Apache 2.0
+  labels: [company, bank, regulator, government agency, country, money amount, credit rating agency, financial instrument]
+  threshold: 0.5
+event_classifier:
+  base: sentence-transformers/all-MiniLM-L6-v2   # SetFit body; trained artefact saved under models/event_setfit
+  path: models/event_setfit

@@ -1,0 +1,310 @@
+{
+  "dataset": "SEntFiN 1.0 (entity-headline pairs)",
+  "model": "ProsusAI/finbert",
+  "all": {
+    "headline": {
+      "n": 14409,
+      "accuracy": 0.6651,
+      "accuracy_ci95": [
+        0.6576,
+        0.6731
+      ],
+      "macro_f1": 0.669,
+      "macro_f1_ci95": [
+        0.6614,
+        0.6769
+      ],
+      "per_class": {
+        "negative": {
+          "precision": 0.69,
+          "recall": 0.7109,
+          "f1": 0.7003,
+          "support": 3819
+        },
+        "neutral": {
+          "precision": 0.6039,
+          "recall": 0.6896,
+          "f1": 0.6439,
+          "support": 5515
+        },
+        "positive": {
+          "precision": 0.734,
+          "recall": 0.6041,
+          "f1": 0.6628,
+          "support": 5075
+        }
+      },
+      "confusion": {
+        "neutral": {
+          "neutral": 3803,
+          "negative": 827,
+          "positive": 885
+        },
+        "positive": {
+          "neutral": 1616,
+          "positive": 3066,
+          "negative": 393
+        },
+        "negative": {
+          "neutral": 878,
+          "positive": 226,
+          "negative": 2715
+        }
+      }
+    },
+    "clause": {
+      "n": 14409,
+      "accuracy": 0.6525,
+      "accuracy_ci95": [
+        0.6447,
+        0.6601
+      ],
+      "macro_f1": 0.6563,
+      "macro_f1_ci95": [
+        0.6484,
+        0.6637
+      ],
+      "per_class": {
+        "negative": {
+          "precision": 0.695,
+          "recall": 0.6892,
+          "f1": 0.6921,
+          "support": 3819
+        },
+        "neutral": {
+          "precision": 0.5809,
+          "recall": 0.7079,
+          "f1": 0.6381,
+          "support": 5515
+        },
+        "positive": {
+          "precision": 0.7347,
+          "recall": 0.5647,
+          "f1": 0.6386,
+          "support": 5075
+        }
+      },
+      "confusion": {
+        "neutral": {
+          "neutral": 3904,
+          "negative": 788,
+          "positive": 823
+        },
+        "positive": {
+          "neutral": 1842,
+          "positive": 2866,
+          "negative": 367
+        },
+        "negative": {
+          "neutral": 975,
+          "positive": 212,
+          "negative": 2632
+        }
+      }
+    }
+  },
+  "multi_entity": {
+    "headline": {
+      "n": 6506,
+      "accuracy": 0.5847,
+      "accuracy_ci95": [
+        0.5733,
+        0.5958
+      ],
+      "macro_f1": 0.5848,
+      "macro_f1_ci95": [
+        0.5729,
+        0.5955
+      ],
+      "per_class": {
+        "negative": {
+          "precision": 0.5801,
+          "recall": 0.6577,
+          "f1": 0.6164,
+          "support": 1443
+        },
+        "neutral": {
+          "precision": 0.5701,
+          "recall": 0.6306,
+          "f1": 0.5988,
+          "support": 2826
+        },
+        "positive": {
+          "precision": 0.6153,
+          "recall": 0.4797,
+          "f1": 0.5391,
+          "support": 2237
+        }
+      },
+      "confusion": {
+        "positive": {
+          "neutral": 964,
+          "positive": 1073,
+          "negative": 200
+        },
+        "negative": {
+          "neutral": 380,
+          "negative": 949,
+          "positive": 114
+        },
+        "neutral": {
+          "neutral": 1782,
+          "negative": 487,
+          "positive": 557
+        }
+      }
+    },
+    "clause": {
+      "n": 6506,
+      "accuracy": 0.5745,
+      "accuracy_ci95": [
+        0.5629,
+        0.5859
+      ],
+      "macro_f1": 0.5718,
+      "macro_f1_ci95": [
+        0.5598,
+        0.5828
+      ],
+      "per_class": {
+        "negative": {
+          "precision": 0.5926,
+          "recall": 0.6251,
+          "f1": 0.6084,
+          "support": 1443
+        },
+        "neutral": {
+          "precision": 0.5473,
+          "recall": 0.6614,
+          "f1": 0.5989,
+          "support": 2826
+        },
+        "positive": {
+          "precision": 0.6163,
+          "recall": 0.4323,
+          "f1": 0.5081,
+          "support": 2237
+        }
+      },
+      "confusion": {
+        "positive": {
+          "neutral": 1096,
+          "positive": 967,
+          "negative": 174
+        },
+        "negative": {
+          "neutral": 450,
+          "negative": 902,
+          "positive": 91
+        },
+        "neutral": {
+          "neutral": 1869,
+          "negative": 446,
+          "positive": 511
+        }
+      }
+    }
+  },
+  "conflicting_sentiment": {
+    "headline": {
+      "n": 2834,
+      "accuracy": 0.4629,
+      "accuracy_ci95": [
+        0.445,
+        0.4799
+      ],
+      "macro_f1": 0.4681,
+      "macro_f1_ci95": [
+        0.4494,
+        0.4855
+      ],
+      "per_class": {
+        "negative": {
+          "precision": 0.4704,
+          "recall": 0.567,
+          "f1": 0.5142,
+          "support": 672
+        },
+        "neutral": {
+          "precision": 0.4341,
+          "recall": 0.4537,
+          "f1": 0.4437,
+          "support": 1177
+        },
+        "positive": {
+          "precision": 0.5,
+          "recall": 0.403,
+          "f1": 0.4463,
+          "support": 985
+        }
+      },
+      "confusion": {
+        "positive": {
+          "neutral": 473,
+          "positive": 397,
+          "negative": 115
+        },
+        "negative": {
+          "neutral": 223,
+          "negative": 381,
+          "positive": 68
+        },
+        "neutral": {
+          "neutral": 534,
+          "negative": 314,
+          "positive": 329
+        }
+      }
+    },
+    "clause": {
+      "n": 2834,
+      "accuracy": 0.4714,
+      "accuracy_ci95": [
+        0.4527,
+        0.4905
+      ],
+      "macro_f1": 0.4752,
+      "macro_f1_ci95": [
+        0.4559,
+        0.4937
+      ],
+      "per_class": {
+        "negative": {
+          "precision": 0.4933,
+          "recall": 0.5461,
+          "f1": 0.5184,
+          "support": 672
+        },
+        "neutral": {
+          "precision": 0.4335,
+          "recall": 0.5013,
+          "f1": 0.4649,
+          "support": 1177
+        },
+        "positive": {
+          "precision": 0.5199,
+          "recall": 0.3848,
+          "f1": 0.4422,
+          "support": 985
+        }
+      },
+      "confusion": {
+        "positive": {
+          "neutral": 519,
+          "positive": 379,
+          "negative": 87
+        },
+        "negative": {
+          "neutral": 252,
+          "negative": 367,
+          "positive": 53
+        },
+        "neutral": {
+          "neutral": 590,
+          "negative": 290,
+          "positive": 297
+        }
+      }
+    }
+  }
+}

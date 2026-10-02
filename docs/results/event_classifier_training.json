@@ -1,0 +1,47 @@
+{
+  "trained_at": "2026-10-02T05:52:57.638708+00:00",
+  "base_model": "sentence-transformers/all-MiniLM-L6-v2",
+  "train": {
+    "n": 486,
+    "by_label": {
+      "Earnings": 64,
+      "Merger/Acquisition": 64,
+      "Macroeconomic": 64,
+      "Other": 64,
+      "Regulatory/Legal": 64,
+      "Management Change": 64,
+      "Geopolitical": 64,
+      "Cyber/Operational": 16,
+      "Credit Event": 12,
+      "Natural Disaster/Supply Chain": 10
+    },
+    "by_origin": {
+      "twitter": 385,
+      "8k": 59,
+      "seed": 42
+    }
+  },
+  "valid": {
+    "n": 878,
+    "by_label": {
+      "Geopolitical": 128,
+      "Other": 128,
+      "Earnings": 128,
+      "Management Change": 128,
+      "Macroeconomic": 128,
+      "Merger/Acquisition": 119,
+      "Regulatory/Legal": 119
+    },
+    "by_origin": {
+      "twitter": 757,
+      "8k": 121
+    }
+  },
+  "head": {
+    "macro_f1_valid": 0.5592588265376531
+  },
+  "setfit": {
+    "macro_f1_valid": 0.5756066733159642
+  },
+  "shipped_for_lite_mode": "head"
+}

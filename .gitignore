@@ -35,3 +35,7 @@ frontend/dist/
 Thumbs.db
 .vscode/
 .idea/
+
+# Large trained models: rebuilt by the train-* commands or downloaded from the release (never committed)
+models/event_setfit/
+models/sentiment_entity/
