@@ -41,6 +41,12 @@ def test_blocks_card_number_but_not_ordinary_numbers(tmp_path):
     timestamps.write_text('{"time_us": 1790000000000000, "ms": 1790902415474, "gdelt": "20261002021500"}',
                           encoding="utf-8")
     assert guard.check_content(timestamps) == []
+    hashes = tmp_path / "keys.jsonl"  # a Luhn-valid digit run inside a hex dedup key is not a card number
+    hashes.write_text('{"key": "e15d68fbf4ae2a99b' + luhn_valid_number() + 'e"}', encoding="utf-8")
+    assert guard.check_content(hashes) == []
+    spaced = tmp_path / "spaced.md"  # but a real number in text, with separators, is still caught
+    spaced.write_text("card: " + " ".join(luhn_valid_number()[i:i + 4] for i in range(0, 16, 4)), encoding="utf-8")
+    assert guard.check_content(spaced)
 
 
 def test_blocks_sensitive_csv_header(tmp_path):
