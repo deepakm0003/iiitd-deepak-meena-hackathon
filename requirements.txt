@@ -7,5 +7,7 @@ SQLAlchemy==2.1.1
 httpx==0.28.1
 feedparser==6.0.14
 websockets==17.1
+fastapi==0.142.2
+uvicorn==0.54.0
 # Installs this project (src/tripwire) so that `python -m tripwire` works after `pip install -r requirements.txt`.
 -e .
