@@ -37,6 +37,9 @@ class Settings(BaseSettings):
     redis_url: str = "redis://localhost:6379/0"
     data_dir: Path = ROOT / "data"
     var_dir: Path = ROOT / "var"
+    # Some networks (e.g. the college server) advertise IPv6 but cannot route it; Python then waits for each
+    # IPv6 attempt to time out. TRIPWIRE_FORCE_IPV4=true makes HTTP and websocket clients use IPv4 only.
+    force_ipv4: bool = False
 
     finnhub_api_key: SecretStr | None = Field(
         default=None, validation_alias=AliasChoices("FINNHUB_API_KEY", "TRIPWIRE_FINNHUB_API_KEY")

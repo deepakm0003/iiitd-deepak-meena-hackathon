@@ -46,7 +46,7 @@ def build_http(settings: Settings) -> HttpClient:
         "www.federalreserve.gov": TokenBucket(0.5, burst=1),
     }
     agent = settings.sec_user_agent or "Tripwire research (contact not configured)"
-    return HttpClient(user_agent=agent, limits=limits)
+    return HttpClient(user_agent=agent, limits=limits, force_ipv4=settings.force_ipv4)
 
 
 def build_sources(
@@ -88,5 +88,6 @@ def build_sources(
     if "bluesky" in wanted:
         bcfg = cfg["bluesky"]
         post_filter = PostFilter(matcher, bcfg["finance_keywords"], bcfg.get("languages", ["en"]))
-        streaming = (BlueskySource(bcfg, post_filter, bluesky_seconds), timedelta(seconds=0))
+        bluesky = BlueskySource(bcfg, post_filter, bluesky_seconds, force_ipv4=settings.force_ipv4)
+        streaming = (bluesky, timedelta(seconds=0))
     return polled, streaming

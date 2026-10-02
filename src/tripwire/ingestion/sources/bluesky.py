@@ -11,6 +11,7 @@ import asyncio
 import hashlib
 import json
 import re
+import socket
 import time
 from datetime import UTC, datetime
 from typing import Any
@@ -70,8 +71,15 @@ class BlueskySource:
     name = "bluesky"
     source_type = "social"
 
-    def __init__(self, cfg: dict[str, Any], post_filter: PostFilter, window_seconds: float | None = None) -> None:
+    def __init__(
+        self,
+        cfg: dict[str, Any],
+        post_filter: PostFilter,
+        window_seconds: float | None = None,
+        force_ipv4: bool = False,
+    ) -> None:
         self.endpoint = cfg["endpoint"]
+        self.connect_kwargs = {"family": socket.AF_INET} if force_ipv4 else {}
         self.window = float(window_seconds or cfg.get("window_seconds", 60))
         self.filter = post_filter
 
@@ -86,7 +94,7 @@ class BlueskySource:
         documents: list[RawDocument] = []
         last: int | None = int(cursor) if cursor else None
         deadline = time.monotonic() + self.window
-        async with websockets.connect(url, open_timeout=20, max_size=2**21) as ws:
+        async with websockets.connect(url, open_timeout=20, max_size=2**21, **self.connect_kwargs) as ws:
             while (remaining := deadline - time.monotonic()) > 0:
                 try:
                     message = await asyncio.wait_for(ws.recv(), timeout=remaining)

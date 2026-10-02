@@ -61,7 +61,10 @@ class HttpClient:
         timeout: float = 30.0,
         transport: httpx.BaseTransport | None = None,
         sleep: Callable[[float], None] = time.sleep,
+        force_ipv4: bool = False,
     ) -> None:
+        if transport is None and force_ipv4:
+            transport = httpx.HTTPTransport(local_address="0.0.0.0")  # binding an IPv4 address forces IPv4
         self.limits = limits or {}
         self.max_retries = max_retries
         self._sleep = sleep

@@ -70,3 +70,16 @@ def test_matcher_rules():
     assert m.cashtags("Buying $JPM and $BRK.B, selling $XYZ") == {"JPM", "BRK-B"}
     assert m.org_lookup("Jpmorgan Chase") == "JPM"
     assert m.org_lookup("Google") is None
+
+
+def test_force_ipv4_option(monkeypatch):
+    from tripwire.ingestion.http import HttpClient
+    from tripwire.ingestion.sources.bluesky import BlueskySource
+    from tripwire.settings import Settings
+
+    monkeypatch.setenv("TRIPWIRE_FORCE_IPV4", "true")
+    assert Settings().force_ipv4 is True
+    client = HttpClient("ua", force_ipv4=True)
+    assert isinstance(client._client._transport, httpx.HTTPTransport)
+    source = BlueskySource({"endpoint": "wss://x"}, post_filter=None, force_ipv4=True)
+    assert source.connect_kwargs == {"family": __import__("socket").AF_INET}
