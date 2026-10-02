@@ -1,6 +1,6 @@
 """Core data contracts shared by the ports and adapters."""
 
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime
 from typing import Any, Literal
 
 from pydantic import BaseModel, Field, field_validator
@@ -62,6 +62,30 @@ class Document(_UtcModel):
     normalized_at: datetime = Field(default_factory=utc_now)
     # Source-provided hints for entity linking (e.g. Finnhub 'related', EDGAR ticker/CIK, GDELT organisations).
     hints: dict[str, Any] = Field(default_factory=dict)
+
+
+class FilingText(BaseModel):
+    """Verbatim text of an 8-K: main document plus the press-release exhibit when present (OBSERVED)."""
+
+    accession: str
+    cik: int
+    main_text: str = ""
+    exhibit_name: str | None = None
+    exhibit_text: str = ""
+    fetched_at: datetime
+    status: Literal["ok", "error"] = "ok"
+    error: str | None = None
+
+
+class PriceBar(BaseModel):
+    """One daily observation. Tickers like 'FRED:DGS10' hold FRED series (value in adj_close)."""
+
+    ticker: str
+    date: date
+    close: float | None = None
+    adj_close: float
+    volume: float | None = None
+    source: str
 
 
 class RunStats(BaseModel):

@@ -18,6 +18,8 @@ CONFIG_FILES = (
     "universe_seed.yaml",
     "sources.yaml",
     "edgar_items.yaml",
+    "event_rules.yaml",
+    "linking.yaml",
     "assumptions_register.yaml",
 )
 

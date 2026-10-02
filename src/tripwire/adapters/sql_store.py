@@ -8,7 +8,9 @@ from typing import Any
 from sqlalchemy import (
     JSON,
     Column,
+    Date,
     DateTime,
+    Float,
     ForeignKey,
     Integer,
     MetaData,
@@ -24,7 +26,7 @@ from sqlalchemy import (
 from sqlalchemy.dialects import postgresql, sqlite
 from sqlalchemy.engine import Engine, make_url
 
-from tripwire.models import Document, RawDocument, RunStats
+from tripwire.models import Document, FilingText, PriceBar, RawDocument, RunStats
 
 metadata = MetaData()
 
@@ -91,6 +93,70 @@ source_runs = Table(
     Column("duplicates", Integer, nullable=False),
     Column("status", String(8), nullable=False),
     Column("error", Text),
+)
+
+filing_texts = Table(
+    "filing_texts",
+    metadata,
+    Column("accession", String(32), primary_key=True),
+    Column("cik", Integer, nullable=False, index=True),
+    Column("main_text", Text, nullable=False),
+    Column("exhibit_name", String(256)),
+    Column("exhibit_text", Text, nullable=False),
+    Column("fetched_at", DateTime(timezone=True), nullable=False),
+    Column("status", String(8), nullable=False),
+    Column("error", Text),
+)
+
+prices_daily = Table(
+    "prices_daily",
+    metadata,
+    Column("ticker", String(32), primary_key=True),
+    Column("date", Date, primary_key=True),
+    Column("close", Float),
+    Column("adj_close", Float, nullable=False),
+    Column("volume", Float),
+    Column("source", String(16), nullable=False),
+)
+
+
+doc_annotations = Table(
+    "doc_annotations",
+    metadata,
+    Column("raw_id", Integer, ForeignKey("raw_documents.id"), primary_key=True),
+    Column("published_at", DateTime(timezone=True), nullable=False, index=True),
+    Column("source", String(32), nullable=False),
+    Column("primary_entity", String(16), nullable=False, index=True),
+    Column("event_type", String(40), nullable=False, index=True),
+    Column("event_method", String(40), nullable=False),
+    Column("sentiment", Float, nullable=False),
+    Column("annotation", JSON, nullable=False),
+    Column("annotated_at", DateTime(timezone=True), nullable=False),
+)
+
+
+events = Table(
+    "events",
+    metadata,
+    Column("event_id", String(32), primary_key=True),
+    Column("key", String(16), nullable=False, index=True),
+    Column("first_seen", DateTime(timezone=True), nullable=False, index=True),
+    Column("last_seen", DateTime(timezone=True), nullable=False),
+    Column("n_docs", Integer, nullable=False),
+    Column("n_publishers", Integer, nullable=False),
+    Column("novelty", Float, nullable=False),
+    Column("corroboration", Float, nullable=False),
+    Column("credibility", Float, nullable=False),
+    Column("detail", JSON, nullable=False),  # sources, source types, publishers, doc ids
+)
+
+event_members = Table(
+    "event_members",
+    metadata,
+    Column("raw_id", Integer, ForeignKey("raw_documents.id"), primary_key=True),
+    Column("event_id", String(32), nullable=False, index=True),
+    Column("similarity", Float, nullable=False),
+    Column("novelty", Float, nullable=False),
 )
 
 
@@ -199,6 +265,19 @@ class SqlStore:
         with self.engine.connect() as conn:
             return [row[0] for row in conn.execute(query)]
 
+    def iter_documents(self, since: datetime | None = None, until: datetime | None = None) -> list[Document]:
+        query = select(documents).order_by(documents.c.published_at)
+        if since:
+            query = query.where(documents.c.published_at >= since)
+        if until:
+            query = query.where(documents.c.published_at <= until)
+        with self.engine.connect() as conn:
+            rows = conn.execute(query).fetchall()
+        return [
+            Document(**{**r._mapping, "published_at": _aware(r.published_at), "normalized_at": _aware(r.normalized_at)})
+            for r in rows
+        ]
+
     def count_documents(self) -> int:
         with self.engine.connect() as conn:
             return int(conn.execute(select(func.count()).select_from(documents)).scalar_one())
@@ -254,6 +333,147 @@ class SqlStore:
             for r in rows
         ]
 
+    # ---- 8-K texts -------------------------------------------------------------------------------
+    def add_filing_text(self, row: FilingText) -> None:
+        values = row.model_dump()
+        updates = {k: v for k, v in values.items() if k != "accession"}
+        stmt = (
+            self._insert(filing_texts)
+            .values(values)
+            .on_conflict_do_update(index_elements=["accession"], set_=updates)
+        )
+        with self.engine.begin() as conn:
+            conn.execute(stmt)
+
+    def get_filing_text(self, accession: str) -> FilingText | None:
+        with self.engine.connect() as conn:
+            row = conn.execute(select(filing_texts).where(filing_texts.c.accession == accession)).first()
+        return FilingText(**{**row._mapping, "fetched_at": _aware(row.fetched_at)}) if row else None
+
+    def edgar_filings_missing_text(self, limit: int = 100_000) -> list[dict[str, Any]]:
+        """EDGAR raw documents with no successfully fetched text yet: [{accession, cik, primary_document}]."""
+        with self.engine.connect() as conn:
+            done = {r[0] for r in conn.execute(select(filing_texts.c.accession).where(filing_texts.c.status == "ok"))}
+            rows = conn.execute(
+                select(raw_documents.c.external_id, raw_documents.c.payload)
+                .where(raw_documents.c.source == "edgar")
+                .order_by(raw_documents.c.published_at.desc())
+            ).fetchall()
+        out = []
+        for accession, payload in rows:
+            if accession and accession not in done and payload.get("cik"):
+                out.append({"accession": accession, "cik": int(payload["cik"]),
+                            "primary_document": payload.get("primary_document")})
+        return out[:limit]
+
+    # ---- NLP annotations -----------------------------------------------------------------------
+    def add_annotations(self, annotations: list) -> int:
+        """Upsert annotations (re-annotating with a newer model replaces the old row)."""
+        if not annotations:
+            return 0
+        rows = [
+            {
+                "raw_id": a.raw_id,
+                "published_at": a.published_at,
+                "source": a.source,
+                "primary_entity": a.primary,
+                "event_type": a.event_type,
+                "event_method": a.event_method,
+                "sentiment": a.sentiment,
+                "annotation": a.model_dump(mode="json"),
+                "annotated_at": a.annotated_at,
+            }
+            for a in annotations
+        ]
+        with self.engine.begin() as conn:
+            stmt = self._insert(doc_annotations).values(rows)
+            stmt = stmt.on_conflict_do_update(
+                index_elements=["raw_id"],
+                set_={c: stmt.excluded[c] for c in rows[0] if c != "raw_id"},
+            )
+            conn.execute(stmt)
+        return len(rows)
+
+    def documents_without_annotation(self, limit: int = 1000) -> list[Document]:
+        query = (
+            select(documents)
+            .outerjoin(doc_annotations, doc_annotations.c.raw_id == documents.c.raw_id)
+            .where(doc_annotations.c.raw_id.is_(None))
+            .order_by(documents.c.published_at.desc())
+            .limit(limit)
+        )
+        with self.engine.connect() as conn:
+            rows = conn.execute(query).fetchall()
+        return [
+            Document(**{**r._mapping, "published_at": _aware(r.published_at), "normalized_at": _aware(r.normalized_at)})
+            for r in rows
+        ]
+
+    def get_annotations(self, since: datetime | None = None, until: datetime | None = None) -> list[dict]:
+        query = select(doc_annotations.c.annotation).order_by(doc_annotations.c.published_at)
+        if since:
+            query = query.where(doc_annotations.c.published_at >= since)
+        if until:
+            query = query.where(doc_annotations.c.published_at <= until)
+        with self.engine.connect() as conn:
+            return [row[0] for row in conn.execute(query)]
+
+    def count_annotations(self) -> int:
+        with self.engine.connect() as conn:
+            return int(conn.execute(select(func.count()).select_from(doc_annotations)).scalar_one())
+
+    # ---- events (clusters) ---------------------------------------------------------------------
+    def replace_events(self, event_rows: list[dict], member_rows: list[dict]) -> None:
+        """Atomically replace all events: clustering is recomputed deterministically over the full history."""
+        with self.engine.begin() as conn:
+            conn.execute(event_members.delete())
+            conn.execute(events.delete())
+            for start in range(0, len(event_rows), 500):
+                conn.execute(events.insert(), event_rows[start : start + 500])
+            for start in range(0, len(member_rows), 1000):
+                conn.execute(event_members.insert(), member_rows[start : start + 1000])
+
+    def get_events(self, since: datetime | None = None) -> list[dict]:
+        query = select(events).order_by(events.c.first_seen)
+        if since:
+            query = query.where(events.c.last_seen >= since)
+        with self.engine.connect() as conn:
+            return [
+                {**r._mapping, "first_seen": _aware(r.first_seen), "last_seen": _aware(r.last_seen)}
+                for r in conn.execute(query)
+            ]
+
+    def count_events(self) -> int:
+        with self.engine.connect() as conn:
+            return int(conn.execute(select(func.count()).select_from(events)).scalar_one())
+
+    # ---- prices --------------------------------------------------------------------------------
+    def upsert_prices(self, bars: list[PriceBar]) -> int:
+        if not bars:
+            return 0
+        rows = [b.model_dump() for b in bars]
+        with self.engine.begin() as conn:
+            for start in range(0, len(rows), 500):
+                stmt = self._insert(prices_daily).values(rows[start : start + 500])
+                stmt = stmt.on_conflict_do_update(
+                    index_elements=["ticker", "date"],
+                    set_={c: stmt.excluded[c] for c in ("close", "adj_close", "volume", "source")},
+                )
+                conn.execute(stmt)
+        return len(rows)
+
+    def get_prices(self, ticker: str) -> list[PriceBar]:
+        query = select(prices_daily).where(prices_daily.c.ticker == ticker).order_by(prices_daily.c.date)
+        with self.engine.connect() as conn:
+            return [PriceBar(**r._mapping) for r in conn.execute(query)]
+
+    def price_coverage(self) -> dict[str, tuple[str, str, int]]:
+        query = select(
+            prices_daily.c.ticker, func.min(prices_daily.c.date), func.max(prices_daily.c.date), func.count()
+        ).group_by(prices_daily.c.ticker)
+        with self.engine.connect() as conn:
+            return {t: (str(a), str(b), int(n)) for t, a, b, n in conn.execute(query)}
+
     def health(self) -> dict[str, Any]:
         try:
             with self.engine.connect() as conn:
@@ -263,6 +483,8 @@ class SqlStore:
                 "backend": self.engine.dialect.name,
                 "raw_documents": self.count_raw(),
                 "documents": self.count_documents(),
+                "annotated": self.count_annotations(),
+                "events": self.count_events(),
                 "quarantined": self.count_quarantine(),
             }
         except Exception as exc:  # health must report, never raise

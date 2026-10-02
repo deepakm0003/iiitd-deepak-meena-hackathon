@@ -34,9 +34,10 @@ def build_queue(settings: Settings) -> Queue:
     raise NotImplementedError("Redis Streams adapter arrives with full mode (Part 1f)")
 
 
-def build_http(settings: Settings) -> HttpClient:
+def build_http(settings: Settings, sec_rate: float | None = None) -> HttpClient:
     sources_cfg = load_yaml("sources.yaml")
-    sec = TokenBucket(float(sources_cfg["edgar"]["requests_per_second"]), burst=2)  # SEC's limit is per user
+    rate = sec_rate or float(sources_cfg["edgar"]["requests_per_second"])
+    sec = TokenBucket(rate, burst=2)  # SEC's 10 req/s limit is per user, shared by both SEC hosts
     limits = {
         "data.gdeltproject.org": TokenBucket(0.5, burst=1),
         "finnhub.io": TokenBucket(float(sources_cfg["finnhub"]["calls_per_minute"]) / 60, burst=5),
@@ -44,6 +45,7 @@ def build_http(settings: Settings) -> HttpClient:
         "data.sec.gov": sec,
         "www.rbi.org.in": TokenBucket(0.5, burst=1),
         "www.federalreserve.gov": TokenBucket(0.5, burst=1),
+        "fred.stlouisfed.org": TokenBucket(1.0, burst=1),
     }
     agent = settings.sec_user_agent or "Tripwire research (contact not configured)"
     return HttpClient(user_agent=agent, limits=limits, force_ipv4=settings.force_ipv4)
