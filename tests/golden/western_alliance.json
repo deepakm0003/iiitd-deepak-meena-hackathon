@@ -1,0 +1,156 @@
+{
+ "generated_at": "2026-10-02T16:33:45.297095+00:00",
+ "provenance": "OBSERVED source document (SEC 8-K, public); outputs recorded from the pipeline as deployed",
+ "document": {
+  "raw_id": 5818,
+  "dedup_key": "5ee04dcecdd9713c4def2635ca1e7248d319237b8a87062891a5b14e6a7519dc",
+  "source": "edgar",
+  "source_type": "filing",
+  "title": "WESTERN ALLIANCE BANCORPORATION files 8-K: Item 7.01 Regulation FD Disclosure",
+  "lead": "Western Alliance Bank President and CEO Kenneth Vecchione issued the following statement today: \u201cSince the statement we released last week, Western Alliance has taken additional steps to strengthen its liquidity position to ensure that we are in a position to meet all of our client funding needs, including increasing our borrowing capacity. As of this morning, cash reserves exceed $25 billion and are growing, while deposit outflows have been moderate.",
+  "lang": "en",
+  "url": "https://sec.gov/Archives/edgar/data/1212545/000121254523000103/wal-20230313.htm",
+  "published_at": "2023-03-13T14:58:47Z",
+  "normalized_at": "2026-10-02T02:40:59.139615Z",
+  "hints": {
+   "cik": 1212545,
+   "ticker": "WAL",
+   "form": "8-K",
+   "items": [
+    "7.01",
+    "9.01"
+   ],
+   "accession": "0001212545-23-000103",
+   "primary_document": "wal-20230313.htm"
+  }
+ },
+ "annotation": {
+  "primary": "WAL",
+  "event_type": "Credit Event",
+  "event_subtype": "liquidity_stress",
+  "event_method": "rule:bank_run",
+  "sentiment": 0.8641,
+  "sentiment_label": "positive",
+  "factuality": "confirmed"
+ },
+ "signal": {
+  "event_id": "evt_600c4206f3fa",
+  "first_seen_at": "2023-03-13T14:58:47+00:00",
+  "headline": "WESTERN ALLIANCE BANCORPORATION files 8-K: Item 7.01 Regulation FD Disclosure",
+  "primary_entity": "WAL",
+  "company": {
+   "ticker": "WAL",
+   "name": "WESTERN ALLIANCE BANCORPORATION",
+   "cik": 1212545,
+   "sector": "Financials"
+  },
+  "event_type": "Credit Event",
+  "event_subtype": "liquidity_stress",
+  "event_method": "rule:bank_run",
+  "sentiment_score": 0.8641,
+  "sentiment_label": "positive",
+  "factuality": "confirmed",
+  "frame": {
+   "actor": "WAL",
+   "target": "Western Alliance Bank",
+   "amounts": [
+    "$25 billion"
+   ],
+   "percentages": [],
+   "places": [],
+   "factuality": "confirmed",
+   "factuality_cue": "",
+   "ner_spans": [
+    {
+     "text": "WESTERN ALLIANCE",
+     "label": "bank",
+     "score": 0.804
+    },
+    {
+     "text": "Western Alliance Bank",
+     "label": "bank",
+     "score": 0.973
+    },
+    {
+     "text": "$25 billion",
+     "label": "money amount",
+     "score": 0.939
+    }
+   ]
+  },
+  "impact_score": 7.48,
+  "impact_breakdown": {
+   "impact": 7.48,
+   "raw": 0.6951,
+   "relevance_gate": 1.0,
+   "adjusted": 0.6951,
+   "percentile": 95.8,
+   "factors": {
+    "S_severity": 0.85,
+    "M_sentiment_magnitude": 0.8641,
+    "E_entity_importance": 0.0137,
+    "N_novelty": 1.0,
+    "V_volume_corroboration": 0.2138,
+    "Q_source_credibility": 1.0,
+    "H_historical_reaction": 0.8636
+   },
+   "contributions": {
+    "S_severity": 0.2125,
+    "M_sentiment_magnitude": 0.1296,
+    "E_entity_importance": 0.0021,
+    "N_novelty": 0.1,
+    "V_volume_corroboration": 0.0214,
+    "Q_source_credibility": 0.1,
+    "H_historical_reaction": 0.1295
+   },
+   "p_large_move": 0.4262,
+   "config_hash": "sha256:178e02ac5fbd9f22"
+  },
+  "p_large_move": 0.4262,
+  "corroboration": {
+   "n_articles": 1,
+   "n_publishers": 1,
+   "sources": [
+    "edgar"
+   ],
+   "score": 0.4
+  }
+ },
+ "stress": {
+  "k": 0.496,
+  "pnl_total": -2190132.45,
+  "pnl_by_asset_class": {
+   "sme_loan": 0.0,
+   "bond": -1594467.02,
+   "corporate_loan": -25891.2,
+   "equity": -903545.27,
+   "swap": 39424.39,
+   "index_put": 294346.65
+  },
+  "ecl_change": 25891.2,
+  "capital": {
+   "cet1_before": 43587370.97,
+   "cet1_after": 41944771.63,
+   "rwa_before": 363228091.42,
+   "rwa_after": 362217511.63,
+   "cet1_ratio_before": 0.12,
+   "cet1_ratio_after": 0.1158,
+   "delta": {
+    "cet1": -1642599.34,
+    "rwa": -1010579.79,
+    "cet1_ratio": -0.0042
+   },
+   "reconciliation": {
+    "cet1": "CET1 after = CET1 before + P&L x (1 - tax 25%); A-12: losses reduce capital net of tax",
+    "rwa_change_from_rating_migration": 2000000.0,
+    "rwa_change_from_market_values": -3010579.8,
+    "book_rwa_recorded": 363228091.42
+   },
+   "floors": {
+    "basel": 0.07,
+    "rbi": 0.08
+   }
+  },
+  "n_positions_affected": 25
+ }
+}
