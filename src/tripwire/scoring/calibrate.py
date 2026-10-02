@@ -206,6 +206,7 @@ def run(store, cal_start: date = date(2023, 1, 1), inner_split: date = date(2024
                 "historical_reaction_only": _single_factor(test, "H_historical_reaction"),
             },
             "ablation_add_one_factor": _incremental(make, in_cal, cal_studied, test),
+            "no_skill_baseline": no_skill(test),
             "ablation_drop_one_factor": {
                 f: evaluate(_drop(final, f), test)["spearman"] for f in FACTORS if final.weights[f] > 0
             },
@@ -235,8 +236,25 @@ def _incremental(make, corpus_rows, iso_rows, test) -> list[dict]:
         out.append({"factors": used, "added": used[-1], "spearman": e["spearman"],
                     "spearman_ci95": e["spearman_ci95"], "auc": e["auc_large_move"], "pr_auc": e["pr_auc_large_move"],
                     "brier": (e["probability"] or {}).get("brier"), "ece": (e["probability"] or {}).get("ece"),
-                    "precision_at_7": e["trigger_precision_impact_ge_7"], "n_at_7": e["n_triggered"]})
+                    "precision_at_7": e["trigger_precision_impact_ge_7"], "n_at_7": e["n_triggered"],
+                    **_at_7_counts(m, test)})
     return out
+
+
+def _at_7_counts(model: ImpactModel, test: list[dict]) -> dict:
+    """Large moves among test events scoring Impact >= 7: count, denominator and Wilson 95% interval."""
+    from tripwire.eval.gold_eval import wilson
+
+    hits = [r["large"] for r in test if model.impact(model.adjusted(r["factors"], r["relevance"])) >= 7]
+    return {"large_moves_at_7": sum(hits), "denominator_at_7": len(hits),
+            "precision_at_7_ci95": wilson(sum(hits), len(hits))}
+
+
+def no_skill(test: list[dict]) -> dict:
+    """What a model with no information scores on the same test set."""
+    base = sum(r["large"] for r in test) / len(test)
+    return {"auc": 0.5, "pr_auc": round(base, 4), "brier": round(base * (1 - base), 4),
+            "large_move_base_rate": round(base, 4), "large_moves": sum(r["large"] for r in test), "n": len(test)}
 
 
 def _drop(model: ImpactModel, factor: str) -> ImpactModel:

@@ -36,19 +36,60 @@ def summary(y: list[str], pred: list[str]) -> dict:
 
     present = sorted(set(y))  # macro-F1 over classes present in the evaluation data only
     assigned = [(p, t) for p, t in zip(pred, y, strict=True) if p != "Other"]
+    tp = sum(p == t for p, t in assigned)
+    positives = sum(t != "Other" for t in y)
+    negatives = len(y) - positives
+    prec = tp / len(assigned) if assigned else None
+    rec = tp / max(1, positives)
     return {
         "macro_f1": round(float(f1_score(y, pred, labels=present, average="macro", zero_division=0)), 4),
-        "non_other_precision": round(sum(p == t for p, t in assigned) / len(assigned), 4) if assigned else None,
-        "non_other_recall": round(sum(p == t for p, t in zip(pred, y, strict=True) if t != "Other")
-                                  / max(1, sum(t != "Other" for t in y)), 4),
+        "non_other_precision": round(prec, 4) if prec is not None else None,
+        "non_other_recall": round(rec, 4),
+        "non_other_f1": round(2 * prec * rec / (prec + rec), 4) if prec and rec else 0.0,
+        "coverage": round(len(assigned) / len(y), 4),
+        "false_positive_rate": round(sum(t == "Other" for _, t in assigned) / negatives, 4) if negatives else None,
         "n_assigned": len(assigned),
     }
 
 
+def calibration(y: list[str], heads: list[dict[str, float]]) -> dict:
+    """Is the head's top-1 probability a probability? ECE (10 equal-count bins) before and after temperature
+    scaling fitted on the same split (a diagnostic: thresholds compare probabilities, so they mean what they
+    say only if the probabilities are calibrated)."""
+    import math
+
+    def scaled(h, t):
+        z = {c: math.exp(math.log(max(v, 1e-9)) / t) for c, v in h.items()}
+        total = sum(z.values())
+        return {c: v / total for c, v in z.items()}
+
+    def nll(t):
+        return -sum(math.log(max(scaled(h, t).get(c, 1e-9), 1e-9)) for h, c in zip(heads, y, strict=True)) / len(y)
+
+    def ece(t):
+        conf = []
+        for h, c in zip(heads, y, strict=True):
+            q = scaled(h, t)
+            top = max(q, key=q.get)
+            conf.append((q[top], top == c))
+        conf.sort()
+        n, out = len(conf), 0.0
+        for b in range(10):
+            part = conf[b * n // 10:(b + 1) * n // 10]
+            if part:
+                out += len(part) / n * abs(sum(x for x, _ in part) / len(part) - sum(ok for _, ok in part) / len(part))
+        return round(out, 4)
+
+    grid = [round(0.3 + 0.05 * i, 2) for i in range(55)]
+    best = min(grid, key=nll)
+    return {"ece_raw": ece(1.0), "temperature": best, "ece_temperature_scaled": ece(best),
+            "nll_raw": round(nll(1.0), 4), "nll_scaled": round(nll(best), 4)}
+
+
 def sweep(y, heads, zss, verify: set[str]) -> list[dict]:
     rows = []
-    for min_p in (0.0, 0.2, 0.25, 0.3, 0.35, 0.4, 0.5):
-        for vmin in (None, 0.1, 0.2, 0.3):
+    for min_p in (0.0, 0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 0.50):
+        for vmin in (None, 0.05, 0.10, 0.15, 0.20, 0.30):
             pred = [apply_policy(h, z, min_p, verify if vmin is not None else set(), vmin or 0.0)
                     for h, z in zip(heads, zss, strict=True)]
             rows.append({"min_p": min_p, "verifier_min_p": vmin, **summary(y, pred)})
@@ -69,4 +110,5 @@ def report(y, heads, zss, origins, verify: set[str], min_p: float, verifier_min_
         "before": {**summary(y, shipped), "per_class": per_class(y, shipped)},
         "after": {**summary(y, chosen), "per_class": per_class(y, chosen)},
         "sweep": sweep(y, heads, zss, verify),
+        "calibration_head_top1": calibration(y, heads),
     }

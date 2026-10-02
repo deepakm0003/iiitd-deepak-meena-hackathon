@@ -116,7 +116,7 @@ def h_table(abs_scar_by_type: dict[str, list[float]], priors: dict[str, float] |
     lo, hi = min(anchors), max(anchors)
     scale = (lambda x: min(1.0, max(0.0, (x - lo) / (hi - lo)))) if hi > lo else (lambda x: 0.5)
     table = {}
-    for t in set(observed) | set(priors):
+    for t in sorted(set(observed) | set(priors)):  # sorted: identical inputs must give an identical file
         n = len(abs_scar_by_type.get(t, []))
         prior = priors.get(t, 0.5)
         measured = scale(observed[t]) if t in observed else prior

@@ -1,5 +1,5 @@
 {
-  "computed_at": "2026-10-02T13:35:08.250650+00:00",
+  "computed_at": "2026-10-02T16:47:37.469154+00:00",
   "periods": {
     "calibration": [
       "2023-01-01",
@@ -18,23 +18,23 @@
     "large_moves": 565
   },
   "counts": {
-    "events_scored": 5744,
+    "events_scored": 6175,
     "calibration_events": 2452,
     "calibration_with_returns": 1933,
     "test_with_returns": 1003
   },
   "h_table": {
+    "Credit Event": 0.8636,
+    "Cyber/Operational": 0.4981,
+    "Earnings": 0.9847,
+    "Geopolitical": 0.6583,
+    "Macroeconomic": 0.65,
+    "Management Change": 0.0797,
+    "Merger/Acquisition": 0.2105,
     "Natural Disaster/Supply Chain": 0.65,
     "Other": 0.0816,
-    "Regulatory/Legal": 0.615,
-    "Merger/Acquisition": 0.2105,
-    "Earnings": 0.9847,
-    "Management Change": 0.0797,
-    "Geopolitical": 0.6583,
-    "Credit Event": 0.8636,
     "Product Launch": 0.3333,
-    "Cyber/Operational": 0.4981,
-    "Macroeconomic": 0.65,
+    "Regulatory/Legal": 0.615,
     "__default__": 0.3607
   },
   "h_measured_on": {
@@ -115,6 +115,64 @@
         0.39
       ],
       "auc_large_move": 0.7259,
+      "pr_auc_large_move": 0.3927,
+      "probability": {
+        "brier": 0.139,
+        "brier_base_rate": 0.1554,
+        "ece": 0.0334,
+        "reliability": [
+          {
+            "mean_predicted": 0.0624,
+            "observed": 0.07,
+            "n": 100
+          },
+          {
+            "mean_predicted": 0.0633,
+            "observed": 0.06,
+            "n": 100
+          },
+          {
+            "mean_predicted": 0.0633,
+            "observed": 0.11,
+            "n": 100
+          },
+          {
+            "mean_predicted": 0.0775,
+            "observed": 0.0792,
+            "n": 101
+          },
+          {
+            "mean_predicted": 0.0961,
+            "observed": 0.1,
+            "n": 100
+          },
+          {
+            "mean_predicted": 0.1332,
+            "observed": 0.18,
+            "n": 100
+          },
+          {
+            "mean_predicted": 0.2993,
+            "observed": 0.1287,
+            "n": 101
+          },
+          {
+            "mean_predicted": 0.3687,
+            "observed": 0.38,
+            "n": 100
+          },
+          {
+            "mean_predicted": 0.3873,
+            "observed": 0.35,
+            "n": 100
+          },
+          {
+            "mean_predicted": 0.4608,
+            "observed": 0.4653,
+            "n": 101
+          }
+        ]
+      },
       "base_rate_large_move": 0.1924,
       "trigger_precision_impact_ge_7": 0.58,
       "n_triggered": 50,
@@ -153,6 +211,64 @@
         0.39
       ],
       "auc_large_move": 0.7259,
+      "pr_auc_large_move": 0.3927,
+      "probability": {
+        "brier": 0.139,
+        "brier_base_rate": 0.1554,
+        "ece": 0.0334,
+        "reliability": [
+          {
+            "mean_predicted": 0.0624,
+            "observed": 0.07,
+            "n": 100
+          },
+          {
+            "mean_predicted": 0.0633,
+            "observed": 0.06,
+            "n": 100
+          },
+          {
+            "mean_predicted": 0.0633,
+            "observed": 0.11,
+            "n": 100
+          },
+          {
+            "mean_predicted": 0.0775,
+            "observed": 0.0792,
+            "n": 101
+          },
+          {
+            "mean_predicted": 0.0961,
+            "observed": 0.1,
+            "n": 100
+          },
+          {
+            "mean_predicted": 0.1332,
+            "observed": 0.18,
+            "n": 100
+          },
+          {
+            "mean_predicted": 0.2993,
+            "observed": 0.1287,
+            "n": 101
+          },
+          {
+            "mean_predicted": 0.3687,
+            "observed": 0.38,
+            "n": 100
+          },
+          {
+            "mean_predicted": 0.3873,
+            "observed": 0.35,
+            "n": 100
+          },
+          {
+            "mean_predicted": 0.4608,
+            "observed": 0.4653,
+            "n": 101
+          }
+        ]
+      },
       "base_rate_large_move": 0.1924,
       "trigger_precision_impact_ge_7": 0.58,
       "n_triggered": 50,
@@ -191,6 +307,64 @@
         0.4019
       ],
       "auc_large_move": 0.7378,
+      "pr_auc_large_move": 0.3959,
+      "probability": {
+        "brier": 0.1378,
+        "brier_base_rate": 0.1554,
+        "ece": 0.0387,
+        "reliability": [
+          {
+            "mean_predicted": 0.059,
+            "observed": 0.05,
+            "n": 100
+          },
+          {
+            "mean_predicted": 0.0602,
+            "observed": 0.05,
+            "n": 100
+          },
+          {
+            "mean_predicted": 0.0616,
+            "observed": 0.09,
+            "n": 100
+          },
+          {
+            "mean_predicted": 0.0742,
+            "observed": 0.1287,
+            "n": 101
+          },
+          {
+            "mean_predicted": 0.0832,
+            "observed": 0.09,
+            "n": 100
+          },
+          {
+            "mean_predicted": 0.1031,
+            "observed": 0.14,
+            "n": 100
+          },
+          {
+            "mean_predicted": 0.3149,
+            "observed": 0.1683,
+            "n": 101
+          },
+          {
+            "mean_predicted": 0.3875,
+            "observed": 0.33,
+            "n": 100
+          },
+          {
+            "mean_predicted": 0.4143,
+            "observed": 0.38,
+            "n": 100
+          },
+          {
+            "mean_predicted": 0.4932,
+            "observed": 0.495,
+            "n": 101
+          }
+        ]
+      },
       "base_rate_large_move": 0.1924,
       "trigger_precision_impact_ge_7": 0.5435,
       "n_triggered": 46,
@@ -229,6 +403,64 @@
         0.3983
       ],
       "auc_large_move": 0.7324,
+      "pr_auc_large_move": 0.3985,
+      "probability": {
+        "brier": 0.1388,
+        "brier_base_rate": 0.1554,
+        "ece": 0.045,
+        "reliability": [
+          {
+            "mean_predicted": 0.0618,
+            "observed": 0.05,
+            "n": 100
+          },
+          {
+            "mean_predicted": 0.0624,
+            "observed": 0.07,
+            "n": 100
+          },
+          {
+            "mean_predicted": 0.0629,
+            "observed": 0.12,
+            "n": 100
+          },
+          {
+            "mean_predicted": 0.0776,
+            "observed": 0.1188,
+            "n": 101
+          },
+          {
+            "mean_predicted": 0.0782,
+            "observed": 0.04,
+            "n": 100
+          },
+          {
+            "mean_predicted": 0.1022,
+            "observed": 0.15,
+            "n": 100
+          },
+          {
+            "mean_predicted": 0.3235,
+            "observed": 0.1683,
+            "n": 101
+          },
+          {
+            "mean_predicted": 0.3864,
+            "observed": 0.34,
+            "n": 100
+          },
+          {
+            "mean_predicted": 0.4085,
+            "observed": 0.39,
+            "n": 100
+          },
+          {
+            "mean_predicted": 0.5001,
+            "observed": 0.4752,
+            "n": 101
+          }
+        ]
+      },
       "base_rate_large_move": 0.1924,
       "trigger_precision_impact_ge_7": 0.5882,
       "n_triggered": 51,
@@ -284,6 +516,198 @@
         ],
         "auc_large_move": 0.7022
       }
+    },
+    "ablation_add_one_factor": [
+      {
+        "factors": [
+          "H_historical_reaction"
+        ],
+        "added": "H_historical_reaction",
+        "spearman": 0.3212,
+        "spearman_ci95": [
+          0.2612,
+          0.376
+        ],
+        "auc": 0.7022,
+        "pr_auc": 0.3131,
+        "brier": 0.1413,
+        "ece": 0.0399,
+        "precision_at_7": 0.3441,
+        "n_at_7": 401,
+        "large_moves_at_7": 138,
+        "denominator_at_7": 401,
+        "precision_at_7_ci95": [
+          0.2993,
+          0.3919
+        ]
+      },
+      {
+        "factors": [
+          "H_historical_reaction",
+          "S_severity"
+        ],
+        "added": "S_severity",
+        "spearman": 0.3382,
+        "spearman_ci95": [
+          0.2788,
+          0.3905
+        ],
+        "auc": 0.7144,
+        "pr_auc": 0.3202,
+        "brier": 0.141,
+        "ece": 0.0386,
+        "precision_at_7": 0.3458,
+        "n_at_7": 402,
+        "large_moves_at_7": 139,
+        "denominator_at_7": 402,
+        "precision_at_7_ci95": [
+          0.3009,
+          0.3935
+        ]
+      },
+      {
+        "factors": [
+          "H_historical_reaction",
+          "S_severity",
+          "M_sentiment_magnitude"
+        ],
+        "added": "M_sentiment_magnitude",
+        "spearman": 0.3388,
+        "spearman_ci95": [
+          0.2818,
+          0.3921
+        ],
+        "auc": 0.729,
+        "pr_auc": 0.3899,
+        "brier": 0.138,
+        "ece": 0.0314,
+        "precision_at_7": 0.5111,
+        "n_at_7": 45,
+        "large_moves_at_7": 23,
+        "denominator_at_7": 45,
+        "precision_at_7_ci95": [
+          0.37,
+          0.6504
+        ]
+      },
+      {
+        "factors": [
+          "H_historical_reaction",
+          "S_severity",
+          "M_sentiment_magnitude",
+          "N_novelty"
+        ],
+        "added": "N_novelty",
+        "spearman": 0.3406,
+        "spearman_ci95": [
+          0.2843,
+          0.3932
+        ],
+        "auc": 0.7257,
+        "pr_auc": 0.39,
+        "brier": 0.1391,
+        "ece": 0.052,
+        "precision_at_7": 0.5,
+        "n_at_7": 50,
+        "large_moves_at_7": 25,
+        "denominator_at_7": 50,
+        "precision_at_7_ci95": [
+          0.3664,
+          0.6336
+        ]
+      },
+      {
+        "factors": [
+          "H_historical_reaction",
+          "S_severity",
+          "M_sentiment_magnitude",
+          "N_novelty",
+          "V_volume_corroboration"
+        ],
+        "added": "V_volume_corroboration",
+        "spearman": 0.3424,
+        "spearman_ci95": [
+          0.2856,
+          0.3972
+        ],
+        "auc": 0.7282,
+        "pr_auc": 0.3954,
+        "brier": 0.1393,
+        "ece": 0.0463,
+        "precision_at_7": 0.5,
+        "n_at_7": 50,
+        "large_moves_at_7": 25,
+        "denominator_at_7": 50,
+        "precision_at_7_ci95": [
+          0.3664,
+          0.6336
+        ]
+      },
+      {
+        "factors": [
+          "H_historical_reaction",
+          "S_severity",
+          "M_sentiment_magnitude",
+          "N_novelty",
+          "V_volume_corroboration",
+          "E_entity_importance"
+        ],
+        "added": "E_entity_importance",
+        "spearman": 0.3318,
+        "spearman_ci95": [
+          0.2725,
+          0.3898
+        ],
+        "auc": 0.7258,
+        "pr_auc": 0.3926,
+        "brier": 0.139,
+        "ece": 0.0334,
+        "precision_at_7": 0.58,
+        "n_at_7": 50,
+        "large_moves_at_7": 29,
+        "denominator_at_7": 50,
+        "precision_at_7_ci95": [
+          0.4423,
+          0.7063
+        ]
+      },
+      {
+        "factors": [
+          "H_historical_reaction",
+          "S_severity",
+          "M_sentiment_magnitude",
+          "N_novelty",
+          "V_volume_corroboration",
+          "E_entity_importance",
+          "Q_source_credibility"
+        ],
+        "added": "Q_source_credibility",
+        "spearman": 0.3319,
+        "spearman_ci95": [
+          0.273,
+          0.39
+        ],
+        "auc": 0.7259,
+        "pr_auc": 0.3927,
+        "brier": 0.139,
+        "ece": 0.0334,
+        "precision_at_7": 0.58,
+        "n_at_7": 50,
+        "large_moves_at_7": 29,
+        "denominator_at_7": 50,
+        "precision_at_7_ci95": [
+          0.4423,
+          0.7063
+        ]
+      }
+    ],
+    "no_skill_baseline": {
+      "auc": 0.5,
+      "pr_auc": 0.1924,
+      "brier": 0.1554,
+      "large_move_base_rate": 0.1924,
+      "large_moves": 193,
+      "n": 1003
     },
     "ablation_drop_one_factor": {
       "S_severity": 0.3085,

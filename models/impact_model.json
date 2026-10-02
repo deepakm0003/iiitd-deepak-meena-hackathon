@@ -9,17 +9,17 @@
   "H_historical_reaction": 0.15
  },
  "h_table": {
+  "Credit Event": 0.8636,
+  "Cyber/Operational": 0.4981,
+  "Earnings": 0.9847,
+  "Geopolitical": 0.6583,
+  "Macroeconomic": 0.65,
+  "Management Change": 0.0797,
+  "Merger/Acquisition": 0.2105,
   "Natural Disaster/Supply Chain": 0.65,
   "Other": 0.0816,
-  "Regulatory/Legal": 0.615,
-  "Merger/Acquisition": 0.2105,
-  "Earnings": 0.9847,
-  "Management Change": 0.0797,
-  "Geopolitical": 0.6583,
-  "Credit Event": 0.8636,
   "Product Launch": 0.3333,
-  "Cyber/Operational": 0.4981,
-  "Macroeconomic": 0.65,
+  "Regulatory/Legal": 0.615,
   "__default__": 0.3607
  },
  "calibration_adjusted": [
