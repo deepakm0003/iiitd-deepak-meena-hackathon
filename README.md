@@ -29,7 +29,17 @@ _Architecture diagram: docs/architecture.png (added in Part 7)._
 
 - **Kaggle "Financial Transactions Dataset: Analytics"** (computingvictor/transactions-fraud-datasets, Apache 2.0, created by Caixabank Tech): consumer card transactions used only to derive aggregate merchant features for the synthetic SME loan book. Profile: [docs/data_profile.md](docs/data_profile.md). Raw files are not redistributed; card numbers, CVVs and addresses are never committed.
 - **Salad Money Open Banking Transaction Data** (listed in the case study) was not used: transaction-level access is restricted to a Trusted Research Environment for UK researchers.
-- News, filings and social sources are documented here as they are added (Part 1).
+- **Live text sources** (all free; collected continuously, then replayed from `data/replay` in lite mode):
+
+  | Source | Type | Access | What we keep |
+  |---|---|---|---|
+  | GDELT 2.0 GKG (raw 15-minute files) | Global news | No key | Records naming a universe company, a macro body (Fed, ECB, RBI...) or strong finance themes; title, organisations, themes, tone, locations |
+  | Finnhub company and general news | News | Free API key | Headline, summary, publisher, timestamp |
+  | SEC EDGAR 8-K filings (submissions API) | Regulatory filings | Contact User-Agent | Exact acceptance time and 8-K item numbers for 73 universe companies |
+  | RBI and Federal Reserve press releases (RSS) | Regulators | No key | Title, summary, time (RBI times are IST) |
+  | Bluesky (Jetstream) | Social | No key | Posts with a universe cashtag, or a company name plus a finance keyword; authors pseudonymised (hashed), no URLs |
+
+- **Company universe:** 73 large US companies (24 financials, since Module B is a banking book) in `config/universe_seed.yaml`; CIK, legal name and SIC come from SEC (`python -m tripwire universe --refresh`). Chosen from today's index constituents, which biases any backfill toward survivors.
 
 ## 4. Quickstart & Installation
 
@@ -43,6 +53,16 @@ python -m tripwire health
 ```
 
 A virtual environment is recommended (`python -m venv .venv`, then `.venv\Scripts\activate` on Windows or `source .venv/bin/activate` on Linux/macOS) before `pip install`. Lite mode needs no API keys, Docker or GPU.
+
+Other commands:
+
+| Command | What it does |
+|---|---|
+| `python -m tripwire collect` | Ingest once (lite mode: replay files) and normalise |
+| `python -m tripwire collect --live --daemon` | Run all live collectors continuously (needs `.env`, see `.env.example`) |
+| `python -m tripwire status` | Store counts and recent collector runs |
+| `python -m tripwire universe --refresh` | Rebuild the company universe from SEC |
+| `python -m tripwire export-replay` | Write captured documents to `data/replay/` for lite mode |
 
 ## 5. Key Results & Domain Impact
 

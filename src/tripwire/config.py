@@ -15,6 +15,9 @@ CONFIG_FILES = (
     "impact_weights.yaml",
     "shocks.yaml",
     "universe.yaml",
+    "universe_seed.yaml",
+    "sources.yaml",
+    "edgar_items.yaml",
     "assumptions_register.yaml",
 )
 

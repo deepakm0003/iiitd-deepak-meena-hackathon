@@ -26,6 +26,12 @@ def test_health_never_prints_secret_values(tmp_path):
     assert json.loads(result.stdout)["secrets"]["FINNHUB_API_KEY"] == "set"
 
 
-def test_unimplemented_commands_say_which_part(tmp_path):
+def test_collect_once_in_replay_mode_needs_no_network_or_keys(tmp_path):
     result = run_cli("collect", tmp_path=tmp_path)
-    assert result.returncode == 2 and "Part 1" in result.stderr
+    assert result.returncode == 0, result.stderr
+    assert "replay" in result.stdout
+
+
+def test_unimplemented_commands_say_which_part(tmp_path):
+    result = run_cli("demo", tmp_path=tmp_path)
+    assert result.returncode == 2 and "Part 6" in result.stderr
