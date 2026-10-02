@@ -1,0 +1,83 @@
+{
+  "n": 296,
+  "by_stratum": {
+    "pred:Cyber/Operational": 35,
+    "pred:Credit Event": 35,
+    "pred:Product Launch": 30,
+    "pred:Natural Disaster/Supply Chain": 26,
+    "pred:Other": 25,
+    "pred:Regulatory/Legal": 20,
+    "pred:Macroeconomic": 20,
+    "pred:Geopolitical": 20,
+    "pred:Management Change": 15,
+    "pred:Merger/Acquisition": 15,
+    "pred:Earnings": 15,
+    "recall:Cyber/Operational": 10,
+    "recall:Product Launch": 10,
+    "recall:Natural Disaster/Supply Chain": 10,
+    "recall:Credit Event": 10
+  },
+  "by_source": {
+    "gdelt": 111,
+    "finnhub": 100,
+    "edgar": 48,
+    "bluesky": 33,
+    "fed": 3,
+    "rbi": 1
+  },
+  "by_split": {
+    "test": 212,
+    "dev": 84
+  },
+  "by_month": {
+    "2023-01": 1,
+    "2023-02": 1,
+    "2023-03": 1,
+    "2023-04": 4,
+    "2023-05": 1,
+    "2023-06": 2,
+    "2023-07": 2,
+    "2023-08": 2,
+    "2023-10": 5,
+    "2024-01": 5,
+    "2024-04": 1,
+    "2024-06": 1,
+    "2024-09": 2,
+    "2024-11": 1,
+    "2024-12": 1,
+    "2025-01": 1,
+    "2025-04": 2,
+    "2025-06": 2,
+    "2025-08": 1,
+    "2025-10": 1,
+    "2025-11": 2,
+    "2026-01": 2,
+    "2026-03": 1,
+    "2026-05": 2,
+    "2026-06": 1,
+    "2026-07": 1,
+    "2026-08": 2,
+    "2026-09": 67,
+    "2026-10": 181
+  },
+  "stratum_population": {
+    "pred:Management Change": 815,
+    "pred:Cyber/Operational": 84,
+    "pred:Regulatory/Legal": 111,
+    "pred:Merger/Acquisition": 748,
+    "pred:Credit Event": 35,
+    "pred:Natural Disaster/Supply Chain": 26,
+    "pred:Other": 4421,
+    "pred:Macroeconomic": 614,
+    "pred:Geopolitical": 259,
+    "recall:Cyber/Operational": 73,
+    "pred:Product Launch": 103,
+    "recall:Product Launch": 132,
+    "recall:Natural Disaster/Supply Chain": 49,
+    "recall:Credit Event": 67,
+    "pred:Earnings": 1321
+  },
+  "strata_short_of_plan": {
+    "Natural Disaster/Supply Chain": 26
+  }
+}

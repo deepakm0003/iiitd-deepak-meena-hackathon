@@ -68,3 +68,36 @@ def test_stats():
              "factuality": "confirmed", "sentiment": 0, "material": True}]
     stats = gold.gold_stats(rows)
     assert stats["n"] == 1 and stats["event_type"] == {"Macroeconomic": 1}
+
+
+def test_stratified_sampling_covers_prediction_and_recall_strata():
+    from tripwire.gold import candidate_report, sample_stratified
+
+    docs, predicted = [], {}
+    for i in range(60):
+        cls = ["Credit Event", "Other", "Earnings"][i % 3]
+        title = f"Bank {i} files for bankruptcy protection" if cls == "Credit Event" else f"Story {i} about markets"
+        if cls == "Other" and i < 45:   # 15 missed credit events among 20 Other items
+            title = f"Lender {i} in default on its bonds, says filing"   # missed credit events go to recall
+        item = doc(i, title)
+        docs.append(item)
+        predicted[item.dedup_key] = cls
+    plan = {"Credit Event": 5, "Other": 5, "Earnings": 5}
+    rows = sample_stratified(docs, predicted, plan=plan, recall_per_class=3)
+    strata = candidate_report(rows, plan)["by_stratum"]
+    assert strata["pred:Credit Event"] == 5 and strata["pred:Other"] == 5
+    assert strata["recall:Credit Event"] == 3
+    recall_rows = [r for r in rows if r["stratum"] == "recall:Credit Event"]
+    assert all(predicted[r["key"]] != "Credit Event" for r in recall_rows)
+    assert all(r["stratum_population"] >= 3 for r in recall_rows)
+    assert len({r["key"] for r in rows}) == len(rows)                          # no item twice
+
+
+def test_candidates_are_not_grouped_by_predicted_class():
+    from tripwire.gold import sample_stratified
+
+    docs = [doc(i, f"Distinct story number {i} here") for i in range(80)]
+    predicted = {d.dedup_key: ("Credit Event" if i < 40 else "Other") for i, d in enumerate(docs)}
+    rows = sample_stratified(docs, predicted, plan={"Credit Event": 20, "Other": 20}, recall_per_class=0)
+    first_half = [r["stratum"] for r in rows[:20]]
+    assert 0 < first_half.count("pred:Credit Event") < 20

@@ -196,6 +196,23 @@ def cmd_gold(args: argparse.Namespace) -> int:
     settings = get_settings()
     gold_dir = settings.data_dir / "gold"
     candidates_path, gold_path = gold_dir / "candidates.jsonl", gold_dir / "gold.jsonl"
+    if args.action == "stratify":
+        from tripwire.factory import build_store
+        from tripwire.nlp.filing_lead import with_filing_leads
+
+        store = build_store(settings)
+        predicted = {a["dedup_key"]: a["event_type"] for a in store.get_annotations()}
+        docs = with_filing_leads(store, store.iter_documents())  # labellers see the press release, not the 8-K title
+        rows = gold.sample_stratified(docs, predicted, seed=args.seed)
+        if gold.read_jsonl(gold_path):
+            print(f"{gold_path} already has labels; refusing to replace the candidates", file=sys.stderr)
+            return 1
+        candidates_path.parent.mkdir(parents=True, exist_ok=True)
+        candidates_path.write_text("".join(json.dumps(r, ensure_ascii=False) + "\n" for r in rows), encoding="utf-8")
+        report = gold.candidate_report(rows)
+        (gold_dir / "candidates_report.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
+        print(json.dumps(report, indent=2))
+        return 0
     if args.action == "sample":
         from tripwire.factory import build_store
 
@@ -323,6 +340,77 @@ def cmd_eval_events(args: argparse.Namespace) -> int:
     path.write_text(json.dumps(out, indent=2), encoding="utf-8")
     print(json.dumps({k: {m: v for m, v in out[k].items() if m != "per_class"} for k in ("before", "after")},
                      indent=2))
+    return 0
+
+
+def cmd_eval_gold(args: argparse.Namespace) -> int:
+    """Evaluate the deployed pipeline on the human gold set (test split); choose thresholds on the dev split."""
+    from tripwire import gold
+    from tripwire.config import load_yaml
+    from tripwire.eval import gold_eval as ge
+    from tripwire.factory import build_store
+    from tripwire.nlp.classifier import EventClassifier
+    from tripwire.nlp.engine import classifier_text
+    from tripwire.nlp.filing_lead import with_filing_leads
+
+    settings = get_settings()
+    gold_dir = settings.data_dir / "gold"
+    labels = gold.read_jsonl(gold_dir / "gold.jsonl")
+    if not labels:
+        print("No human labels yet (data/gold/gold.jsonl is empty): nothing to evaluate.", file=sys.stderr)
+        return 1
+    candidates = {c["key"]: c for c in gold.read_jsonl(gold_dir / "candidates.jsonl")}
+    store = build_store(settings)
+    ann = {a["dedup_key"]: a for a in store.get_annotations()}
+    docs = {d.dedup_key: d for d in store.iter_documents()}
+    rows = []
+    for lab in labels:
+        a, c = ann.get(lab["key"]), candidates.get(lab["key"])
+        if a is None or c is None:
+            continue
+        rows.append({"key": lab["key"], "split": lab["split"], "stratum": c["stratum"],
+                     "stratum_population": c["stratum_population"], "gold": lab["event_type"],
+                     "pred": a["event_type"], "method": a["event_method"], "entity_gold": lab["entity"],
+                     "entity_pred": a["primary"], "sentiment_gold": lab["sentiment"],
+                     "sentiment_pred": {"negative": -1, "neutral": 0, "positive": 1}[a["sentiment_label"]],
+                     "factuality_gold": lab["factuality"], "factuality_pred": (a.get("frame") or {}).get("factuality")})
+    classes = [c["name"] for c in load_yaml("taxonomy.yaml")["classes"]]
+    test = [r for r in rows if r["split"] == "test"]
+    # Threshold check: ML-classified items only (rules and 8-K items do not use thresholds).
+    ml = [r for r in rows if not r["method"].startswith(("8k_item", "rule", "8k:"))]
+    texts = [classifier_text(d) for d in with_filing_leads(store, [docs[r["key"]] for r in ml])]
+    clf = EventClassifier()
+    keep = [i for i, t in enumerate(texts) if t]
+    heads = clf.predict([texts[i] for i in keep])
+    zss = clf.predict_zero_shot([texts[i] for i in keep])
+    for i, h, z in zip(keep, heads, zss, strict=True):
+        ml[i]["head"], ml[i]["zs"] = h.probabilities, z.probabilities
+    ml = [r for r in ml if "head" in r]
+    cfg = load_yaml("models.yaml")["event_classifier"]
+    verify = set(cfg["verify"]["classes"])
+    entity_ok = [r["entity_gold"] == r["entity_pred"] or (r["entity_gold"] == "OTHER" and r["entity_pred"] == "NONE")
+                 for r in test]
+    n_test = max(1, len(test))
+    report = {
+        "labels": {"n": len(labels), "joined": len(rows), "test": len(test), "dev": len(rows) - len(test)},
+        "note": "population = corpus-level estimates (stratified sampling, see eval/gold_eval.py); on_sample = "
+                "metrics on the labelled test items, which over-represent rare classes by design. This is the full "
+                "11-class gold result, distinct from the 7-class validation-proxy result in event_selective.json.",
+        "population_test": ge.population(test, classes),
+        "on_sample_test": ge.on_sample([r["gold"] for r in test], [r["pred"] for r in test]) if test else None,
+        "entity_accuracy_test": round(sum(entity_ok) / n_test, 4),
+        "sentiment_accuracy_test": round(sum(r["sentiment_gold"] == r["sentiment_pred"] for r in test) / n_test, 4),
+        "factuality_accuracy_test": round(sum(r["factuality_gold"] == r["factuality_pred"] for r in test) / n_test, 4),
+        "thresholds": {
+            "current": {"min_p": cfg["min_confidence"], "verifier_min_p": cfg["verify"]["min_p"]},
+            "sweep_dev": ge.threshold_sweep([r for r in ml if r["split"] == "dev"], verify),
+            "sweep_test_for_reference_only": ge.threshold_sweep([r for r in ml if r["split"] == "test"], verify),
+        },
+    }
+    out = settings.data_dir.parent / "docs" / "results" / "gold_eval.json"
+    out.write_text(json.dumps(report, indent=2), encoding="utf-8")
+    print(json.dumps({k: report[k] for k in ("labels", "entity_accuracy_test", "sentiment_accuracy_test")}, indent=2))
+    print(json.dumps(report["population_test"], indent=1))
     return 0
 
 
@@ -608,6 +696,9 @@ def main(argv: list[str] | None = None) -> int:
     eval_ev.add_argument("--per-class", type=int, default=64)
     eval_ev.set_defaults(func=cmd_eval_events)
 
+    eval_gold = sub.add_parser("eval-gold", help="evaluate the event pipeline on the human gold set")
+    eval_gold.set_defaults(func=cmd_eval_gold)
+
     eval_sent = sub.add_parser("eval-sentiment", help="entity-level sentiment accuracy on SEntFiN")
     eval_sent.add_argument("--limit", type=int, default=None)
     eval_sent.set_defaults(func=cmd_eval_sentiment)
@@ -645,7 +736,7 @@ def main(argv: list[str] | None = None) -> int:
     train_sent.set_defaults(func=cmd_train_sentiment)
 
     gold_cmd = sub.add_parser("gold", help="gold test set: sample candidates, label them, show stats")
-    gold_cmd.add_argument("action", choices=["sample", "label", "stats"])
+    gold_cmd.add_argument("action", choices=["stratify", "sample", "label", "stats"])
     gold_cmd.add_argument("--since", default="2026-09-28", help="sample documents published after this date")
     gold_cmd.add_argument("--n", type=int, default=200)
     gold_cmd.add_argument("--seed", type=int, default=7)

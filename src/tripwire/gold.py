@@ -86,6 +86,89 @@ def sample_candidates(
     ]
 
 
+# ---- stratified sampling (v2) ----------------------------------------------------------------------
+# Prediction strata measure PRECISION per class: items the pipeline assigned to that class, sampled at random
+# within the class. The four classes with no validation labels so far are over-sampled.
+STRATA_PLAN = {
+    "Credit Event": 35, "Cyber/Operational": 35, "Natural Disaster/Supply Chain": 30, "Product Launch": 30,
+    "Geopolitical": 20, "Macroeconomic": 20, "Regulatory/Legal": 20, "Merger/Acquisition": 15,
+    "Earnings": 15, "Management Change": 15, "Other": 25,
+}
+# Recall strata look for MISSES: items the pipeline did NOT put in the class but whose text has the class's
+# cue words. Model-independent selection, so they can surface true examples the classifier abstained on.
+RECALL_CUES = {
+    "Credit Event": re.compile(r"bankrupt|chapter 11|default|downgrad|liquidity|insolven|going concern|"
+                               r"credit rating|missed (a )?payment", re.I),
+    "Cyber/Operational": re.compile(r"hack|breach|ransomware|cyber|outage|recall|strike|data leak|"
+                                    r"systems? (failure|down)", re.I),
+    "Natural Disaster/Supply Chain": re.compile(r"hurricane|flood|wildfire|earthquake|storm|typhoon|drought|"
+                                                r"shortage|supply chain|disruption", re.I),
+    "Product Launch": re.compile(r"\b(launch(es|ed)?|unveil(s|ed)?|introduc(es|ed)|debut(s|ed)?|"
+                                 r"rolls? out|new (model|product|service|device|chip))\b", re.I),
+}
+RECALL_PER_CLASS = 10
+MIN_TEXT = 25
+
+
+def sample_stratified(docs: list[Document], predicted: dict[str, str], plan: dict[str, int] | None = None,
+                      recall_per_class: int = RECALL_PER_CLASS, seed: int = 11) -> list[dict[str, Any]]:
+    """Stratified gold candidates. `predicted` maps dedup_key -> the pipeline's event class.
+
+    Each item records its stratum and the stratum's population (after removing syndicated copies), so
+    corpus-level precision and recall can be re-weighted (inverse sampling probability) in evaluation.
+    """
+    plan = STRATA_PLAN if plan is None else plan
+    rng = random.Random(seed)
+    unique: dict[str, Document] = {}
+    for doc in sorted(docs, key=lambda d: d.published_at):  # one item per normalised title, earliest copy
+        if doc.dedup_key in predicted and len(f"{doc.title} {doc.lead}".strip()) >= MIN_TEXT:
+            unique.setdefault(normalize_title(doc.title if doc.source != "edgar" else doc.lead[:120]), doc)
+    pool = list(unique.values())
+    rng.shuffle(pool)
+    picked: dict[str, tuple[Document, str, int]] = {}
+    for cls, k in plan.items():
+        members = [d for d in pool if predicted[d.dedup_key] == cls]
+        for doc in members[:k]:
+            picked.setdefault(doc.dedup_key, (doc, f"pred:{cls}", len(members)))
+    for cls, cue in RECALL_CUES.items():
+        members = [d for d in pool if predicted[d.dedup_key] != cls and d.dedup_key not in picked
+                   and cue.search(f"{d.title} {d.lead}")]
+        for doc in members[:recall_per_class]:
+            picked.setdefault(doc.dedup_key, (doc, f"recall:{cls}", len(members)))
+    order = list(picked.values())
+    rng.shuffle(order)  # labelling order must not group items by predicted class (anchoring)
+    return [
+        {
+            "key": doc.dedup_key, "document_id": doc.raw_id, "source": doc.source,
+            "source_type": doc.source_type, "published_at": doc.published_at.isoformat(),
+            "title": doc.title, "lead": doc.lead, "url": doc.url,
+            "stratum": stratum, "stratum_population": population, "split": split_for(doc.dedup_key),
+        }
+        for doc, stratum, population in order
+    ]
+
+
+def candidate_report(rows: list[dict[str, Any]], plan: dict[str, int] | None = None) -> dict[str, Any]:
+    plan = STRATA_PLAN if plan is None else plan
+    by = lambda f: dict(sorted(_count(rows, f).items(), key=lambda kv: -kv[1]))  # noqa: E731
+    months: dict[str, int] = {}
+    for r in rows:
+        months[r["published_at"][:7]] = months.get(r["published_at"][:7], 0) + 1
+    short = {s.split(":", 1)[1]: n for s, n in by("stratum").items() if s.startswith("pred:")
+             and n < plan.get(s.split(":", 1)[1], 0)}
+    return {"n": len(rows), "by_stratum": by("stratum"), "by_source": by("source"), "by_split": by("split"),
+            "by_month": dict(sorted(months.items())),
+            "stratum_population": {r["stratum"]: r["stratum_population"] for r in rows},
+            "strata_short_of_plan": short}
+
+
+def _count(rows: list[dict[str, Any]], field: str) -> dict[str, int]:
+    out: dict[str, int] = {}
+    for row in rows:
+        out[str(row[field])] = out.get(str(row[field]), 0) + 1
+    return out
+
+
 def read_jsonl(path: Path) -> list[dict[str, Any]]:
     if not path.exists():
         return []
@@ -153,9 +236,11 @@ def label_loop(
                 print("  (undid the last saved label)")
             continue
         entity, event, sentiment, factuality, material = answers
-        note = ask("  note (optional, Enter to skip): ").strip()
+        note = ask("  evidence span or note (optional, Enter to skip): ").strip()
         append_jsonl(gold_path, {
             "key": item["key"],
+            "document_id": item.get("document_id"),
+            "published_at": item.get("published_at"),
             "split": item["split"],
             "stratum": item["stratum"],
             "source": item["source"],
