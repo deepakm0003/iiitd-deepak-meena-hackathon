@@ -30,9 +30,15 @@ class NormalizationError(ValueError):
     pass
 
 
+REPLACEMENT_CHAR = "\ufffd"  # what a feed sends when its own encoding broke (e.g. "Amazon\ufffds")
+
+
 def clean_text(value: str) -> str:
     value = html.unescape(html.unescape(value or ""))  # some feeds double-escape (&amp;amp;)
+    value = re.sub(r"(?<=\w)\ufffd(?=(s|t|re|ll|ve|d)\b)", "'", value)  # broken apostrophe in "X's", "don't"
+    value = value.replace(REPLACEMENT_CHAR, " ")
     return SPACE.sub(" ", TAG.sub(" ", value)).strip()
+
 
 
 def make_lead(text: str, max_sentences: int = 2, max_chars: int = 600) -> str:

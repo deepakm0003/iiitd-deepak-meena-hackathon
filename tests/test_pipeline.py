@@ -54,6 +54,13 @@ def test_normalize_rejects_unusable_records(make_doc, overrides, reason):
         normalize(1, make_doc(**overrides))
 
 
+def test_clean_text_repairs_broken_apostrophes():
+    from tripwire.ingestion.normalize import clean_text
+
+    assert clean_text("Amazon\ufffds former highs") == "Amazon's former highs"
+    assert clean_text("Price \ufffd up") == "Price up"
+
+
 def test_make_lead_truncates_long_text():
     assert len(make_lead("word " * 400)) <= 600
 
@@ -119,3 +126,30 @@ def test_export_then_replay_round_trip(store, make_doc, tmp_path):
     assert all(len(d.text) == 600 for d in result.documents)
     assert replay.fetch(result.cursor).documents == []
     assert all(isinstance(d, RawDocument) for d in result.documents)
+
+
+def test_daemon_picks_up_documents_inserted_by_other_processes(store, make_doc, tmp_path, monkeypatch):
+    import threading
+
+    from tripwire.ingestion import daemon
+
+    monkeypatch.setattr(daemon, "REQUEUE_EVERY", timedelta(0))
+    queue = MemoryQueue()
+    stop = threading.Event()
+    calls = {"n": 0}
+
+    class Inserter:  # simulates another process inserting while the daemon runs
+        name, source_type = "other", "news"
+
+        def fetch(self, cursor):
+            calls["n"] += 1
+            if calls["n"] >= 2:
+                stop.set()
+            store.add_raw(make_doc(url=f"https://e.com/other/{calls['n']}"))  # bypasses this daemon's queue
+            return FetchResult([], None)
+
+    item = daemon.Scheduled(Inserter(), timedelta(0))
+    daemon.run_daemon(store, queue, [item], None, tmp_path / "status.json", stop, tick_seconds=0)
+    run_normalizer(store, queue)
+    assert store.count_documents() == 2
+    assert (tmp_path / "status.json").exists()

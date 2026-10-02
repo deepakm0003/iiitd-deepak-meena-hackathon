@@ -20,6 +20,10 @@ from tripwire.ports import Queue, Source, Store
 log = logging.getLogger(__name__)
 TRIP_AFTER = 3
 TRIP_FOR = timedelta(minutes=30)
+# Other processes (e.g. the 8-K backfill) insert raw documents without access to this process's in-memory
+# queue, so stored-but-unnormalised documents are re-queued periodically, not only at start-up. Not every
+# tick: a record that keeps failing (dead-lettered) would otherwise be retried in a tight loop.
+REQUEUE_EVERY = timedelta(minutes=10)
 
 
 @dataclass
@@ -76,6 +80,7 @@ def run_daemon(
     tick_seconds: float = 5.0,
 ) -> None:
     log.info("requeued %d raw documents awaiting normalisation", requeue_unnormalized(store, queue))
+    last_requeue = datetime.now(UTC)
     threads = []
     if streaming:
         threads.append(threading.Thread(target=_stream_loop, args=(store, queue, streaming, stop), daemon=True))
@@ -91,6 +96,10 @@ def run_daemon(
         counts = run_normalizer(store, queue)
         if any(counts.values()):
             log.info("normaliser: %s", counts)
+        if datetime.now(UTC) - last_requeue >= REQUEUE_EVERY:
+            last_requeue = datetime.now(UTC)
+            if requeued := requeue_unnormalized(store, queue, limit=5000):
+                log.info("requeued %d documents inserted by other processes", requeued)
         _write_status(status_path, store, queue, [*polled, *([streaming] if streaming else [])])
         stop.wait(tick_seconds)
     for thread in threads:
