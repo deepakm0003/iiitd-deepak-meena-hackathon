@@ -1,0 +1,14 @@
+# Offline research jobs (8-K backfill, price cache, model training, evaluation). Not needed for the README
+# Quickstart: their outputs are committed as small derived files. Install on top of requirements.txt.
+# torch: install the build for your hardware first, e.g.
+#   CPU:  pip install torch==2.14.1 --index-url https://download.pytorch.org/whl/cpu
+#   GPU:  pip install torch==2.14.1 --index-url https://download.pytorch.org/whl/cu126   (cu126 still supports Pascal/P100)
+-r requirements.txt
+yfinance==1.7.0
+pandas==3.0.6
+transformers==5.16.1
+sentence-transformers==6.1.0
+setfit==1.2.0
+gliner==0.2.29
+scikit-learn==1.9.1
+datasets==5.0.1

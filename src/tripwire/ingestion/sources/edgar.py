@@ -19,6 +19,7 @@ from tripwire.universe import Company
 
 log = logging.getLogger(__name__)
 SUBMISSIONS = "https://data.sec.gov/submissions/CIK{cik:010d}.json"
+SUBMISSIONS_PAGE = "https://data.sec.gov/submissions"
 ARCHIVE = "https://www.sec.gov/Archives/edgar/data/{cik}/{accession}/{document}"
 
 
@@ -78,6 +79,30 @@ class EdgarSource:
         if self.companies and failures == len(self.companies):
             raise RuntimeError("all EDGAR submissions requests failed")
         return FetchResult(documents, json.dumps(state))
+
+    def backfill(self, since: datetime, until: datetime | None = None) -> list[RawDocument]:
+        """All matching filings accepted in [since, until] for every company.
+
+        The submissions JSON's 'recent' block only holds the latest ~1,000 filings of any form (a few weeks
+        for prolific filers such as large banks), so older filings are read from the extra pages listed
+        under filings.files.
+        """
+        until = until or self._now()
+        documents: list[RawDocument] = []
+        for company in self.companies:
+            submissions = self.http.get(SUBMISSIONS.format(cik=company.cik)).json()
+            pages = [submissions["filings"]["recent"]]
+            for extra in submissions["filings"].get("files", []):
+                if extra.get("filingTo", "9999") >= since.date().isoformat():
+                    pages.append(self.http.get(f"{SUBMISSIONS_PAGE}/{extra['name']}").json())
+            for page in pages:
+                for i, form in enumerate(page.get("form", [])):
+                    if form not in self.forms:
+                        continue
+                    accepted = parse_sec_time(page["acceptanceDateTime"][i])
+                    if since <= accepted <= until:
+                        documents.append(self._doc(company, page, i, form, accepted))
+        return documents
 
     def _doc(self, company: Company, recent: dict, i: int, form: str, accepted: datetime) -> RawDocument:
         accession = recent["accessionNumber"][i]
