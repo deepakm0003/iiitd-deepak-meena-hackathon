@@ -1,8 +1,10 @@
 name: ci
 
+# Manual-only for now: GitHub Actions cannot start jobs on this private repository (account billing lock),
+# which made every push show a failed run. Until the repository is public, run `python scripts/check.py`
+# locally before pushing; it runs exactly these steps. Re-enable `push` and `pull_request` once public.
 on:
-  push:
-  pull_request:
+  workflow_dispatch:
 
 jobs:
   test:

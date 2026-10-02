@@ -1,15 +1,17 @@
-# Install once (inside the activated venv):  pre-commit install
-# Runs automatically on every `git commit`. Run on everything:  pre-commit run --all-files
+# Install once:  pre-commit install      (then it runs on every `git commit`)
+# Run on everything:  pre-commit run --all-files
+# Hooks use their own isolated environments, so they work whether or not the project venv is activated.
 repos:
   - repo: local
     hooks:
       - id: tripwire-guard
         name: Tripwire guard (secrets, raw data, card numbers)
         entry: python scripts/guard_commit.py
-        language: system
+        language: python
         pass_filenames: true
       - id: ruff
         name: ruff lint
-        entry: python -m ruff check
-        language: system
+        entry: ruff check
+        language: python
+        additional_dependencies: ["ruff==0.16.10"]
         types: [python]
