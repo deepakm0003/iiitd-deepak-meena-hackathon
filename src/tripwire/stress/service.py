@@ -151,6 +151,10 @@ class StressService:
                 k: v for k, v in group("state").items() if k != "n/a"},
             "market_snapshot": self.book.get("market_snapshot"),
             "analogs": self.analogs,
+            "pd_basis": "SME loan PDs come from the internal grade table (ASSUMPTION A-05). Grades are assigned by "
+                        "ranking a transaction-derived behavioural score (the calibrated probability of a card-volume "
+                        "collapse next year, a proxy event, not an observed default probability) into fixed grade "
+                        "shares (ASSUMPTION A-04). Large-corporate PDs come from assumed ratings.",
         }
         if include_positions:
             summary["positions"] = positions

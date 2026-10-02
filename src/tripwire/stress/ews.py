@@ -94,7 +94,8 @@ def watchlist(book: dict, signals: list[dict], now: datetime | None = None, cfg:
         })
     for pos in book["tranche1"]:
         drivers = [{"source": "behavioural model", "weight": round(pos["risk_score"], 4),
-                    "detail": f"calibrated probability of a card-volume collapse next year (grade {pos['grade']})"}]
+                    "detail": f"calibrated probability of a card-volume collapse next year (grade {pos['grade']}); "
+                              "a proxy event from card transactions, not a probability of default"}]
         for s, states in geo_events:
             if pos.get("state") in states:
                 age = _age_days(s, now)

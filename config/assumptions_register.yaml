@@ -50,9 +50,9 @@ assumptions:
     rationale: Case study example threshold.
     status: proposed
   - id: A-09
-    name: IFRS 9 Stage 2 rule
-    value: "PD up 3x vs origination, or 12m PD of 20% or more, or EWS Red"
-    used_in: stress/ecl (Part 5)
+    name: IFRS 9 staging rule
+    value: "Stage 2 if stressed PD >= 3x origination PD or >= 20%, or an 8-K 2.04 / 4.02 flag on the borrower; Stage 3 on an 8-K 1.03 (bankruptcy) flag. The watchlist status does not change stages."
+    used_in: stress/engine.py StressEngine._stage
     rationale: ECB-recommended backstops (GARP summary); configurable.
     status: proposed
   - id: A-10

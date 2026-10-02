@@ -12,6 +12,10 @@ from pathlib import Path
 from tripwire.config import load_yaml
 from tripwire.portfolio.pricing import bond_price, bs_put, duration_convexity, swap_dv01
 
+# What the SME behavioural score is, and is not (docs/module_b.md section 2).
+RISK_SCORE_MEANING = ("MODEL: calibrated probability that card volume collapses next year (a proxy event, validated "
+                      "out of time); used to rank obligors into grades. Not a probability of default: loan PDs come "
+                      "from the grade table, ASSUMPTION A-05")
 GRADE_SPREAD_BP = {"AA": 50, "A": 80, "BBB": 130, "BB": 250, "B": 450, "CCC": 900}  # A-24
 SECTOR_ETF = {
     "Information Technology": "XLK", "Communication Services": "XLC", "Consumer Discretionary": "XLY",
@@ -116,7 +120,7 @@ def build_book(merchant_rows: list[dict], market: dict, universe: dict, cfg: dic
             "maturity_years": _maturity(int(row["merchant_id"]), *t1["maturity_years"]),
             "stage": 1, "risk_weight": grades[grade]["risk_weight"],
             "provenance": {"sector": "DERIVED", "state": "DERIVED", "card_volume": "DERIVED",
-                           "risk_score": "MODEL (validated, proxy target)", "grade": "ASSUMPTION:A-04",
+                           "risk_score": RISK_SCORE_MEANING, "grade": "ASSUMPTION:A-04",
                            "pd": "ASSUMPTION:A-05", "ead": "SYNTHETIC (A-02, A-11)", "maturity_years": "SYNTHETIC"},
         })
 
