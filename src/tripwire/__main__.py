@@ -247,9 +247,15 @@ def cmd_nlp(args: argparse.Namespace) -> int:
     engine = NlpEngine(EntityLinker(load_universe()), ner=ner)
     log.info("event classifier: %s | entity sentiment model: %s | NER: %s", engine.classifier.method,
              engine.sentiment.entity_model or "none (base FinBERT)", ner.name if ner else "off")
+    from tripwire.nlp.filing_lead import with_filing_leads
+
+    for source in (args.reannotate or "").split(","):
+        if source.strip():
+            log.info("deleted %d annotations from source %s for re-annotation",
+                     store.delete_annotations(source.strip()), source.strip())
     total = 0
     while True:
-        docs = store.documents_without_annotation(limit=args.batch)
+        docs = with_filing_leads(store, store.documents_without_annotation(limit=args.batch))
         if docs:
             started = time.monotonic()
             total += store.add_annotations(engine.annotate(docs))
@@ -345,6 +351,62 @@ def cmd_events(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_calibrate(_: argparse.Namespace) -> int:
+    """Event study + Impact calibration (calibration period) + out-of-time validation."""
+    from tripwire.factory import build_store
+    from tripwire.scoring.calibrate import run, save_outputs
+
+    settings = get_settings()
+    final, report, returns_ = run(build_store(settings))
+    save_outputs(settings.data_dir.parent, final, report, returns_)
+    print(json.dumps({k: report[k] for k in ("event_study", "counts", "model_selection_inner_check_spearman",
+                                             "chosen", "identifiable_factors", "weights")}, indent=2))
+    test = report["test"]
+    print("\nOUT-OF-TIME TEST (|SCAR| vs Impact):")
+    for name in ("final", "expert", "fitted", "blended"):
+        t = test[name]
+        print(f"  {name:8} n={t['n']} spearman={t['spearman']} {t['spearman_ci95']} AUC={t['auc_large_move']} "
+              f"precision@7={t['trigger_precision_impact_ge_7']} (n={t['n_triggered']}, "
+              f"base {t['base_rate_large_move']})")
+    for name, b in test["baselines"].items():
+        print(f"  baseline {name:26} spearman={b['spearman']} {b['spearman_ci95']} AUC={b['auc_large_move']}")
+    print("  buckets:", test["final"]["buckets"])
+    print("  ablation (spearman without factor):", test["ablation_drop_one_factor"])
+    return 0
+
+
+def cmd_score(args: argparse.Namespace) -> int:
+    """Cluster -> score -> store signals -> export JSONL. With --daemon, repeat every --every seconds."""
+    import time
+
+    from tripwire.factory import build_store
+    from tripwire.scoring.impact import ImpactModel
+    from tripwire.scoring.pipeline import score_cycle
+
+    settings = get_settings()
+    _setup_logging(settings)
+    log = logging.getLogger("tripwire.score")
+    store = build_store(settings)
+    model = ImpactModel.load(settings.data_dir.parent / "models" / "impact_model.json")
+    export = settings.var_dir / "signals.jsonl"
+    while True:
+        stats = score_cycle(store, model, export)
+        log.info("score cycle: %s", stats)
+        if not args.daemon:
+            print(json.dumps(stats, indent=2))
+            return 0
+        time.sleep(args.every)
+
+
+def cmd_api(args: argparse.Namespace) -> int:
+    import uvicorn
+
+    from tripwire.api.app import create_app
+
+    uvicorn.run(create_app(), host=args.host, port=args.port, log_level="info")
+    return 0
+
+
 def cmd_status(_: argparse.Namespace) -> int:
     from tripwire.factory import build_store
 
@@ -404,6 +466,7 @@ def main(argv: list[str] | None = None) -> int:
     nlp.add_argument("--limit", type=int, default=None, help="stop after this many documents")
     nlp.add_argument("--daemon", action="store_true", help="keep polling for new documents")
     nlp.add_argument("--no-ner", action="store_true", help="skip GLiNER frame enrichment (faster on CPU)")
+    nlp.add_argument("--reannotate", metavar="SOURCE", help="delete and redo annotations of one source first")
     nlp.set_defaults(func=cmd_nlp)
 
     train = sub.add_parser("train-events", help="train the event classifier on weak labels (GPU server)")
@@ -417,6 +480,20 @@ def main(argv: list[str] | None = None) -> int:
     eval_sent = sub.add_parser("eval-sentiment", help="entity-level sentiment accuracy on SEntFiN")
     eval_sent.add_argument("--limit", type=int, default=None)
     eval_sent.set_defaults(func=cmd_eval_sentiment)
+
+    score = sub.add_parser("score", help="cluster events, score Impact, store and export signals")
+    score.add_argument("--daemon", action="store_true")
+    score.add_argument("--every", type=int, default=120, help="seconds between cycles with --daemon")
+    score.set_defaults(func=cmd_score)
+
+    api = sub.add_parser("api", help="serve the signals API (OpenAPI docs at /docs)")
+    api.add_argument("--host", default="127.0.0.1")
+    api.add_argument("--port", type=int, default=8000)
+    api.set_defaults(func=cmd_api)
+
+    sub.add_parser("calibrate", help="event study, Impact calibration and out-of-time validation").set_defaults(
+        func=cmd_calibrate
+    )
 
     events_cmd = sub.add_parser("events", help="cluster annotated documents into events (full recompute)")
     events_cmd.add_argument("--threshold", type=float, default=0.72, help="cosine similarity to join an event")

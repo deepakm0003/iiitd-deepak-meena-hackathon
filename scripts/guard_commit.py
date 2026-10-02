@@ -19,7 +19,7 @@ BLOCKED_DIRS = ("data/raw/", "var/")
 TABULAR = {".csv", ".tsv", ".json", ".jsonl"}
 SENSITIVE_HEADER = re.compile(r"\b(card_number|cvv|cvc)\b", re.IGNORECASE)
 
-CARD_LIKE = re.compile(r"(?<!\d)(?:\d[ -]?){12,18}\d(?!\d)")
+CARD_LIKE = re.compile(r"(?<![\d.])(?:\d[ -]?){12,18}\d(?![\d.])")  # not part of a decimal number
 PRIVATE_KEY = re.compile("-----" + r"BEGIN [A-Z ]*PRIVATE KEY" + "-----")
 SECRET_ASSIGN = re.compile(
     r"(?i)(?<![a-z0-9])(api[_-]?key|secret|token|password)\b[\"']?\s*[:=]\s*[\"']?([A-Za-z0-9_\-]{16,})"

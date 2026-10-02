@@ -1,5 +1,6 @@
 """Store adapter on SQLAlchemy Core. One implementation serves SQLite (lite) and PostgreSQL (full)."""
 
+import json
 from collections.abc import Iterator
 from datetime import UTC, datetime
 from pathlib import Path
@@ -157,6 +158,21 @@ event_members = Table(
     Column("event_id", String(32), nullable=False, index=True),
     Column("similarity", Float, nullable=False),
     Column("novelty", Float, nullable=False),
+)
+
+
+signals = Table(
+    "signals",
+    metadata,
+    Column("event_id", String(32), primary_key=True),
+    Column("primary_entity", String(16), nullable=False, index=True),
+    Column("event_type", String(40), nullable=False, index=True),
+    Column("impact", Float, nullable=False, index=True),
+    Column("sentiment", Float, nullable=False),
+    Column("risk_level", String(12), nullable=False),
+    Column("first_seen", DateTime(timezone=True), nullable=False, index=True),
+    Column("updated_at", DateTime(timezone=True), nullable=False, index=True),
+    Column("payload", JSON, nullable=False),
 )
 
 
@@ -418,6 +434,10 @@ class SqlStore:
         with self.engine.connect() as conn:
             return [row[0] for row in conn.execute(query)]
 
+    def delete_annotations(self, source: str) -> int:
+        with self.engine.begin() as conn:
+            return conn.execute(doc_annotations.delete().where(doc_annotations.c.source == source)).rowcount
+
     def count_annotations(self) -> int:
         with self.engine.connect() as conn:
             return int(conn.execute(select(func.count()).select_from(doc_annotations)).scalar_one())
@@ -446,6 +466,62 @@ class SqlStore:
     def count_events(self) -> int:
         with self.engine.connect() as conn:
             return int(conn.execute(select(func.count()).select_from(events)).scalar_one())
+
+    # ---- signals (the Risk Engine's output) ----------------------------------------------------
+    def upsert_signals(self, payloads: list[dict], prune: bool = False) -> int:
+        """Insert or update; updated_at changes only when the signal's content changed (drives the stream).
+
+        prune=True removes signals whose event no longer exists (events are recomputed every cycle: an item
+        re-classified as NONE, or merged into another event, must not leave a stale signal behind).
+        """
+        now = datetime.now(UTC)
+        with self.engine.begin() as conn:
+            if prune:
+                keep = [p["event_id"] for p in payloads]
+                conn.execute(signals.delete().where(signals.c.event_id.not_in(keep)) if keep else signals.delete())
+            if not payloads:
+                return 0
+            existing = {r[0]: r[1] for r in conn.execute(select(signals.c.event_id, signals.c.payload))}
+            changed = 0
+            for p in payloads:
+                p = json.loads(json.dumps(p, default=str))  # same normal form as what the database returns
+                comparable = {k: v for k, v in p.items() if k != "scored_at"}
+                old = existing.get(p["event_id"])
+                if old is not None and {k: v for k, v in old.items() if k != "scored_at"} == comparable:
+                    continue
+                row = {"event_id": p["event_id"], "primary_entity": p["primary_entity"], "event_type": p["event_type"],
+                       "impact": p["impact_score"], "sentiment": p["sentiment_score"], "risk_level": p["risk_level"],
+                       "first_seen": datetime.fromisoformat(p["first_seen_at"]), "updated_at": now, "payload": p}
+                stmt = self._insert(signals).values(row)
+                conn.execute(stmt.on_conflict_do_update(index_elements=["event_id"],
+                                                        set_={k: v for k, v in row.items() if k != "event_id"}))
+                changed += 1
+        return changed
+
+    def query_signals(self, min_impact: float | None = None, event_type: str | None = None,
+                      entity: str | None = None, since: datetime | None = None, updated_since: datetime | None = None,
+                      limit: int = 100) -> list[dict]:
+        query = select(signals.c.payload).order_by(signals.c.first_seen.desc()).limit(limit)
+        if min_impact is not None:
+            query = query.where(signals.c.impact >= min_impact)
+        if event_type:
+            query = query.where(signals.c.event_type == event_type)
+        if entity:
+            query = query.where(signals.c.primary_entity == entity)
+        if since:
+            query = query.where(signals.c.first_seen >= since)
+        if updated_since:
+            query = query.where(signals.c.updated_at > updated_since)
+        with self.engine.connect() as conn:
+            return [r[0] for r in conn.execute(query)]
+
+    def get_signal(self, event_id: str) -> dict | None:
+        with self.engine.connect() as conn:
+            return conn.execute(select(signals.c.payload).where(signals.c.event_id == event_id)).scalar_one_or_none()
+
+    def count_signals(self) -> int:
+        with self.engine.connect() as conn:
+            return int(conn.execute(select(func.count()).select_from(signals)).scalar_one())
 
     # ---- prices --------------------------------------------------------------------------------
     def upsert_prices(self, bars: list[PriceBar]) -> int:
@@ -485,6 +561,7 @@ class SqlStore:
                 "documents": self.count_documents(),
                 "annotated": self.count_annotations(),
                 "events": self.count_events(),
+                "signals": self.count_signals(),
                 "quarantined": self.count_quarantine(),
             }
         except Exception as exc:  # health must report, never raise
