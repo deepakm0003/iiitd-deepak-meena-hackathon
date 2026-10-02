@@ -1,26 +1,42 @@
 # Severe-end shocks per event class (assumption A-15). Scaled by k(Impact) at run time.
 # Part 5 replaces equity/spread levels with historical-analog measurements where available.
 # Units: equity = fractional return, rates/spreads = basis points, pd = multiplier, vol = points.
+# sector_scope (A-25): who the sector layer reaches. "corporate" = large-corporate peers of the event's company
+# only (Tranche 2); "all" = also SME obligors in that sector (Tranche 1). A large company's credit event does
+# not raise the default risk of small merchants that merely share its GICS sector; sector-wide regulation does.
+# systemic_when (A-25): when the market-wide layer applies. "always" (default); "financials" = only if the
+# event's company is a financial institution (a bank failure is contagious, a drug maker's litigation
+# bankruptcy is not); "market_wide" = only for events not tied to one company (a war or a tariff round,
+# not export controls on one chip maker, which hit that company and its sector).
 assumption_id: A-15
 classes:
   Geopolitical:
-    layers: [systemic]
+    layers: [entity, sector, systemic]   # sanctions / export controls hit the named company first
+    sector_scope: corporate
+    systemic_when: market_wide
+    entity: { equity: -0.10, spread_bp: 75, pd_mult: 1.3 }
+    sector: { equity: -0.04, spread_bp: 25, pd_mult: 1.1 }
     systemic: { equity: -0.12, rate_10y_bp: -30, ig_spread_bp: 80, pd_mult: 1.5, vol_pts: 12 }
   Macroeconomic:
     layers: [systemic]
     systemic: { equity: -0.10, rate_10y_bp: 100, ig_spread_bp: 50, pd_mult: 1.3, vol_pts: 8 }
   Credit Event:
     layers: [entity, sector, systemic]
+    sector_scope: corporate
+    systemic_when: financials
     entity: { equity: -0.40, spread_bp: 500, pd_mult: 5.0 }
     sector: { equity: -0.15, spread_bp: 200, pd_mult: 2.0 }
     systemic: { equity: -0.03, rate_10y_bp: -10, ig_spread_bp: 25, vol_pts: 5 }
   Regulatory/Legal:
-    layers: [sector]
-    sector: { equity: -0.12, spread_bp: 100, pd_mult: 1.5, vol_pts: 3 }
+    layers: [entity, sector]          # the named company bears the action; peers get a milder sector move
+    sector_scope: all
+    entity: { equity: -0.12, spread_bp: 100, pd_mult: 1.5 }
+    sector: { equity: -0.04, spread_bp: 30, pd_mult: 1.15 }
   Cyber/Operational:
     layers: [entity]
     entity: { equity: -0.15, spread_bp: 150, pd_mult: 1.5, vol_pts: 2 }
   Natural Disaster/Supply Chain:
     layers: [sector, geography]
+    sector_scope: corporate           # SMEs are reached through their home state (geography layer)
     sector: { equity: -0.10, spread_bp: 60, pd_mult: 1.3, vol_pts: 3 }
     geography: { pd_mult: 1.8 }

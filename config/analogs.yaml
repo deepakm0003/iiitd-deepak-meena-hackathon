@@ -1,0 +1,21 @@
+# Historical analog windows (public market data). Moves are MEASURED from the price cache by
+# `python -m tripwire analogs`; they set the severe-end SYSTEMIC and SECTOR shocks per event class.
+# Entity-level shocks (a single company) have no clean analog and stay in shocks.yaml as assumptions.
+# Credit spread change is derived from bond-ETF price moves: d_spread ~ -return / duration (A-26).
+etf_duration: {LQD: 8.4, HYG: 3.3}   # A-26: approximate effective durations of the IG and HY ETFs
+windows:
+  Credit Event:
+    name: US regional bank run (Silicon Valley Bank failure)
+    start: 2023-03-08      # last close before the run
+    end: 2023-03-13
+    sector_etf: KRE        # regional banks: the sector shock for Financials
+  Geopolitical:
+    name: Russian invasion of Ukraine
+    start: 2022-02-18
+    end: 2022-03-07
+    sector_etf: XLE        # energy reacts most; reported, not applied to other sectors
+  Macroeconomic:
+    name: US CPI surprise (inflation shock)
+    start: 2022-09-12
+    end: 2022-09-13
+    sector_etf: XLK

@@ -1,0 +1,414 @@
+{
+ "measured_at": "2026-10-02T12:47:53.611982+00:00",
+ "provenance": "MEASURED from public daily prices (Yahoo Finance, FRED) in the local cache",
+ "analogs": {
+  "Credit Event": {
+   "name": "US regional bank run (Silicon Valley Bank failure)",
+   "start": "2023-03-08",
+   "end": "2023-03-13",
+   "equity_market": -0.034,
+   "sector_etf": "KRE",
+   "equity_sector": -0.2296,
+   "rate_10y_bp": -43.0,
+   "ig_spread_bp": 26.1,
+   "hy_spread_bp": 75.8,
+   "vol_pts": 7.41
+  },
+  "Geopolitical": {
+   "name": "Russian invasion of Ukraine",
+   "start": "2022-02-18",
+   "end": "2022-03-07",
+   "equity_market": -0.0341,
+   "sector_etf": "XLE",
+   "equity_sector": 0.1218,
+   "rate_10y_bp": -14.0,
+   "ig_spread_bp": 26.4,
+   "hy_spread_bp": 42.1,
+   "vol_pts": 8.7
+  },
+  "Macroeconomic": {
+   "name": "US CPI surprise (inflation shock)",
+   "start": "2022-09-12",
+   "end": "2022-09-13",
+   "equity_market": -0.0435,
+   "sector_etf": "XLK",
+   "equity_sector": -0.0531,
+   "rate_10y_bp": 5.0,
+   "ig_spread_bp": 3.6,
+   "hy_spread_bp": 63.9,
+   "vol_pts": 3.4
+  }
+ },
+ "betas": {
+  "AAPL": {
+   "beta_market": 1.0766,
+   "sector_etf": "XLK",
+   "beta_sector": 0.5189
+  },
+  "MSFT": {
+   "beta_market": 0.9347,
+   "sector_etf": "XLK",
+   "beta_sector": 0.565
+  },
+  "NVDA": {
+   "beta_market": 1.857,
+   "sector_etf": "XLK",
+   "beta_sector": 1.2999
+  },
+  "ORCL": {
+   "beta_market": 1.6348,
+   "sector_etf": "XLK",
+   "beta_sector": 1.2151
+  },
+  "CRM": {
+   "beta_market": 0.8681,
+   "sector_etf": "XLK",
+   "beta_sector": 0.4717
+  },
+  "ADBE": {
+   "beta_market": 0.7448,
+   "sector_etf": "XLK",
+   "beta_sector": 0.3011
+  },
+  "INTC": {
+   "beta_market": 1.9591,
+   "sector_etf": "XLK",
+   "beta_sector": 1.4757
+  },
+  "AMD": {
+   "beta_market": 2.2918,
+   "sector_etf": "XLK",
+   "beta_sector": 1.7121
+  },
+  "CSCO": {
+   "beta_market": 0.9239,
+   "sector_etf": "XLK",
+   "beta_sector": 0.5931
+  },
+  "IBM": {
+   "beta_market": 0.7595,
+   "sector_etf": "XLK",
+   "beta_sector": 0.3847
+  },
+  "QCOM": {
+   "beta_market": 1.6236,
+   "sector_etf": "XLK",
+   "beta_sector": 1.0485
+  },
+  "GOOGL": {
+   "beta_market": 1.1124,
+   "sector_etf": "XLC",
+   "beta_sector": 1.1918
+  },
+  "META": {
+   "beta_market": 1.3924,
+   "sector_etf": "XLC",
+   "beta_sector": 1.6178
+  },
+  "DIS": {
+   "beta_market": 0.8976,
+   "sector_etf": "XLC",
+   "beta_sector": 0.9492
+  },
+  "T": {
+   "beta_market": -0.0176,
+   "sector_etf": "XLC",
+   "beta_sector": 0.2903
+  },
+  "VZ": {
+   "beta_market": -0.0406,
+   "sector_etf": "XLC",
+   "beta_sector": 0.2189
+  },
+  "AMZN": {
+   "beta_market": 1.3573,
+   "sector_etf": "XLY",
+   "beta_sector": 1.1685
+  },
+  "TSLA": {
+   "beta_market": 2.2659,
+   "sector_etf": "XLY",
+   "beta_sector": 2.0645
+  },
+  "HD": {
+   "beta_market": 0.643,
+   "sector_etf": "XLY",
+   "beta_sector": 0.6404
+  },
+  "MCD": {
+   "beta_market": 0.1508,
+   "sector_etf": "XLY",
+   "beta_sector": 0.2003
+  },
+  "NKE": {
+   "beta_market": 0.8883,
+   "sector_etf": "XLY",
+   "beta_sector": 0.8323
+  },
+  "SBUX": {
+   "beta_market": 0.8519,
+   "sector_etf": "XLY",
+   "beta_sector": 0.6457
+  },
+  "F": {
+   "beta_market": 0.9413,
+   "sector_etf": "XLY",
+   "beta_sector": 0.7748
+  },
+  "GM": {
+   "beta_market": 0.9406,
+   "sector_etf": "XLY",
+   "beta_sector": 0.7939
+  },
+  "WMT": {
+   "beta_market": 0.422,
+   "sector_etf": "XLP",
+   "beta_sector": 1.11
+  },
+  "COST": {
+   "beta_market": 0.333,
+   "sector_etf": "XLP",
+   "beta_sector": 0.8988
+  },
+  "KO": {
+   "beta_market": -0.0168,
+   "sector_etf": "XLP",
+   "beta_sector": 0.927
+  },
+  "PEP": {
+   "beta_market": 0.0713,
+   "sector_etf": "XLP",
+   "beta_sector": 1.0959
+  },
+  "PG": {
+   "beta_market": 0.1115,
+   "sector_etf": "XLP",
+   "beta_sector": 1.0139
+  },
+  "TGT": {
+   "beta_market": 0.7369,
+   "sector_etf": "XLP",
+   "beta_sector": 1.0543
+  },
+  "JNJ": {
+   "beta_market": -0.0116,
+   "sector_etf": "XLV",
+   "beta_sector": 0.6945
+  },
+  "UNH": {
+   "beta_market": 0.3164,
+   "sector_etf": "XLV",
+   "beta_sector": 1.0064
+  },
+  "PFE": {
+   "beta_market": 0.3936,
+   "sector_etf": "XLV",
+   "beta_sector": 0.9136
+  },
+  "MRK": {
+   "beta_market": 0.3149,
+   "sector_etf": "XLV",
+   "beta_sector": 1.1967
+  },
+  "ABBV": {
+   "beta_market": 0.2655,
+   "sector_etf": "XLV",
+   "beta_sector": 1.0165
+  },
+  "LLY": {
+   "beta_market": 0.5528,
+   "sector_etf": "XLV",
+   "beta_sector": 1.5324
+  },
+  "JPM": {
+   "beta_market": 0.9351,
+   "sector_etf": "XLF",
+   "beta_sector": 1.1939
+  },
+  "BAC": {
+   "beta_market": 0.914,
+   "sector_etf": "XLF",
+   "beta_sector": 1.1774
+  },
+  "WFC": {
+   "beta_market": 0.9728,
+   "sector_etf": "XLF",
+   "beta_sector": 1.3117
+  },
+  "C": {
+   "beta_market": 1.2902,
+   "sector_etf": "XLF",
+   "beta_sector": 1.3803
+  },
+  "GS": {
+   "beta_market": 1.4527,
+   "sector_etf": "XLF",
+   "beta_sector": 1.4051
+  },
+  "MS": {
+   "beta_market": 1.3616,
+   "sector_etf": "XLF",
+   "beta_sector": 1.3824
+  },
+  "USB": {
+   "beta_market": 0.965,
+   "sector_etf": "XLF",
+   "beta_sector": 1.1654
+  },
+  "PNC": {
+   "beta_market": 0.8575,
+   "sector_etf": "XLF",
+   "beta_sector": 1.0877
+  },
+  "TFC": {
+   "beta_market": 1.0115,
+   "sector_etf": "XLF",
+   "beta_sector": 1.2458
+  },
+  "SCHW": {
+   "beta_market": 0.7305,
+   "sector_etf": "XLF",
+   "beta_sector": 1.0117
+  },
+  "COF": {
+   "beta_market": 1.4694,
+   "sector_etf": "XLF",
+   "beta_sector": 1.6473
+  },
+  "BNY": {
+   "beta_market": 0.8509,
+   "sector_etf": "XLF",
+   "beta_sector": 0.9313
+  },
+  "KEY": {
+   "beta_market": 1.1191,
+   "sector_etf": "XLF",
+   "beta_sector": 1.3103
+  },
+  "CFG": {
+   "beta_market": 1.1871,
+   "sector_etf": "XLF",
+   "beta_sector": 1.3891
+  },
+  "FITB": {
+   "beta_market": 0.9695,
+   "sector_etf": "XLF",
+   "beta_sector": 1.1912
+  },
+  "RF": {
+   "beta_market": 1.0145,
+   "sector_etf": "XLF",
+   "beta_sector": 1.2462
+  },
+  "HBAN": {
+   "beta_market": 1.1043,
+   "sector_etf": "XLF",
+   "beta_sector": 1.3233
+  },
+  "ZION": {
+   "beta_market": 1.1653,
+   "sector_etf": "XLF",
+   "beta_sector": 1.4334
+  },
+  "WAL": {
+   "beta_market": 1.4519,
+   "sector_etf": "XLF",
+   "beta_sector": 1.6487
+  },
+  "AXP": {
+   "beta_market": 1.2235,
+   "sector_etf": "XLF",
+   "beta_sector": 1.37
+  },
+  "BLK": {
+   "beta_market": 1.1136,
+   "sector_etf": "XLF",
+   "beta_sector": 1.1122
+  },
+  "MET": {
+   "beta_market": 0.9838,
+   "sector_etf": "XLF",
+   "beta_sector": 1.2293
+  },
+  "AIG": {
+   "beta_market": 0.4348,
+   "sector_etf": "XLF",
+   "beta_sector": 0.7144
+  },
+  "BRK-B": {
+   "beta_market": 0.3864,
+   "sector_etf": "XLF",
+   "beta_sector": 0.6285
+  },
+  "XOM": {
+   "beta_market": 0.179,
+   "sector_etf": "XLE",
+   "beta_sector": 0.9492
+  },
+  "CVX": {
+   "beta_market": 0.2969,
+   "sector_etf": "XLE",
+   "beta_sector": 0.9337
+  },
+  "COP": {
+   "beta_market": 0.4631,
+   "sector_etf": "XLE",
+   "beta_sector": 1.2352
+  },
+  "BA": {
+   "beta_market": 1.1411,
+   "sector_etf": "XLI",
+   "beta_sector": 1.0733
+  },
+  "CAT": {
+   "beta_market": 1.2981,
+   "sector_etf": "XLI",
+   "beta_sector": 1.4836
+  },
+  "GE": {
+   "beta_market": 1.1396,
+   "sector_etf": "XLI",
+   "beta_sector": 1.284
+  },
+  "UPS": {
+   "beta_market": 0.7528,
+   "sector_etf": "XLI",
+   "beta_sector": 0.7839
+  },
+  "HON": {
+   "beta_market": 0.7645,
+   "sector_etf": "XLI",
+   "beta_sector": 0.8965
+  },
+  "LMT": {
+   "beta_market": 0.1598,
+   "sector_etf": "XLI",
+   "beta_sector": 0.4513
+  },
+  "NEE": {
+   "beta_market": 0.2741,
+   "sector_etf": "XLU",
+   "beta_sector": 1.0902
+  },
+  "DUK": {
+   "beta_market": -0.0903,
+   "sector_etf": "XLU",
+   "beta_sector": 0.7505
+  },
+  "LIN": {
+   "beta_market": 0.4563,
+   "sector_etf": "XLB",
+   "beta_sector": 0.6764
+  },
+  "PLD": {
+   "beta_market": 0.7363,
+   "sector_etf": "XLRE",
+   "beta_sector": 1.2358
+  },
+  "KRE": {
+   "beta_market": 0.991,
+   "sector_etf": "XLF",
+   "beta_sector": 1.2051
+  }
+ }
+}

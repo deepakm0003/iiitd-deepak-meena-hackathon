@@ -296,6 +296,36 @@ def cmd_train_events(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_eval_events(args: argparse.Namespace) -> int:
+    """Selective-classification report on the validation split: head vs head + abstention + zero-shot check."""
+    from datetime import UTC, datetime
+
+    from tripwire.config import load_yaml
+    from tripwire.eval.event_selective import report
+    from tripwire.factory import build_http, build_store
+    from tripwire.nlp import training_data as td
+    from tripwire.nlp.classifier import EventClassifier
+
+    settings = get_settings()
+    store, http = build_store(settings), build_http(settings)
+    utc = lambda s: datetime.fromisoformat(s).replace(tzinfo=UTC)  # noqa: E731
+    valid = td.edgar_examples(store, utc(args.valid_from), utc(args.valid_to))
+    valid += td.twitter_examples(td.download_twitter_topic(http, "valid"))
+    valid = td.balance(valid, per_class=args.per_class * 2, seed=29)  # the same split as train-events
+    texts = [e.text for e in valid]
+    clf = EventClassifier()
+    heads = [r.probabilities for r in clf.predict(texts)]
+    zss = [r.probabilities for r in clf.predict_zero_shot(texts)]
+    cfg = load_yaml("models.yaml")["event_classifier"]
+    out = report([e.label for e in valid], heads, zss, [e.origin for e in valid], set(cfg["verify"]["classes"]),
+                 cfg["min_confidence"], cfg["verify"]["min_p"])
+    path = settings.data_dir.parent / "docs" / "results" / "event_selective.json"
+    path.write_text(json.dumps(out, indent=2), encoding="utf-8")
+    print(json.dumps({k: {m: v for m, v in out[k].items() if m != "per_class"} for k in ("before", "after")},
+                     indent=2))
+    return 0
+
+
 def cmd_eval_sentiment(args: argparse.Namespace) -> int:
     from tripwire.eval.sentiment_eval import evaluate, load_sentfin
     from tripwire.nlp.sentiment import FinbertSentiment
@@ -389,8 +419,11 @@ def cmd_score(args: argparse.Namespace) -> int:
     store = build_store(settings)
     model = ImpactModel.load(settings.data_dir.parent / "models" / "impact_model.json")
     export = settings.var_dir / "signals.jsonl"
+    from tripwire.stress.service import load_service
+
+    stress = load_service(store, settings.data_dir)  # Module B runs automatically when the book exists
     while True:
-        stats = score_cycle(store, model, export)
+        stats = score_cycle(store, model, export, stress)
         log.info("score cycle: %s", stats)
         if not args.daemon:
             print(json.dumps(stats, indent=2))
@@ -405,6 +438,98 @@ def cmd_api(args: argparse.Namespace) -> int:
 
     uvicorn.run(create_app(), host=args.host, port=args.port, log_level="info")
     return 0
+
+
+def cmd_book(args: argparse.Namespace) -> int:
+    """Build the synthetic wholesale book. --from-raw re-derives merchant features from the Kaggle data."""
+    from pathlib import Path
+
+    from tripwire.config import load_yaml
+    from tripwire.portfolio.book import build_book, build_merchant_table, market_snapshot, save_book
+
+    settings = get_settings()
+    root = settings.data_dir.parent
+    table_csv = settings.data_dir / "merchant_features.csv"
+    fy = load_yaml("book.yaml")["as_of_fiscal_year"]
+    if args.from_raw:
+
+        from tripwire.portfolio import merchants as m
+
+        raw = settings.data_dir / "raw" / "kaggle_transactions"
+        derived = settings.var_dir / "derived"
+        derived.mkdir(parents=True, exist_ok=True)
+        if args.reaggregate or not (derived / "mccs.pkl").exists():  # the 13 M-row pass takes minutes
+            monthly, customers, states, mccs = m.aggregate(raw / "transactions_data.csv",
+                                                           raw / "train_fraud_labels.json")
+            for name, frame in (("monthly", monthly), ("customers", customers), ("states", states), ("mccs", mccs)):
+                frame.to_pickle(derived / f"{name}.pkl")
+        else:
+            import pandas as pd
+
+            monthly, customers = pd.read_pickle(derived / "monthly.pkl"), pd.read_pickle(derived / "customers.pkl")
+        _, report = m.validate_risk_model(monthly, customers)
+        out = root / "docs" / "results" / "merchant_risk_validation.json"
+        out.write_text(json.dumps(report, indent=2), encoding="utf-8")
+        print(f"merchant risk model, out-of-time AUC {report['test']['auc']} {report['test']['auc_ci95']}")
+        table = build_merchant_table(derived, settings.data_dir / "mcc_sector_map.csv", fy)
+        table.to_csv(table_csv, index_label="merchant_id")
+        print(f"wrote {len(table)} merchants to {table_csv}")
+        if args.merchants_only:
+            return 0
+    import csv
+
+    from tripwire.factory import build_store
+    from tripwire.universe import load_universe
+
+    rows = []
+    with open(Path(table_csv), encoding="utf-8") as fh:
+        for r in csv.DictReader(fh):
+            rows.append({k: (r[k] if k in ("sector", "state") else float(r[k])) for k in r})
+    universe = {c.ticker: {"sector": c.sector} for c in load_universe()}
+    tickers = [e["ticker"] for e in load_yaml("book.yaml")["tranche2"]["equities"]]
+    book = build_book(rows, market_snapshot(build_store(settings), tickers), universe)
+    save_book(book, settings.data_dir / "book.json")
+    print(json.dumps({"totals": book["totals"], "capital": book["capital"],
+                      "tranche1_grades": _count(o["grade"] for o in book["tranche1"])}, indent=2))
+    return 0
+
+
+def cmd_market_inputs(_: argparse.Namespace) -> int:
+    """Measure historical-analog shocks and equity betas from the price cache -> data/market_inputs.json."""
+    from datetime import UTC, datetime
+
+    from tripwire.factory import build_store
+    from tripwire.market.prices import MARKET_TICKERS
+    from tripwire.portfolio.book import SECTOR_ETF
+    from tripwire.stress.market import measure_analogs, measure_betas
+    from tripwire.universe import load_universe
+
+    settings = get_settings()
+    store = build_store(settings)
+    companies = load_universe()
+    names = [*(c.ticker for c in companies), *MARKET_TICKERS, "FRED:DGS10", "FRED:VIXCLS"]
+    prices = {t: {b.date: b.adj_close for b in store.get_prices(t)} for t in names}
+    prices = {t: p for t, p in prices.items() if p}
+    sector_etf = {c.ticker: SECTOR_ETF[c.sector] for c in companies}
+    sector_etf["KRE"] = "XLF"
+    out = {
+        "measured_at": datetime.now(UTC).isoformat(),
+        "provenance": "MEASURED from public daily prices (Yahoo Finance, FRED) in the local cache",
+        "analogs": measure_analogs(prices),
+        "betas": measure_betas(prices, [*(c.ticker for c in companies), "KRE"], sector_etf),
+    }
+    path = settings.data_dir / "market_inputs.json"
+    path.write_text(json.dumps(out, indent=1), encoding="utf-8")
+    print(json.dumps(out["analogs"], indent=1))
+    print({t: out["betas"][t] for t in ("JPM", "NVDA", "XOM", "KRE") if t in out["betas"]})
+    return 0
+
+
+def _count(values) -> dict:
+    out: dict = {}
+    for v in values:
+        out[v] = out.get(v, 0) + 1
+    return out
 
 
 def cmd_status(_: argparse.Namespace) -> int:
@@ -477,9 +602,25 @@ def main(argv: list[str] | None = None) -> int:
     train.add_argument("--per-class", type=int, default=64)
     train.set_defaults(func=cmd_train_events)
 
+    eval_ev = sub.add_parser("eval-events", help="selective-classification report for the event classifier")
+    eval_ev.add_argument("--valid-from", default="2025-01-01")
+    eval_ev.add_argument("--valid-to", default="2025-06-30")
+    eval_ev.add_argument("--per-class", type=int, default=64)
+    eval_ev.set_defaults(func=cmd_eval_events)
+
     eval_sent = sub.add_parser("eval-sentiment", help="entity-level sentiment accuracy on SEntFiN")
     eval_sent.add_argument("--limit", type=int, default=None)
     eval_sent.set_defaults(func=cmd_eval_sentiment)
+
+    book = sub.add_parser("book", help="build the synthetic wholesale book (Module B)")
+    book.add_argument("--from-raw", action="store_true", help="re-derive merchant features from the Kaggle data")
+    book.add_argument("--reaggregate", action="store_true", help="redo the pass over the raw transactions")
+    book.add_argument("--merchants-only", action="store_true", help="with --from-raw: stop after the merchant table")
+    book.set_defaults(func=cmd_book)
+
+    sub.add_parser("market-inputs", help="measure historical-analog shocks and betas (price cache)").set_defaults(
+        func=cmd_market_inputs
+    )
 
     score = sub.add_parser("score", help="cluster events, score Impact, store and export signals")
     score.add_argument("--daemon", action="store_true")

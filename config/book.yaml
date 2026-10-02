@@ -1,0 +1,80 @@
+# Synthetic wholesale book parameters. Every number here is an ASSUMPTION (see assumptions_register.yaml).
+as_of_fiscal_year: 2019          # A-01: last full year of the dataset (Nov 2018 - Oct 2019) treated as "now"
+tranche1:                         # SME loan book derived from the card-transaction data
+  n_obligors: 300
+  total_ead: 300_000_000          # A-02
+  facility_multiple: 0.15         # EAD proportional to 0.15 x annual card volume before scaling (A-02)
+  single_obligor_cap: 0.03        # A-11: no obligor above 3% of the tranche
+  maturity_years: [1, 5]          # A-03
+  lgd: 0.45                       # A-05: senior unsecured
+  # A-04: share of obligors per internal grade, assigned by behavioural-risk rank (riskiest -> CCC).
+  grade_distribution: {A: 0.10, BBB: 0.30, BB: 0.35, B: 0.20, CCC: 0.05}
+grades:                           # A-05: illustrative 1-year PD per internal grade; A-22: standardised risk weights
+  AA:  {pd: 0.0002, risk_weight: 0.20}
+  A:   {pd: 0.0005, risk_weight: 0.50}
+  BBB: {pd: 0.0015, risk_weight: 0.75}
+  BB:  {pd: 0.0060, risk_weight: 1.00}
+  B:   {pd: 0.0300, risk_weight: 1.50}
+  CCC: {pd: 0.1500, risk_weight: 1.50}
+capital:
+  cet1_ratio_start: 0.12          # A-21: capital allocated to this book = 12% of its RWA
+  tax_rate: 0.25                  # A-12
+  floors: {basel: 0.07, rbi: 0.08}  # A-10: CET1 minimum + conservation buffer
+  equity_risk_weight: 2.50        # A-22: listed equity, standardised approach
+tranche2:                         # A-06: large-corporate positions on real public names; exposures are SYNTHETIC
+  bonds:
+    - {issuer: JPM, grade: A, notional: 10_000_000, coupon: 0.050, maturity_years: 7}
+    - {issuer: BAC, grade: A, notional: 10_000_000, coupon: 0.052, maturity_years: 6}
+    - {issuer: C, grade: BBB, notional: 8_000_000, coupon: 0.055, maturity_years: 5}
+    - {issuer: WFC, grade: BBB, notional: 8_000_000, coupon: 0.054, maturity_years: 8}
+    - {issuer: KEY, grade: BBB, notional: 6_000_000, coupon: 0.060, maturity_years: 5}
+    - {issuer: ZION, grade: BBB, notional: 6_000_000, coupon: 0.062, maturity_years: 4}
+    - {issuer: BA, grade: BBB, notional: 8_000_000, coupon: 0.058, maturity_years: 10}
+    - {issuer: F, grade: BB, notional: 6_000_000, coupon: 0.070, maturity_years: 6}
+    - {issuer: T, grade: BBB, notional: 8_000_000, coupon: 0.053, maturity_years: 9}
+    - {issuer: XOM, grade: AA, notional: 8_000_000, coupon: 0.045, maturity_years: 7}
+    - {issuer: PFE, grade: A, notional: 6_000_000, coupon: 0.047, maturity_years: 8}
+    - {issuer: DIS, grade: A, notional: 6_000_000, coupon: 0.048, maturity_years: 6}
+  loans:
+    - {borrower: TSLA, grade: BB, ead: 8_000_000, maturity_years: 4}
+    - {borrower: GM, grade: BBB, ead: 8_000_000, maturity_years: 5}
+    - {borrower: UPS, grade: A, ead: 6_000_000, maturity_years: 3}
+    - {borrower: CVX, grade: AA, ead: 6_000_000, maturity_years: 5}
+    - {borrower: AIG, grade: BBB, ead: 6_000_000, maturity_years: 4}
+    - {borrower: COF, grade: BBB, ead: 6_000_000, maturity_years: 3}
+    - {borrower: SCHW, grade: A, ead: 4_000_000, maturity_years: 3}
+    - {borrower: WAL, grade: BB, ead: 4_000_000, maturity_years: 3}
+  equities:
+    - {ticker: NVDA, market_value: 4_000_000}
+    - {ticker: AAPL, market_value: 4_000_000}
+    - {ticker: JPM, market_value: 3_000_000}
+    - {ticker: XOM, market_value: 3_000_000}
+    - {ticker: WMT, market_value: 2_000_000}
+    - {ticker: KRE, market_value: 2_000_000}
+  swaps:
+    - {id: SWP-5Y-PAY, side: pay_fixed, notional: 40_000_000, tenor_years: 5}
+    - {id: SWP-10Y-REC, side: receive_fixed, notional: 25_000_000, tenor_years: 10}
+  index_puts:
+    - {id: SPY-PUT-90, underlying: SPY, notional: 20_000_000, moneyness: 0.90, expiry_years: 0.5}
+stress_trigger:                   # A-27: portfolio-aware stress trigger (stress/trigger.py)
+  direct_large_share: 0.02        # direct exposure at or above this share of the book...
+  direct_large: 5.5               # ...lowers the Impact bar to 5.5
+  direct_any: 6.0                 # any direct exposure
+  indirect_share: 0.10            # sector or geography exposure at or above this share
+  indirect: 6.5
+  market_only: 7.0                # the event reaches the book only through market-wide factors
+  auto_max_age_days: 7            # automatic runs consider signals first seen in the last 7 days
+early_warning:                    # A-28: watchlist (stress/ews.py)
+  lookback_days: 30
+  half_life_days: 14              # older evidence counts less: weight x 0.5 ** (age / half-life)
+  adverse_weight: {negative: 1.0, neutral: 0.15, positive: 0.0}
+  top_evidence: 3                 # noisy-OR over the 3 strongest items only: coverage volume is not risk
+  factuality_weight: {confirmed: 1.0, announced: 1.0, rumour: 0.5, opinion: 0.5, hypothetical: 0.3, denied: 0.0}
+  geography_weight: 0.5           # a disaster in an SME's home state, per unit of severity k
+  geo_min_publishers: 3           # ...counted only if the disaster is big: reported by 3+ publishers
+  geo_min_impact: 7.0             # ...or Impact >= 7 (one local flood story is not a state-level event)
+  thresholds:                     # Amber / Red
+    issuer: {amber: 0.25, red: 0.50}   # probability-like score of a large adverse move
+    sme: {amber: 0.05, red: 0.10}      # proxy distress probability; base rate 2%, top decile 9% (measured)
+  hard_flags_red: ["1.03", "2.04", "4.02", "bankruptcy"]
+  hard_flags_amber: ["4.01"]      # auditor change

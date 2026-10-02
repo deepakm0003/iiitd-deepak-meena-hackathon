@@ -1,0 +1,57 @@
+{
+  "target": "next fiscal year card volume falls >= 50% or merchant disappears (proxy for credit distress)",
+  "train": {
+    "features_fy": [
+      2015,
+      2016
+    ],
+    "n": 4493,
+    "base_rate": 0.0209
+  },
+  "test": {
+    "features_fy": 2018,
+    "outcome_fy": 2019,
+    "n": 2234,
+    "base_rate": 0.0201,
+    "auc": 0.8492,
+    "auc_ci95": [
+      0.7932,
+      0.8914
+    ],
+    "brier": 0.01853,
+    "mean_predicted": 0.0202
+  },
+  "findings": [
+    "Monthly volume volatility alone ranks almost as well as the full model: revenue volatility is the dominant early-warning driver in this data.",
+    "Volume decline alone ranks below chance: after a decline volume tends to recover, and growth years are followed by falls (mean reversion), so a naive 'shrinking merchant' rule fails here.",
+    "Merchants almost never disappear in this dataset, so the target is a revenue collapse, not an exit."
+  ],
+  "baselines_test_auc": {
+    "equal_weight_zscore": 0.6015,
+    "volatility_only": 0.8494,
+    "few_customers_only": 0.6188,
+    "volume_decline_only": 0.3422
+  },
+  "distress_rate_by_risk_decile_test": [
+    0.0045,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.009,
+    0.0089,
+    0.0493,
+    0.0404,
+    0.0893
+  ],
+  "coefficients_standardised": {
+    "neg_trend": -0.0859,
+    "volatility": 0.81,
+    "refund_ratio": 0.2244,
+    "insufficient_rate": -0.3262,
+    "error_rate": 0.3212,
+    "fraud_rate": 0.0068,
+    "neg_log_customers": 0.9824,
+    "online_share": 0.3806
+  }
+}

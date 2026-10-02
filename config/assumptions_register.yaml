@@ -103,3 +103,70 @@ assumptions:
     used_in: config/linking.yaml, nlp/linking
     rationale: RavenPack-style idea that the subject of the headline matters more than a passing mention.
     status: proposed
+  - id: A-18
+    name: Story clustering threshold and windows
+    value: "cosine >= 0.72 within 24 h joins a story; novelty looks back 7 days"
+    used_in: nlp/clustering.py
+    rationale: Same story from several outlets should count once (with corroboration), different stories never merge.
+    status: proposed
+  - id: A-19
+    name: Importance of market-wide (MACRO) events
+    value: "E = 0.70 for MACRO events"
+    used_in: scoring/records.py
+    rationale: An economy-wide event matters to every large book, roughly like a large-cap company event.
+    status: proposed
+  - id: A-20
+    name: Merchant category (MCC) to GICS sector map
+    value: "data/mcc_sector_map.csv (109 codes)"
+    used_in: portfolio/book.py (Tranche 1 sectors)
+    rationale: Lets sector shocks and concentration reports use the same sectors for SMEs and public names.
+    status: proposed
+  - id: A-21
+    name: Starting capital of the book
+    value: "CET1 = 12% of the book's risk-weighted assets"
+    used_in: config/book.yaml capital.cet1_ratio_start
+    rationale: Typical large-bank CET1 ratio; the floors (A-10) are what stress results are judged against.
+    status: proposed
+  - id: A-22
+    name: Risk weights
+    value: "Basel standardised: AA 20%, A 50%, BBB 75%, BB 100%, B and CCC 150%, listed equity 250%, swaps 2% of notional"
+    used_in: config/book.yaml grades, capital.equity_risk_weight; portfolio/book.py
+    rationale: Simplified standardised approach so RWA moves with rating migration under stress.
+    status: proposed
+  - id: A-23
+    name: Lifetime PD with a constant hazard
+    value: "PD_lifetime = 1 - (1 - PD_1y) ** remaining years"
+    used_in: portfolio/pricing.py lifetime_pd (IFRS 9 Stage 2 ECL)
+    rationale: Standard simplification when no term structure of PD is available.
+    status: proposed
+  - id: A-24
+    name: Credit spread per rating grade
+    value: "AA 50 bp, A 80, BBB 130, BB 250, B 450, CCC 900"
+    used_in: portfolio/book.py GRADE_SPREAD_BP (bond yields at book build)
+    rationale: Round numbers in line with long-run average option-adjusted spreads by rating bucket.
+    status: proposed
+  - id: A-25
+    name: Reach of sector shocks
+    value: "Credit Event and Natural Disaster: large-corporate peers only; Regulatory/Legal: SME obligors too"
+    used_in: config/shocks.yaml sector_scope; stress/engine.py
+    rationale: A large company's credit event does not raise the default risk of small merchants that only share
+      its GICS sector; sector-wide regulation does. SMEs are reached by disasters through their home state.
+    status: proposed
+  - id: A-26
+    name: Bond-ETF durations used to turn price moves into spread changes
+    value: "LQD 8.4, HYG 3.3 years"
+    used_in: config/analogs.yaml; stress/market.py
+    rationale: d_spread ~ -return / duration - d_rate, applied to measured analog windows.
+    status: proposed
+  - id: A-27
+    name: Portfolio-aware stress trigger
+    value: "Impact bar 5.5 (direct >= 2% of book), 6.0 (any direct), 6.5 (sector/geography >= 10%), 7.0 (market only); hard flag on a borrower always"
+    used_in: config/book.yaml stress_trigger; stress/trigger.py
+    rationale: The more of the book an event touches, the less severe it must be before capital is re-measured.
+    status: proposed
+  - id: A-28
+    name: Early-warning weights and thresholds
+    value: "30-day lookback, 14-day half-life, adverse 1.0/0.15/0.0, rumour 0.5, top 3 items; issuer Amber 0.25 Red 0.50; SME Amber 0.05 Red 0.10"
+    used_in: config/book.yaml early_warning; stress/ews.py
+    rationale: SME thresholds sit at 2.5x and 5x the measured 2% base rate of the proxy distress event.
+    status: proposed

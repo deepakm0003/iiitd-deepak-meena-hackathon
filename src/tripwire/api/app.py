@@ -6,6 +6,14 @@
   GET  /companies/{ticker}/risk      rolling 7-day view for one company
   GET  /ops/status                   collector status (per-source last run, failures, pauses)
   WS   /stream/signals               pushes new or changed signals (checks every 5 s), heartbeat every 15 s
+Module B (stress testing the synthetic wholesale book):
+  GET  /portfolio                    book summary: exposures by type, sector, grade, state; capital
+  GET  /watchlist                    early-warning list, Green / Amber / Red, with the evidence per name
+  GET  /signals/{event_id}/stress-decision   would this signal launch a stress test, and why (every check)
+  GET  /signals/{event_id}/trace     signal -> evidence -> impact -> exposure -> shocks -> P&L -> ECL -> CET1
+  POST /stress-test                  run for an event ({"event_id": ...}) or a what-if scenario
+  GET  /stress-test/{run_id}         one run: P&L by position with causal paths, stages, CET1, reverse stress
+  GET  /stress-runs                  run summaries, newest first (automatic, manual and what-if)
 """
 
 import asyncio
@@ -13,6 +21,7 @@ import json
 from datetime import UTC, datetime, timedelta
 
 from fastapi import FastAPI, HTTPException, Query, WebSocket, WebSocketDisconnect
+from pydantic import BaseModel, Field
 
 from tripwire.config import load_yaml
 from tripwire.factory import build_store
@@ -21,9 +30,30 @@ from tripwire.settings import get_settings
 EVENT_TYPES = [c["name"] for c in load_yaml("taxonomy.yaml")["classes"]]
 
 
-def create_app(store=None) -> FastAPI:
+class StressRequest(BaseModel):
+    """Either an event_id (run that event's scenario) or a what-if: event_type + impact (+ optional target)."""
+
+    event_id: str | None = None
+    event_type: str | None = None
+    impact: float | None = Field(None, ge=1, le=10)
+    entity: str | None = Field(None, description="ticker of the company the event hits")
+    sector: str | None = None
+    states: list[str] = Field(default_factory=list, description="US state codes, for the geography channel")
+    hard_flags: list[str] = Field(default_factory=list, description="e.g. 1.03 (bankruptcy)")
+
+
+def create_app(store=None, stress=None) -> FastAPI:
     settings = get_settings()
     store = store or build_store(settings)
+    if stress is None:
+        from tripwire.stress.service import load_service
+
+        stress = load_service(store, settings.data_dir)
+
+    def service():
+        if stress is None:
+            raise HTTPException(503, "the book is not built: run `python -m tripwire book` and `market-inputs`")
+        return stress
     tickers = {c["ticker"] for c in load_yaml("universe.yaml").get("companies", [])}
     app = FastAPI(title="Tripwire Risk Engine API", version="1.0",
                   description="Structured, explainable financial risk signals from news, filings and social posts.")
@@ -73,6 +103,59 @@ def create_app(store=None) -> FastAPI:
         path = settings.var_dir / "collector_status.json"
         collectors = json.loads(path.read_text(encoding="utf-8")) if path.exists() else None
         return {"collectors": collectors, "store": store.health()}
+
+    # ---- Module B ---------------------------------------------------------------------------------
+    @app.get("/portfolio")
+    def portfolio(include_positions: bool = False):
+        return service().portfolio(include_positions)
+
+    @app.get("/watchlist")
+    def get_watchlist(status: str | None = Query(None, pattern="^(Red|Amber|Green)$"), limit: int = Query(100, ge=1)):
+        days = load_yaml("book.yaml")["early_warning"]["lookback_days"]
+        recent = store.query_signals(since=datetime.now(UTC) - timedelta(days=days), limit=100_000)
+        out = service().watchlist(recent)
+        out["names"] = [r for r in out["names"] if status is None or r["status"] == status][:limit]
+        return out
+
+    @app.get("/signals/{event_id}/stress-decision")
+    def stress_decision(event_id: str):
+        signal = store.get_signal(event_id)
+        if signal is None:
+            raise HTTPException(404, "unknown event_id")
+        return service().decision(signal)
+
+    @app.get("/signals/{event_id}/trace")
+    def trace(event_id: str):
+        signal = store.get_signal(event_id)
+        if signal is None:
+            raise HTTPException(404, "unknown event_id")
+        return service().trace(signal)
+
+    @app.post("/stress-test")
+    def stress_test(req: StressRequest):
+        svc = service()
+        try:
+            if req.event_id:
+                return svc.run_event(req.event_id)
+            if not req.event_type or req.impact is None:
+                raise HTTPException(422, "give event_id, or event_type and impact for a what-if scenario")
+            return svc.run_custom(req.event_type, req.impact, req.entity.upper() if req.entity else None,
+                                  req.sector, [s.upper() for s in req.states], req.hard_flags)
+        except KeyError:
+            raise HTTPException(404, "unknown event_id") from None
+        except ValueError as exc:
+            raise HTTPException(422, str(exc)) from None
+
+    @app.get("/stress-test/{run_id}")
+    def get_stress_run(run_id: str):
+        run = store.get_stress_run(run_id)
+        if run is None:
+            raise HTTPException(404, "unknown run_id")
+        return run
+
+    @app.get("/stress-runs")
+    def stress_runs(limit: int = Query(50, ge=1, le=500), event_id: str | None = None):
+        return store.list_stress_runs(limit=limit, event_id=event_id)
 
     @app.websocket("/stream/signals")
     async def stream(ws: WebSocket, min_impact: float = 0):

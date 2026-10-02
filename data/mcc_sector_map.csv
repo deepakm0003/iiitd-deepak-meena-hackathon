@@ -1,0 +1,110 @@
+mcc,sector,description
+1711,Industrials,"Heating, Plumbing, Air Conditioning Contractors"
+3000,Materials,Steelworks
+3001,Materials,Steel Products Manufacturing
+3005,Materials,Miscellaneous Metal Fabrication
+3006,Materials,Miscellaneous Fabricated Metal Products
+3007,Materials,Coated and Laminated Products
+3008,Materials,Steel Drums and Barrels
+3009,Materials,Fabricated Structural Metal Products
+3058,Industrials,"Tools, Parts, Supplies Manufacturing"
+3066,Materials,Miscellaneous Metals
+3075,Industrials,"Bolt, Nut, Screw, Rivet Manufacturing"
+3132,Consumer Discretionary,Leather Goods
+3144,Consumer Discretionary,Floor Covering Stores
+3174,Consumer Discretionary,Upholstery and Drapery Stores
+3256,Materials,"Brick, Stone, and Related Materials"
+3260,Consumer Discretionary,Pottery and Ceramics
+3359,Materials,Non-Ferrous Metal Foundries
+3387,Industrials,"Electroplating, Plating, Polishing Services"
+3389,Materials,Non-Precious Metal Services
+3390,Materials,Miscellaneous Metalwork
+3393,Industrials,Heat Treating Metal Services
+3395,Industrials,Welding Repair
+3405,Materials,Ironwork
+3504,Consumer Discretionary,Gardening Supplies
+3509,Industrials,Industrial Equipment and Supplies
+3596,Industrials,Miscellaneous Machinery and Parts Manufacturing
+3640,Industrials,"Lighting, Fixtures, Electrical Supplies"
+3684,Information Technology,Semiconductors and Related Devices
+3722,Industrials,Passenger Railways
+3730,Industrials,Ship Chandlers
+3771,Industrials,Railroad Passenger Transport
+3775,Industrials,Railroad Freight
+3780,Information Technology,Computer Network Services
+4111,Industrials,Local and Suburban Commuter Transportation
+4112,Industrials,Passenger Railways
+4121,Industrials,Taxicabs and Limousines
+4131,Industrials,Bus Lines
+4214,Industrials,Motor Freight Carriers and Trucking
+4411,Consumer Discretionary,Cruise Lines
+4511,Industrials,Airlines
+4722,Consumer Discretionary,Travel Agencies
+4784,Industrials,Tolls and Bridge Fees
+4814,Communication Services,Telecommunication Services
+4829,Financials,Money Transfer
+4899,Communication Services,"Cable, Satellite, and Other Pay Television Services"
+4900,Utilities,"Utilities - Electric, Gas, Water, Sanitary"
+5045,Information Technology,"Computers, Computer Peripheral Equipment"
+5094,Consumer Discretionary,Precious Stones and Metals
+5192,Communication Services,"Books, Periodicals, Newspapers"
+5193,Consumer Staples,"Florists Supplies, Nursery Stock and Flowers"
+5211,Consumer Discretionary,Lumber and Building Materials
+5251,Consumer Discretionary,Hardware Stores
+5261,Consumer Discretionary,Lawn and Garden Supply Stores
+5300,Consumer Staples,Wholesale Clubs
+5310,Consumer Staples,Discount Stores
+5311,Consumer Discretionary,Department Stores
+5411,Consumer Staples,"Grocery Stores, Supermarkets"
+5499,Consumer Staples,Miscellaneous Food Stores
+5533,Consumer Discretionary,Automotive Parts and Accessories Stores
+5541,Energy,Service Stations
+5621,Consumer Discretionary,Women's Ready-To-Wear Stores
+5651,Consumer Discretionary,Family Clothing Stores
+5655,Consumer Discretionary,"Sports Apparel, Riding Apparel Stores"
+5661,Consumer Discretionary,Shoe Stores
+5712,Consumer Discretionary,"Furniture, Home Furnishings, and Equipment Stores"
+5719,Consumer Discretionary,Miscellaneous Home Furnishing Stores
+5722,Consumer Discretionary,Household Appliance Stores
+5732,Consumer Discretionary,Electronics Stores
+5733,Consumer Discretionary,Music Stores - Musical Instruments
+5812,Consumer Discretionary,Eating Places and Restaurants
+5813,Consumer Discretionary,Drinking Places (Alcoholic Beverages)
+5814,Consumer Discretionary,Fast Food Restaurants
+5815,Communication Services,"Digital Goods - Media, Books, Apps"
+5816,Communication Services,Digital Goods - Games
+5912,Consumer Staples,Drug Stores and Pharmacies
+5921,Consumer Staples,"Package Stores, Beer, Wine, Liquor"
+5932,Consumer Discretionary,Antique Shops
+5941,Consumer Discretionary,Sporting Goods Stores
+5942,Consumer Discretionary,Book Stores
+5947,Consumer Discretionary,"Gift, Card, Novelty Stores"
+5970,Consumer Discretionary,"Artist Supply Stores, Craft Shops"
+5977,Consumer Staples,Cosmetic Stores
+6300,Financials,"Insurance Sales, Underwriting"
+7011,Consumer Discretionary,"Lodging - Hotels, Motels, Resorts"
+7210,Consumer Discretionary,Laundry Services
+7230,Consumer Discretionary,Beauty and Barber Shops
+7276,Consumer Discretionary,Tax Preparation Services
+7349,Industrials,Cleaning and Maintenance Services
+7393,Industrials,"Detective Agencies, Security Services"
+7531,Consumer Discretionary,Automotive Body Repair Shops
+7538,Consumer Discretionary,Automotive Service Shops
+7542,Consumer Discretionary,Car Washes
+7549,Consumer Discretionary,Towing Services
+7801,Consumer Discretionary,"Athletic Fields, Commercial Sports"
+7802,Consumer Discretionary,"Recreational Sports, Clubs"
+7832,Communication Services,Motion Picture Theaters
+7922,Communication Services,Theatrical Producers
+7995,Consumer Discretionary,"Betting (including Lottery Tickets, Casinos)"
+7996,Consumer Discretionary,"Amusement Parks, Carnivals, Circuses"
+8011,Health Care,"Doctors, Physicians"
+8021,Health Care,Dentists and Orthodontists
+8041,Health Care,Chiropractors
+8043,Health Care,"Optometrists, Optical Goods and Eyeglasses"
+8049,Health Care,Podiatrists
+8062,Health Care,Hospitals
+8099,Health Care,Medical Services
+8111,Industrials,Legal Services and Attorneys
+8931,Industrials,"Accounting, Auditing, and Bookkeeping Services"
+9402,Industrials,Postal Services - Government Only

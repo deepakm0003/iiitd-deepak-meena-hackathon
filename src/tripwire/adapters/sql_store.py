@@ -176,6 +176,21 @@ signals = Table(
 )
 
 
+stress_runs = Table(
+    "stress_runs",
+    metadata,
+    Column("run_id", String(32), primary_key=True),
+    Column("event_id", String(32), nullable=True, index=True),
+    Column("trigger", String(12), nullable=False),  # auto | manual | what-if
+    Column("created_at", DateTime(timezone=True), nullable=False, index=True),
+    Column("event_type", String(40), nullable=False),
+    Column("impact", Float, nullable=False),
+    Column("pnl_total", Float, nullable=False),
+    Column("cet1_ratio_after", Float, nullable=False),
+    Column("result", JSON, nullable=False),
+)
+
+
 def _aware(value: datetime | None) -> datetime | None:
     """SQLite returns naive datetimes; values are always stored as UTC."""
     if value is not None and value.tzinfo is None:
@@ -522,6 +537,34 @@ class SqlStore:
     def count_signals(self) -> int:
         with self.engine.connect() as conn:
             return int(conn.execute(select(func.count()).select_from(signals)).scalar_one())
+
+    # ---- stress runs (Module B) ------------------------------------------------------------------
+    def add_stress_run(self, run: dict) -> None:
+        run = json.loads(json.dumps(run, default=str))
+        row = {"run_id": run["run_id"], "event_id": run.get("event_id"), "trigger": run["trigger"],
+               "created_at": datetime.fromisoformat(run["created_at"]), "event_type": run["scenario"]["event_type"],
+               "impact": run["scenario"]["impact"], "pnl_total": run["pnl_total"],
+               "cet1_ratio_after": run["capital"]["cet1_ratio_after"], "result": run}
+        with self.engine.begin() as conn:
+            conn.execute(self._insert(stress_runs).values(row).on_conflict_do_nothing(index_elements=["run_id"]))
+
+    def get_stress_run(self, run_id: str) -> dict | None:
+        with self.engine.connect() as conn:
+            return conn.execute(select(stress_runs.c.result).where(stress_runs.c.run_id == run_id)).scalar_one_or_none()
+
+    def list_stress_runs(self, limit: int = 50, event_id: str | None = None) -> list[dict]:
+        """Run summaries, newest first (the full result, with every position's paths, is in get_stress_run)."""
+        query = select(stress_runs).order_by(stress_runs.c.created_at.desc()).limit(limit)
+        if event_id:
+            query = query.where(stress_runs.c.event_id == event_id)
+        with self.engine.connect() as conn:
+            return [
+                {"run_id": r.run_id, "event_id": r.event_id, "trigger": r.trigger,
+                 "created_at": _aware(r.created_at).isoformat(), "event_type": r.event_type, "impact": r.impact,
+                 "pnl_total": r.pnl_total, "cet1_ratio_after": r.cet1_ratio_after,
+                 "scenario_name": r.result["scenario"]["name"]}
+                for r in conn.execute(query)
+            ]
 
     # ---- prices --------------------------------------------------------------------------------
     def upsert_prices(self, bars: list[PriceBar]) -> int:
