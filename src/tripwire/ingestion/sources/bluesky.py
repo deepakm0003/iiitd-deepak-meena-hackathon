@@ -100,6 +100,10 @@ class BlueskySource:
                     message = await asyncio.wait_for(ws.recv(), timeout=remaining)
                 except TimeoutError:
                     break
+                except websockets.ConnectionClosed:
+                    # The server dropped the stream mid-window (seen in production). Keep what was received;
+                    # the cursor resumes the next window exactly here, so nothing is lost.
+                    break
                 event = json.loads(message)
                 last = event.get("time_us", last)
                 commit = event.get("commit") or {}
