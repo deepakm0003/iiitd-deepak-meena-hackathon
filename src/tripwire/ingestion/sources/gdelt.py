@@ -85,6 +85,7 @@ class GdeltSource:
         self.macro_orgs = {o.casefold() for o in cfg.get("macro_orgs", [])}
         self.finance_themes = set(cfg.get("finance_themes", []))
         self.risk_themes = set(cfg.get("risk_themes", []))
+        self.boilerplate = {o.casefold() for o in cfg.get("boilerplate_orgs", [])}
         self.strong_themes = set(cfg.get("strong_themes", []))
         self.min_theme_hits = int(cfg.get("min_theme_hits", 1))
 
@@ -123,13 +124,17 @@ class GdeltSource:
     def parse_row(self, cols: list[str]) -> RawDocument | None:
         orgs = _split_names(cols[C_V2_ORGS])
         themes = set(_split_names(cols[C_V2_THEMES])) | {t for t in cols[C_V1_THEMES].split(";") if t}
-        tickers = sorted({t for o in orgs if (t := self.matcher.org_lookup(o))})
+        title_match = PAGE_TITLE.search(cols[C_EXTRAS])
+        in_title = self.matcher.find(title_match.group(1)) if title_match else set()
+        tickers = sorted({
+            t for o in orgs
+            if (t := self.matcher.org_lookup(o)) and (o.casefold() not in self.boilerplate or t in in_title)
+        })
         macro = sorted({o for o in orgs if o.casefold() in self.macro_orgs})
         finance = themes & self.finance_themes
         theme_ok = bool(finance & self.strong_themes) or len(finance) >= self.min_theme_hits
         if not (tickers or macro or theme_ok):
             return None
-        title_match = PAGE_TITLE.search(cols[C_EXTRAS])
         if not title_match or not cols[C_URL].startswith("http"):
             return None
         tone = cols[C_TONE].split(",")[0]

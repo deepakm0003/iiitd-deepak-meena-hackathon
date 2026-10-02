@@ -83,3 +83,18 @@ def test_force_ipv4_option(monkeypatch):
     assert isinstance(client._client._transport, httpx.HTTPTransport)
     source = BlueskySource({"endpoint": "wss://x"}, post_filter=None, force_ipv4=True)
     assert source.connect_kwargs == {"family": __import__("socket").AF_INET}
+
+
+def test_prefer_ipv4_restricts_name_resolution(monkeypatch):
+    import socket
+
+    from tripwire import netfix
+
+    seen = []
+    monkeypatch.setattr(netfix, "_original_getaddrinfo", lambda *args: seen.append(args) or [])
+    monkeypatch.setattr(netfix, "_applied", False)
+    monkeypatch.setattr(socket, "getaddrinfo", socket.getaddrinfo)  # restored after the test
+    netfix.prefer_ipv4()
+    socket.getaddrinfo("example.com", 443)
+    socket.getaddrinfo("example.com", 443, socket.AF_INET6)
+    assert seen[0][2] == socket.AF_INET and seen[1][2] == socket.AF_INET6  # explicit family is respected

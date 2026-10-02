@@ -3,6 +3,10 @@ gdelt:
   interval_minutes: 15
   base_url: http://data.gdeltproject.org/gdeltv2
   max_files_per_run: 8            # catch up at most 2 hours per run after downtime
+  # GKG extracts these from page boilerplate (share buttons, ads, analytics), so they appear on most pages.
+  # They count as a company match only when the headline itself names the company.
+  boilerplate_orgs: [Google, Facebook, Instagram, Youtube, YouTube, Twitter, LinkedIn, Tiktok, TikTok, Whatsapp,
+                     WhatsApp, Apple, Amazon, Microsoft, Meta, Reddit, Pinterest, Snapchat]
   # Keep a GKG record if an organisation matches the universe or these macro bodies...
   macro_orgs:
     - federal reserve

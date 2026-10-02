@@ -66,6 +66,20 @@ def test_gdelt_parse_keeps_relevant_rows_only():
     assert docs[1].payload["macro_orgs"] == ["Federal Reserve"]
 
 
+def test_gdelt_boilerplate_orgs_need_a_headline_mention():
+    from tripwire.universe import Company
+
+    google = Company(ticker="GOOGL", sector="Communication Services", aliases=("Google", "Alphabet"))
+    cfg = {**GDELT_CFG, "boilerplate_orgs": ["Google"]}
+    source = GdeltSource(fake_http(lambda r: httpx.Response(500)), cfg, NameMatcher([google]))
+    rows = [
+        gkg_row("a", "https://x.example/roads", "Ontario highways add new speed limits", orgs="Google,3"),
+        gkg_row("b", "https://x.example/eu", "Google fined by EU regulators", orgs="Google,0"),
+    ]
+    docs = source.parse_file(gkg_zip(*rows))
+    assert [d.external_id for d in docs] == ["b"] and docs[0].payload["matched_tickers"] == ["GOOGL"]
+
+
 def test_gdelt_fetch_follows_cursor_and_skips_missing_files():
     lastupdate = "1 a http://data.gdeltproject.org/gdeltv2/20261002020000.gkg.csv.zip\n"
     requested = []
