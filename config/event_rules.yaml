@@ -19,9 +19,19 @@ item_map:
   "5.01": {class: Merger/Acquisition, subtype: change_of_control}
   "5.02": {class: Management Change, subtype: officer_change}
 
+# An item whose meaning depends on the text: 3.01 covers both delisting notices and voluntary transfers of a
+# listing (found on live data: Linde moving its listing was scored as a Regulatory/Legal delisting).
+item_text_overrides:
+  "3.01": {class: Other, subtype: listing_transfer, pattern: "transfer (of )?(its |the )?(listing|common stock|ordinary shares)"}
+
 # Layer 2: high-precision text rules (case-insensitive regex on title + lead). Precision over recall:
 # anything not matched goes to the ML classifier. Each rule id is reported as evidence.
 rules:
+  # Routine financing and periodic disclosures carry credit vocabulary but are not credit events (found on live
+  # data: monthly charge-off statistics, senior-note issues and credit-agreement exhibits were labelled Credit
+  # Event by both ML models). Other-class rules yield to any specific rule, so a real default still wins.
+  - {id: routine_financing, class: Other, subtype: routine_financing,
+     pattern: "monthly charge-off and delinquency|charge-off and delinquency (metrics|statistics)|aggregate principal amount of (its |the )?[^.]{0,80}notes|issued and sold \\$|to issue and sell \\$|underwriting agreement|joint lead arrangers and joint bookrunners|credit agreement,? dated as of|fallback rate|benchmark replacement"}
   - {id: bankruptcy, class: Credit Event, subtype: bankruptcy,
      pattern: "chapter (7|11)\\b|files? for bankruptcy|bankruptcy (filing|protection)|enters? receivership|insolven"}
   - {id: default, class: Credit Event, subtype: default_or_covenant_breach,
@@ -50,8 +60,9 @@ rules:
      pattern: "\\b(data breach|cyber ?attack|ransomware|hack(ed|ers)?|outage|systems? (down|failure))\\b"}
   - {id: operations, class: Cyber/Operational, subtype: operational_disruption,
      pattern: "\\b(recall(s|ed)?|strike (by|at)|workers strike|plant (fire|explosion|shutdown)|grounded)\\b"}
+  # "pandemic" is not a cue: in 2023+ filings and news it is almost always retrospective ("since the pandemic")
   - {id: disaster, class: Natural Disaster/Supply Chain, subtype: disaster,
-     pattern: "\\b(hurricane|typhoon|earthquake|wildfires?|floods?|flooding|tornado|pandemic)\\b"}
+     pattern: "\\b(hurricane|typhoon|earthquake|wildfires?|floods?|flooding|tornado)\\b"}
   - {id: supply, class: Natural Disaster/Supply Chain, subtype: supply_disruption,
      pattern: "supply (chain )?(disruption|shortage|crunch)|chip shortage|port (closure|congestion)"}
   - {id: earnings, class: Earnings, subtype: results,

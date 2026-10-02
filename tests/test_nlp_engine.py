@@ -139,3 +139,31 @@ def test_ml_macro_guess_without_evidence_is_none(engine):
     fed_doc = d(2, "Officials discuss outlook", source="gdelt", hints={"macro_orgs": ["Federal Reserve"]})
     [fed] = engine.annotate([fed_doc])
     assert fed.primary == "MACRO" and fed.macro_evidence == 0.9
+
+
+def test_selective_classification_abstains_when_unsure_or_unverified():
+    from tripwire.nlp.engine import _select
+
+    policy = {"min_confidence": 0.3, "verify_classes": {"Geopolitical"}, "verifier_min_p": 0.1}
+    unsure = ClassResult("Earnings", {"Earnings": 0.25}, 0.25, "head")
+    assert _select(unsure, None, policy).event_type == "Other"
+    assert _select(unsure, None, policy).method == "head:abstain"
+    geo = ClassResult("Geopolitical", {"Geopolitical": 0.43}, 0.43, "head")
+    feud = ClassResult("Other", {"Other": 0.8, "Geopolitical": 0.03}, 0.8, "zero_shot")
+    assert _select(geo, feud, policy).method == "head:unverified"
+    war = ClassResult("Geopolitical", {"Geopolitical": 0.7}, 0.7, "zero_shot")
+    assert _select(geo, war, policy).event_type == "Geopolitical"
+    assert _select(geo, war, policy).method == "head+zs"
+    sure = ClassResult("Earnings", {"Earnings": 0.9}, 0.9, "head")
+    assert _select(sure, None, policy) is sure  # classes outside the verify list need no verifier
+
+
+def test_filings_are_classified_on_the_press_release_not_the_templated_title():
+    from tripwire.nlp.engine import classifier_text
+
+    base = dict(raw_id=1, dedup_key="k", source="edgar", source_type="filing", url="https://sec.gov/x",
+                published_at=datetime(2026, 1, 5, tzinfo=UTC), hints={})
+    title = "KEYCORP files 8-K: Item 7.01 Regulation FD Disclosure"
+    assert classifier_text(Document(title=title, lead="", **base)) == ""
+    lead = "KeyCorp will present at the Goldman Sachs financial services conference on December 9, 2025."
+    assert classifier_text(Document(title=title, lead=lead, **base)) == lead

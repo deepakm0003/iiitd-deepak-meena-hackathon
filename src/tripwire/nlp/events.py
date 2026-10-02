@@ -13,6 +13,7 @@ from tripwire.models import Document
 
 ITEM_CONFIDENCE = 0.95  # the filer itself declared the item: strongest evidence we have
 RULE_CONFIDENCE = 0.90
+OVERRIDE_PRIOR = 0.90  # text rules at least this severe (bankruptcy, default) may override a specific 8-K item
 
 
 @dataclass(frozen=True)
@@ -28,6 +29,10 @@ class EventRules:
         rules_cfg = rules_cfg or load_yaml("event_rules.yaml")
         taxonomy = taxonomy or load_yaml("taxonomy.yaml")
         self.item_map = rules_cfg["item_map"]
+        self.item_overrides = {
+            item: (re.compile(o["pattern"], re.IGNORECASE), o["class"], o["subtype"])
+            for item, o in rules_cfg.get("item_text_overrides", {}).items()
+        }
         self.rules = [
             (r["id"], r["class"], r["subtype"], re.compile(r["pattern"], re.IGNORECASE)) for r in rules_cfg["rules"]
         ]
@@ -48,7 +53,11 @@ class EventRules:
         if doc.source == "edgar":
             for item in doc.hints.get("items", []):
                 if mapped := self.item_map.get(item):
-                    found.append(EventEvidence(mapped["class"], mapped["subtype"], f"8k_item:{item}", ITEM_CONFIDENCE))
+                    cls, subtype = mapped["class"], mapped["subtype"]
+                    override = self.item_overrides.get(item)
+                    if override and override[0].search(f"{doc.title}. {doc.lead}"):
+                        cls, subtype = override[1], override[2]
+                    found.append(EventEvidence(cls, subtype, f"8k_item:{item}", ITEM_CONFIDENCE))
         haystack = text if text is not None else f"{doc.title}. {doc.lead}"
         for rule_id, cls, subtype, pattern in self.rules:
             if pattern.search(haystack):
@@ -63,4 +72,12 @@ class EventRules:
         if not evidence:
             return None
         specific = [e for e in evidence if e.event_type != "Other"] or evidence
+        # A specific 8-K item is what the filer itself says the filing is about; a text rule firing on a word in
+        # a long press release is only a mention (found on live data: bank earnings releases that mention
+        # hurricanes became Natural Disaster events). Only the most severe credit rules (bankruptcy, default:
+        # prior >= OVERRIDE_PRIOR) may override a specific item.
+        items = [e for e in specific if e.source.startswith("8k_item") and e.event_type != "Other"]
+        if items:
+            specific = items + [e for e in specific if not e.source.startswith("8k_item")
+                                and self.prior(e.event_type, e.subtype) >= OVERRIDE_PRIOR]
         return max(specific, key=lambda e: (self.prior(e.event_type, e.subtype), e.confidence))

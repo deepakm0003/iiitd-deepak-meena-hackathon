@@ -25,7 +25,8 @@ OPINION = re.compile(
     r"\b(stocks? to (buy|sell|watch)|should you buy|"
     r"is it time to|here'?s (why|how|what)|what to (know|expect)|versus industry peers|buy the dip|top picks?|"
     r"best .{0,20}stocks?|my favorite|price target|analyst(s)? (says?|sees)|(bull|bear) case|explained|opinion|"
-    r"(?-i:could|might|may) (?!not\b)\w+|speculation)\b",
+    r"(?-i:could|might|may) (?!not\b)\w+|speculation)\b|"
+    r"\bwarns? (of|that)\b[^.]{0,80}\bif\b",  # conditional warnings ("warns of a bank run if ...")
     re.IGNORECASE,
 )
 DENIED = re.compile(r"\b(denies|denied|refutes|rejects (the )?(report|claims?)|no plans to|not in talks)\b", re.I)
@@ -33,7 +34,7 @@ DENIED = re.compile(r"\b(denies|denied|refutes|rejects (the )?(report|claims?)|n
 # "could/might" speculation are opinion, not rumour.
 RUMOUR = re.compile(
     r"\b(reportedly|report(s|ed)? say|sources (said|say)|people familiar|according to (people|sources)|"
-    r"(is|are) (said|reported) to|(considering|exploring|weighing) (a|an|options|selling|strategic|bids?|sale)|"
+    r"(is|are) (said|reported) to|(considering|exploring|weigh(ing|s|ed)) (a|an|options|selling|strategic|bids?|sale)|"
     r"mulls?|in (early )?talks|rumou?rs?|eyes (?!on\b)\w+)\b",
     re.IGNORECASE,
 )

@@ -16,3 +16,10 @@ ner:
 event_classifier:
   base: sentence-transformers/all-MiniLM-L6-v2   # SetFit body; trained artefact saved under models/event_setfit
   path: models/event_setfit
+  # Selective classification (chosen on the validation split; docs/results/event_selective.json):
+  # an ML label needs head probability >= min_confidence, else the item is Other ("abstain").
+  min_confidence: 0.30
+  verify:                           # stress-mappable classes (they drive Module B) also need the zero-shot
+    classes: [Credit Event, Geopolitical, Macroeconomic, Regulatory/Legal, Cyber/Operational,
+              Natural Disaster/Supply Chain]
+    min_p: 0.10                     # NLI verifier to give the class at least this probability

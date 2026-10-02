@@ -11,6 +11,7 @@ from typing import Any
 
 from pydantic import BaseModel, Field
 
+from tripwire.config import load_yaml
 from tripwire.models import Document
 from tripwire.nlp.classifier import ClassResult, EventClassifier
 from tripwire.nlp.embeddings import Embedder
@@ -27,6 +28,7 @@ STRONG_FINANCE_THEMES = {"ECON_BANKRUPTCY", "ECON_CENTRALBANK", "WB_1235_CENTRAL
                          "ECON_SOVEREIGN_DEBT", "ECON_INFLATION", "ECON_STOCKMARKET"}
 MIN_MACRO_EVIDENCE = 0.6
 MAX_ENTITIES_SCORED = 3
+MIN_FILING_TEXT = 80  # same minimum as the 8-K training examples
 
 
 def macro_evidence(doc: Document, event_method: str) -> float:
@@ -69,6 +71,29 @@ def _guard_earnings(result: ClassResult, text: str) -> ClassResult:
         return result
     prob, cls = ranked[-1]
     return ClassResult(cls, result.probabilities, round(prob, 4), f"{result.method}+guard")
+
+
+def _select(result: ClassResult, verifier: ClassResult | None, policy: dict) -> ClassResult:
+    """Selective classification (docs/results/event_selective.json): abstain to Other when the head is unsure,
+    and for stress-mappable classes when the independent zero-shot verifier does not support the label."""
+    if result.event_type == "Other":
+        return result
+    if result.confidence < policy["min_confidence"]:
+        return ClassResult("Other", result.probabilities, result.confidence, f"{result.method}:abstain")
+    if result.event_type in policy["verify_classes"] and verifier is not None:
+        support = verifier.probabilities.get(result.event_type, 0.0)
+        if support < policy["verifier_min_p"]:
+            return ClassResult("Other", result.probabilities, result.confidence, f"{result.method}:unverified")
+        return ClassResult(result.event_type, result.probabilities, result.confidence, f"{result.method}+zs")
+    return result
+
+
+def classifier_text(doc: Document) -> str:
+    """What the event classifier reads. 8-K filings: the press-release lead only, as in training (the templated
+    title "files 8-K: Item 7.01 Regulation FD Disclosure" pulled filings toward Regulatory/Legal)."""
+    if doc.source == "edgar":
+        return doc.lead if len(doc.lead or "") >= MIN_FILING_TEXT else ""
+    return f"{doc.title}. {doc.lead}".strip() if doc.lead else doc.title
 
 
 class EntityAnnotation(BaseModel):
@@ -123,6 +148,25 @@ class NlpEngine:
         self.sentiment = sentiment or FinbertSentiment()
         self.embedder = embedder or Embedder()
         self.ner = ner  # optional GlinerNer: enriches frame slots (targets, authorities, places, amounts)
+        cfg = load_yaml("models.yaml")["event_classifier"]
+        self.selection = {"min_confidence": cfg.get("min_confidence", 0.0),
+                          "verify_classes": set(cfg.get("verify", {}).get("classes", [])),
+                          "verifier_min_p": cfg.get("verify", {}).get("min_p", 0.0)}
+
+    def _classify(self, texts: list[str], undecided: list[int]) -> dict[int, ClassResult]:
+        """ML layer for items the 8-K map and rules left undecided, with the selective-classification policy."""
+        empty = [i for i in undecided if not texts[i]]
+        todo = [i for i in undecided if texts[i]]
+        results = {i: _guard_earnings(r, texts[i])
+                   for i, r in zip(todo, self.classifier.predict([texts[i] for i in todo]), strict=True)}
+        verify = [i for i, r in results.items() if r.event_type in self.selection["verify_classes"]
+                  and r.confidence >= self.selection["min_confidence"]]
+        zero_shot = getattr(self.classifier, "predict_zero_shot", None)
+        checks = dict(zip(verify, zero_shot([texts[i] for i in verify]), strict=True)) if verify and zero_shot \
+            else {}
+        out = {i: _select(r, checks.get(i), self.selection) for i, r in results.items()}
+        out.update({i: ClassResult("Other", {}, 0.0, "8k:no_text") for i in empty})
+        return out
 
     def annotate(self, docs: list[Document]) -> list[Annotation]:
         if not docs:
@@ -131,7 +175,7 @@ class NlpEngine:
         linked = [self.linker.link(d) for d in docs]
         decisions = [self.rules.decide(self.rules.evidence(d)) for d in docs]
         undecided = [i for i, dec in enumerate(decisions) if dec is None]
-        ml = dict(zip(undecided, self.classifier.predict([texts[i] for i in undecided]), strict=True))
+        ml = self._classify([classifier_text(d) for d in docs], undecided)
         embeddings = self.embedder.encode(texts)
         spans = self.ner.extract(texts) if self.ner else [[] for _ in docs]
         now = datetime.now(UTC)
@@ -141,7 +185,7 @@ class NlpEngine:
                 event_type, subtype = decisions[i].event_type, decisions[i].subtype
                 method, confidence, probs = decisions[i].source, decisions[i].confidence, {}
             else:
-                result = _guard_earnings(ml[i], texts[i])
+                result = ml[i]
                 event_type, subtype, method = result.event_type, None, result.method
                 confidence, probs = result.confidence, result.probabilities
             macro = macro_evidence(doc, method)

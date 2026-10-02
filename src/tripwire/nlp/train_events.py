@@ -64,6 +64,7 @@ def run(train: list[Example], valid: list[Example], out_dir: Path, report_path: 
 
     head = train_head(train, embed)
     head_pred = list(head.predict(embed([e.text for e in valid])))
+    labels = [c for c in labels if c in {e.label for e in valid}]  # macro-F1 over classes present in valid
     report = {
         "trained_at": datetime.now(UTC).isoformat(),
         "base_model": cfg["base"],

@@ -155,3 +155,45 @@ def test_frame_slots():
     assert frame.actor == "PFE" and frame.target == "Seagen"
     assert frame.amounts == ["$43 billion"] and frame.percentages == ["4.5%"]
     assert frame.factuality == "announced"
+
+
+@pytest.mark.parametrize("text", [
+    "Monthly Charge-Off and Delinquency Metrics As of and for the month ended December 31, 2022",
+    "On November 18, 2024, the Company issued and sold $1,150,000,000 aggregate principal amount of its 5.272% "
+    "Fixed-to-Floating Rate Senior Notes due 2031",
+    "as Joint Lead Arrangers and Joint Bookrunners ARTICLE I DEFINITIONS AND ACCOUNTING TERMS",
+])
+def test_routine_financing_disclosures_are_not_credit_events(text):
+    rules = EventRules()
+    decision = rules.decide(rules.evidence(d(text)))
+    assert decision.event_type == "Other" and decision.source == "rule:routine_financing"
+
+
+def test_a_real_default_still_wins_over_routine_financing_words():
+    rules = EventRules()
+    text = "The company missed an interest payment on its notes; the underwriting agreement is terminated"
+    assert rules.decide(rules.evidence(d(text))).event_type == "Credit Event"
+
+
+def test_a_specific_8k_item_beats_a_passing_mention_in_the_press_release(rules):
+    doc = d("BANK OF AMERICA CORP files 8-K: Item 2.02 Results of Operations", "Net income rose; hurricane-related "
+            "provisions were modest", source="edgar", hints={"items": ["2.02", "9.01"]})
+    assert rules.decide(rules.evidence(doc)).event_type == "Earnings"
+    doc = d("X files 8-K: Item 2.02", "The auditor expressed substantial doubt about our ability to continue as a "
+            "going-concern", source="edgar", hints={"items": ["2.02"]})
+    assert rules.decide(rules.evidence(doc)).event_type == "Credit Event"  # severe credit text still wins
+
+
+def test_a_voluntary_listing_transfer_is_not_a_delisting(rules):
+    doc = d("LINDE PLC files 8-K: Item 3.01", "Linde announced its intention to transfer the listing of its "
+            "ordinary shares to Nasdaq", source="edgar", hints={"items": ["3.01"]})
+    assert rules.decide(rules.evidence(doc)).event_type == "Other"
+
+
+def test_conditional_warnings_are_opinion_not_fact():
+    label, _ = factuality("Apollo's Slok warns of a 'bank run' if households start using stablecoins")
+    assert label == "opinion"
+
+
+def test_weighing_a_policy_is_a_rumour_not_a_fact():
+    assert factuality("Trump weighed a diesel export ban")[0] == "rumour"

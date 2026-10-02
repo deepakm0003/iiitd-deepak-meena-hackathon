@@ -38,10 +38,13 @@
     }
   },
   "head": {
-    "macro_f1_valid": 0.5592588265376531
+    "macro_f1_valid": 0.8788,
+    "macro_f1_over_all_11_classes": 0.5593
   },
   "setfit": {
-    "macro_f1_valid": 0.5756066733159642
+    "macro_f1_valid": 0.9045,
+    "macro_f1_over_all_11_classes": 0.5756
   },
-  "shipped_for_lite_mode": "head"
+  "shipped_for_lite_mode": "head",
+  "metric_note": "macro-F1 is averaged over the 7 classes present in the validation split. The first version of this report averaged over all 11 taxonomy classes, counting the 4 classes with no validation examples as F1 = 0 (0.559 = 0.879 x 7/11); fixed in train_events.py."
 }
