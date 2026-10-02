@@ -82,6 +82,15 @@ def test_entity_level_sentiment_separates_companies_in_one_headline(engine):
     assert a.primary == "NKE" and a.sentiment == by_ticker["NKE"].sentiment
 
 
+def test_earnings_label_needs_earnings_evidence():
+    from tripwire.nlp.engine import _guard_earnings
+
+    pred = ClassResult("Earnings", {"Earnings": 0.6, "Other": 0.3, "Merger/Acquisition": 0.1}, 0.6, "head")
+    fixed = _guard_earnings(pred, "Boeing wins $20 billion Navy fighter contract")
+    assert (fixed.event_type, fixed.method, fixed.confidence) == ("Other", "head+guard", 0.3)
+    assert _guard_earnings(pred, "Nike beats estimates as quarterly revenue rises").event_type == "Earnings"
+
+
 def test_macro_items_use_document_sentiment(engine):
     [a] = engine.annotate([d(1, "RBI holds repo rate as inflation falls", source="rbi")])
     assert a.primary == "MACRO" and a.event_type == "Macroeconomic"
@@ -96,6 +105,15 @@ def test_filings_are_classified_by_item_and_linked_to_filer(engine):
     assert a.entities[0].link_confidence == 1.0
 
 
+def test_filing_sentiment_reads_the_press_release_not_the_template(engine):
+    doc = d(1, "ACME CORP files 8-K: Item 2.02 Results", source="edgar",
+            lead="The Company reported a net loss of $2 billion. Revenue falls sharply.",
+            hints={"ticker": "JPM", "items": ["2.02"]})
+    [a] = engine.annotate([doc])
+    assert a.sentiment < -0.5
+    assert all(e["location"] == "lead" for e in a.sentiment_evidence)
+
+
 def test_annotation_round_trips_through_the_store(engine, store, make_doc):
     raw_id = store.add_raw(make_doc(title="Nike beats estimates"))
     from tripwire.ingestion.normalize import normalize
@@ -106,3 +124,18 @@ def test_annotation_round_trips_through_the_store(engine, store, make_doc):
     assert store.documents_without_annotation() == []
     [saved] = store.get_annotations()
     assert saved["primary"] == "NKE" and saved["embedding"] == [1.0, 0.0]
+
+
+def test_ml_macro_guess_without_evidence_is_none(engine):
+    # Real case: a local GDELT story labelled natural-disaster by the ML layer was scored as a market-wide event.
+    class DisasterClassifier(FakeClassifier):
+        def predict(self, texts):
+            return [ClassResult("Natural Disaster/Supply Chain", {"Natural Disaster/Supply Chain": 0.6}, 0.6, "head")
+                    for _ in texts]
+
+    engine.classifier = DisasterClassifier()
+    [local] = engine.annotate([d(1, "List of Maine restaurants that closed in September", source="gdelt")])
+    assert local.primary == "NONE" and local.macro_evidence == 0.0
+    fed_doc = d(2, "Officials discuss outlook", source="gdelt", hints={"macro_orgs": ["Federal Reserve"]})
+    [fed] = engine.annotate([fed_doc])
+    assert fed.primary == "MACRO" and fed.macro_evidence == 0.9

@@ -37,6 +37,9 @@ class EventRules:
             for subtype, prior in cls.get("subtypes", {}).items():
                 self.severity[(cls["name"], subtype)] = prior
 
+    def severity_classes(self) -> list[str]:
+        return [cls for cls, sub in self.severity if sub is None]
+
     def prior(self, event_type: str, subtype: str | None = None) -> float:
         return self.severity.get((event_type, subtype), self.severity.get((event_type, None), 0.1))
 

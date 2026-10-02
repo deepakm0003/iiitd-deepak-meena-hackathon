@@ -131,8 +131,12 @@ class FinbertSentiment:
 
     def _units(self, doc: Document, entity: LinkedEntity | None) -> list[tuple[str, str, str, float]]:
         """(text, location, method, weight) units to score for this entity."""
-        pieces = [("title", doc.title)] + [("lead", s) for s in split_sentences(doc.lead)]
         weight = lambda loc: TITLE_WEIGHT if loc == "title" else 1.0  # noqa: E731
+        if doc.source == "edgar" and doc.lead:
+            # Filing titles are templated ("X files 8-K: Item 2.02 ..."); the filer is the subject of every
+            # sentence of its own press release, which says "the Company" rather than its legal name.
+            return [(s, "lead", "filing_lead", 1.0) for s in split_sentences(doc.lead)]
+        pieces = [("title", doc.title)] + [("lead", s) for s in split_sentences(doc.lead)]
         if entity is None:
             return [(text, loc, "document", weight(loc)) for loc, text in pieces]
         surfaces = {m.surface for m in entity.mentions if m.location != "hint"}

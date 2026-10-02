@@ -5,13 +5,14 @@ stored in doc_annotations; clustering, novelty and the Impact Score (later stage
 Every stage records how it decided (method + confidence + evidence) for the dashboard's "why" view.
 """
 
+import re
 from datetime import UTC, datetime
 from typing import Any
 
 from pydantic import BaseModel, Field
 
 from tripwire.models import Document
-from tripwire.nlp.classifier import EventClassifier
+from tripwire.nlp.classifier import ClassResult, EventClassifier
 from tripwire.nlp.embeddings import Embedder
 from tripwire.nlp.events import EventRules
 from tripwire.nlp.frame import extract_frame
@@ -21,8 +22,53 @@ from tripwire.nlp.sentiment import FinbertSentiment
 
 PRIMARY_MIN_RELEVANCE = 0.35  # below this an entity is a passing mention, not the subject (A-17)
 MACRO_SOURCES = {"rbi", "fed"}
-MACRO_CLASSES = {"Macroeconomic", "Geopolitical", "Natural Disaster/Supply Chain"}
+MACRO_RULES = {"central_bank", "macro_data", "sanctions", "tariffs", "conflict", "disaster", "supply"}
+STRONG_FINANCE_THEMES = {"ECON_BANKRUPTCY", "ECON_CENTRALBANK", "WB_1235_CENTRAL_BANKS", "ECON_INTEREST_RATES",
+                         "ECON_SOVEREIGN_DEBT", "ECON_INFLATION", "ECON_STOCKMARKET"}
+MIN_MACRO_EVIDENCE = 0.6
 MAX_ENTITIES_SCORED = 3
+
+
+def macro_evidence(doc: Document, event_method: str) -> float:
+    """How strongly the item is about the economy or markets as a whole (0-1).
+
+    Found on live data: local GDELT stories (restaurant closures, a rural fire district) were labelled
+    natural-disaster/macro by the ML layer and then scored as market-wide events. Market-wide status now
+    needs evidence; an ML label alone is not enough.
+    """
+    if doc.source in MACRO_SOURCES:
+        return 1.0
+    if doc.hints.get("macro_orgs"):
+        return 0.9
+    if event_method.startswith("rule:") and event_method.split(":", 1)[1] in MACRO_RULES:
+        return 0.8
+    if len(set(doc.hints.get("themes", [])) & STRONG_FINANCE_THEMES) >= 1:
+        # GDELT theme tags alone are noisy (page footers, tickers): they get a page collected, but are not
+        # enough to make it market-wide. Found on live data: lighthouse and lawn-care pages tagged ECON_*.
+        return 0.4
+    return 0.0
+
+
+EARNINGS_CUES = re.compile(
+    r"\b(earnings|results|quarter(ly)?|q[1-4]|fiscal|revenues?|sales|profits?|loss(es)?|eps|per share|"
+    r"guidance|outlook|forecast|beats?|miss(es|ed)?|estimates)\b",
+    re.IGNORECASE,
+)
+
+
+def _guard_earnings(result: ClassResult, text: str) -> ClassResult:
+    """An ML 'Earnings' label needs at least one earnings word; otherwise use the next most likely class.
+
+    Found on live data: contract wins and industry awards were labelled Earnings, and because earnings
+    filings have the strongest measured market reaction, those errors inflated Impact.
+    """
+    if result.event_type != "Earnings" or EARNINGS_CUES.search(text) or not result.probabilities:
+        return result
+    ranked = sorted((p, c) for c, p in result.probabilities.items() if c != "Earnings")
+    if not ranked:
+        return result
+    prob, cls = ranked[-1]
+    return ClassResult(cls, result.probabilities, round(prob, 4), f"{result.method}+guard")
 
 
 class EntityAnnotation(BaseModel):
@@ -57,6 +103,7 @@ class Annotation(BaseModel):
     frame: dict[str, Any] = Field(default_factory=dict)
     embedding: list[float] = Field(default_factory=list)
     model_versions: dict[str, str | None] = Field(default_factory=dict)
+    macro_evidence: float = 0.0          # 0-1, how market-wide the item is (relevance for MACRO events)
     annotated_at: datetime
 
 
@@ -94,10 +141,11 @@ class NlpEngine:
                 event_type, subtype = decisions[i].event_type, decisions[i].subtype
                 method, confidence, probs = decisions[i].source, decisions[i].confidence, {}
             else:
-                result = ml[i]
+                result = _guard_earnings(ml[i], texts[i])
                 event_type, subtype, method = result.event_type, None, result.method
                 confidence, probs = result.confidence, result.probabilities
-            primary = self._primary(doc, entities, event_type)
+            macro = macro_evidence(doc, method)
+            primary = self._primary(doc, entities, macro)
             scored = entities[:MAX_ENTITIES_SCORED]
             sentiments = self.sentiment.for_entities(doc, scored)
             main = sentiments[primary.ticker if isinstance(primary, LinkedEntity) and primary.ticker in sentiments
@@ -136,6 +184,7 @@ class NlpEngine:
                         "embedding": self.embedder.name,
                         "event_classifier": self.classifier.method if not decisions[i] else "rules",
                     },
+                    macro_evidence=macro,
                     annotated_at=now,
                 )
             )
@@ -148,9 +197,11 @@ class NlpEngine:
         frame = extract_frame(doc.title, doc.lead, actor, places).as_dict()
         return enrich_frame(frame, spans) if spans else frame
 
-    def _primary(self, doc: Document, entities: list[LinkedEntity], event_type: str) -> LinkedEntity | str:
+    def _primary(self, doc: Document, entities: list[LinkedEntity], macro: float) -> LinkedEntity | str:
+        """The subject: a company that is central to the text, else MACRO if there is market-wide evidence,
+        else NONE (passing mentions and unsupported macro guesses produce no signal)."""
         if entities and entities[0].relevance >= PRIMARY_MIN_RELEVANCE:
             return entities[0]
-        if doc.source in MACRO_SOURCES or doc.hints.get("macro_orgs") or event_type in MACRO_CLASSES:
+        if macro >= MIN_MACRO_EVIDENCE:
             return "MACRO"
-        return entities[0] if entities else "NONE"
+        return "NONE"

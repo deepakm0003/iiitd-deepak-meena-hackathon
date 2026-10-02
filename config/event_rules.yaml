@@ -39,7 +39,7 @@ rules:
   - {id: central_bank, class: Macroeconomic, subtype: central_bank_decision,
      pattern: "(fed|federal reserve|fomc|ecb|bank of england|bank of japan|rbi|reserve bank).{0,40}(rate|rates|hike|cut|holds|pause|policy)|repo rate|monetary policy"}
   - {id: macro_data, class: Macroeconomic, subtype: macro_data_surprise,
-     pattern: "\\b(cpi|inflation|payrolls|jobs report|unemployment rate|gdp|recession|pmi)\\b"}
+     pattern: "\\b(cpi|inflation|payrolls|jobs report|unemployment rate|gdp|recession|pmi|government (stock|securities)|treasury (bills?|auction)|bond auction)\\b"}
   - {id: mna, class: Merger/Acquisition, subtype: deal,
      pattern: "\\b(to acquire|acquires|acquisition of|agrees? to buy|to buy .{0,40} for \\$|merger|merge with|takeover|buyout|tender offer|spin[- ]?off)\\b"}
   - {id: legal, class: Regulatory/Legal, subtype: litigation_or_enforcement,
