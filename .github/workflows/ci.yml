@@ -1,0 +1,38 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      # Exactly the README Quickstart commands: if this fails, a judge's run fails too.
+      - name: README Quickstart
+        run: |
+          pip install -r requirements.txt
+          python -m tripwire health
+
+      - name: Install dev tools
+        run: pip install -r requirements-dev.txt
+
+      - name: Lint
+        run: python -m ruff check .
+
+      - name: Tests
+        run: python -m pytest
+
+      - name: Guard over all tracked files
+        if: runner.os == 'Linux'
+        run: python scripts/guard_commit.py $(git ls-files)

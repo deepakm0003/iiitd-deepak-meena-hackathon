@@ -1,0 +1,37 @@
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+build/
+dist/
+
+# Secrets - never commit. Use .env.example as the template.
+.env
+.env.*
+!.env.example
+
+# Raw third-party data stays local (large files, and the Kaggle set includes card/PII-like columns).
+data/raw/
+*.zip
+
+# Runtime state (SQLite database, logs, caches)
+var/
+*.db
+*.sqlite
+*.log
+
+# Large intermediate files; small curated outputs are whitelisted explicitly when needed.
+*.parquet
+
+# Frontend (Part 6)
+node_modules/
+frontend/dist/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

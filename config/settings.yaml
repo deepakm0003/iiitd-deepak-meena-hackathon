@@ -1,0 +1,6 @@
+# Runtime defaults. Environment variables (prefix TRIPWIRE_) and .env override these.
+# lite: SQLite + in-memory queue + replay data, no API keys (the README Quickstart path).
+# full: Postgres + Redis Streams + live collectors (docker compose, later parts).
+mode: lite
+queue: memory
+sources: replay

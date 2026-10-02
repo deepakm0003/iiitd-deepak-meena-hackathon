@@ -1,0 +1,8 @@
+# Runtime dependencies, pinned for reproducibility.
+# ML libraries (torch CPU, transformers, sentence-transformers, ...) are added in Part 2.
+pydantic==2.13.5
+pydantic-settings==2.15.0
+PyYAML==6.0.3
+SQLAlchemy==2.1.1
+# Installs this project (src/tripwire) so that `python -m tripwire` works after `pip install -r requirements.txt`.
+-e .

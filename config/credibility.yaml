@@ -1,0 +1,9 @@
+# Source credibility tiers = factor Q of the Impact Score (assumption A-14).
+assumption_id: A-14
+tiers:
+  filing: 1.00          # SEC EDGAR 8-K
+  regulator: 1.00       # RBI press releases, central banks
+  wire_major_press: 0.90
+  general_news: 0.70
+  aggregator_blog: 0.50
+  social: 0.35          # Bluesky, financial tweets (replay)

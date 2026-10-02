@@ -1,0 +1,39 @@
+# Event taxonomy (11 classes). The five classes named in the case study are all present.
+# severity_prior = factor S of the Impact Score, in [0, 1]. Values are expert priors (assumption A-13),
+# checked later against the event study (Part 3). Subtype priors override the class prior.
+assumption_id: A-13
+classes:
+  - name: Credit Event
+    severity_prior: 0.85
+    subtypes:
+      bankruptcy: 0.95
+      default_or_covenant_breach: 0.90
+      accelerated_obligation: 0.90
+      rating_downgrade: 0.70
+  - name: Geopolitical
+    severity_prior: 0.80
+    subtypes:
+      sanctions: 0.80
+      armed_conflict: 0.80
+      trade_restriction: 0.65
+  - name: Macroeconomic
+    severity_prior: 0.65
+    subtypes:
+      central_bank_decision: 0.70
+      macro_data_surprise: 0.55
+  - name: Merger/Acquisition
+    severity_prior: 0.60
+  - name: Regulatory/Legal
+    severity_prior: 0.60
+  - name: Cyber/Operational
+    severity_prior: 0.65
+  - name: Natural Disaster/Supply Chain
+    severity_prior: 0.65
+  - name: Earnings
+    severity_prior: 0.50
+  - name: Management Change
+    severity_prior: 0.40
+  - name: Product Launch
+    severity_prior: 0.30
+  - name: Other
+    severity_prior: 0.10

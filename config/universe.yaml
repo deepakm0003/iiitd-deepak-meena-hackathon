@@ -1,0 +1,4 @@
+# Tracked company universe: about 60 large US names including banks. Filled in Part 1
+# from the SEC company_tickers file. Survivorship note: chosen from today's index, so the
+# backfill favours companies that still exist (stated in the README limitations).
+tickers: []

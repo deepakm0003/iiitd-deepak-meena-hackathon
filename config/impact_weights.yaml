@@ -1,0 +1,14 @@
+# Impact Score: expert starting weights (assumption A-07). Part 3 compares these with weights fitted
+# on the calibration period and keeps whichever validates better out-of-time.
+assumption_id: A-07
+weights:
+  S_severity: 0.25
+  M_sentiment_magnitude: 0.15
+  E_entity_importance: 0.15
+  N_novelty: 0.10
+  V_volume_corroboration: 0.10
+  Q_source_credibility: 0.10
+  H_historical_reaction: 0.15
+relevance_gate: { floor: 0.6, slope: 0.4 }   # adjusted = raw * (floor + slope * relevance)
+trigger_threshold: 7.0                         # assumption A-08 (portfolio-aware variant in Part 5)
+risk_levels: { low: 4.0, medium: 7.0, high: 8.5 }  # below 4 Low | 4-7 Medium | 7-8.5 High | 8.5+ Critical

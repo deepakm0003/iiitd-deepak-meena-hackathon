@@ -1,0 +1,15 @@
+# Install once (inside the activated venv):  pre-commit install
+# Runs automatically on every `git commit`. Run on everything:  pre-commit run --all-files
+repos:
+  - repo: local
+    hooks:
+      - id: tripwire-guard
+        name: Tripwire guard (secrets, raw data, card numbers)
+        entry: python scripts/guard_commit.py
+        language: system
+        pass_filenames: true
+      - id: ruff
+        name: ruff lint
+        entry: python -m ruff check
+        language: system
+        types: [python]

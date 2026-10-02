@@ -1,0 +1,14 @@
+Tripwire
+Copyright (c) 2026 Deepak Meena. Licensed under the MIT License (see LICENSE).
+
+This project uses third-party data, models and libraries. Each keeps its own licence.
+Raw third-party data is NOT redistributed in this repository unless stated below.
+
+Data
+- "Financial Transactions Dataset: Analytics" (Kaggle: computingvictor/transactions-fraud-datasets),
+  created by Caixabank Tech for the 2024 AI Hackathon. Licence: Apache License 2.0.
+  Used only to derive aggregate merchant features (sector mix, geography, volume, behaviour).
+  Raw files, card numbers, CVVs and addresses are never committed.
+
+Models and libraries
+- Listed with versions and licences in docs/model_card.md as they are added (Part 2 onwards).

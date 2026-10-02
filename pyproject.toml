@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tripwire"
+version = "0.1.0"
+description = "Explainable NLP risk engine with credit early-warning stress testing (S&P Global x Crisil Campus Hackathon 2026)"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "Deepak Meena", email = "deepak23188@iiitd.ac.in" }]
+dependencies = [
+    "pydantic>=2.7",
+    "pydantic-settings>=2.4",
+    "PyYAML>=6.0",
+    "SQLAlchemy>=2.0",
+]
+
+[project.scripts]
+tripwire = "tripwire.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+src = ["src", "tests", "scripts"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

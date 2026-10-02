@@ -1,0 +1,93 @@
+# Every modelling assumption gets an ID here. Code, configs and the dashboard reference these IDs,
+# and any value tagged ASSUMPTION must point to an entry. status: proposed -> reviewed (by Deepak).
+assumptions:
+  - id: A-01
+    name: Transaction window re-dating
+    value: "Last 24 months of data (2017-11-01 to 2019-10-31) are treated as the current window"
+    used_in: portfolio/build_book (Part 5)
+    rationale: Dataset ends Oct 2019; behaviour is used relatively, not as calendar facts.
+    status: proposed
+  - id: A-02
+    name: SME facility size
+    value: "EAD = 0.15 x annual card volume, scaled so Tranche 1 totals USD 300M"
+    used_in: portfolio/build_book (Part 5)
+    rationale: Working-capital facility proxy; only relative sizes come from data.
+    status: proposed
+  - id: A-03
+    name: SME loan maturity
+    value: "1-5 years"
+    used_in: portfolio/build_book (Part 5)
+    rationale: Typical term-loan range; synthetic.
+    status: proposed
+  - id: A-04
+    name: Rating grade distribution
+    value: "Behavioural risk ranks mapped to a BBB-centred grade distribution"
+    used_in: portfolio/build_book (Part 5)
+    rationale: Gives a plausible SME book; not a validated rating model.
+    status: proposed
+  - id: A-05
+    name: Grade to PD and LGD table
+    value: "Illustrative PD per grade; LGD 45% senior unsecured"
+    used_in: stress/ecl (Part 5)
+    rationale: Illustrative values; documented, not proprietary rating data.
+    status: proposed
+  - id: A-06
+    name: Large-corporate tranche
+    value: "USD 200M of synthetic positions on real public names (bonds, loans, equity, swaps, index puts)"
+    used_in: portfolio/build_book (Part 5)
+    rationale: Lets direct entity-level news hit the book. Exposures are hypothetical.
+    status: proposed
+  - id: A-07
+    name: Impact Score expert weights
+    value: "S .25, M .15, E .15, N .10, V .10, Q .10, H .15"
+    used_in: config/impact_weights.yaml
+    rationale: Starting point; compared against fitted weights out-of-time in Part 3.
+    status: proposed
+  - id: A-08
+    name: Stress trigger threshold
+    value: "Impact above 7 (case study example); portfolio-aware variant in Part 5"
+    used_in: config/impact_weights.yaml
+    rationale: Case study example threshold.
+    status: proposed
+  - id: A-09
+    name: IFRS 9 Stage 2 rule
+    value: "PD up 3x vs origination, or 12m PD of 20% or more, or EWS Red"
+    used_in: stress/ecl (Part 5)
+    rationale: ECB-recommended backstops (GARP summary); configurable.
+    status: proposed
+  - id: A-10
+    name: CET1 floor
+    value: "Basel 7.0% (4.5% + 2.5% buffer) or RBI 8.0% (5.5% + 2.5%), toggle"
+    used_in: stress/capital (Part 5)
+    rationale: Regulatory minimum plus conservation buffer; RBI figure to verify.
+    status: proposed
+  - id: A-11
+    name: Single-obligor cap
+    value: "No SME obligor above 3% of Tranche 1 EAD"
+    used_in: portfolio/build_book (Part 5)
+    rationale: Card volume is extremely skewed (top merchant 11.0M vs #300 26k in 24m spend).
+    status: proposed
+  - id: A-12
+    name: Tax rate on stress losses
+    value: "25%"
+    used_in: stress/capital (Part 5)
+    rationale: Simple after-tax loss for CET1 impact.
+    status: proposed
+  - id: A-13
+    name: Event severity priors
+    value: "Per class and subtype, see config/taxonomy.yaml"
+    used_in: Impact factor S
+    rationale: Expert priors, checked against the event study.
+    status: proposed
+  - id: A-14
+    name: Source credibility tiers
+    value: "filing/regulator 1.0, wire 0.9, news 0.7, aggregator 0.5, social 0.35"
+    used_in: Impact factor Q, corroboration
+    rationale: Primary sources outrank secondary; social is noisiest.
+    status: proposed
+  - id: A-15
+    name: Severe-end shock table
+    value: "Per event class and layer, see config/shocks.yaml"
+    used_in: stress engine (Part 5)
+    rationale: Instantaneous single-event shocks; replaced by historical-analog levels where measured.
+    status: proposed
