@@ -1,5 +1,5 @@
 {
-  "computed_at": "2026-10-02T11:55:29.596618+00:00",
+  "computed_at": "2026-10-02T13:35:08.250650+00:00",
   "periods": {
     "calibration": [
       "2023-01-01",
@@ -9,33 +9,57 @@
     "test_from": "2025-07-01"
   },
   "event_study": {
-    "input": 3817,
+    "input": 3819,
     "no_prices": 0,
-    "no_reaction_day": 2,
+    "no_reaction_day": 4,
     "confounded": 678,
     "short_estimation": 0,
     "studied": 2936,
     "large_moves": 565
   },
   "counts": {
-    "events_scored": 6512,
+    "events_scored": 5744,
     "calibration_events": 2452,
     "calibration_with_returns": 1933,
     "test_with_returns": 1003
   },
   "h_table": {
-    "Earnings": 1.0,
-    "Management Change": 0.0344,
-    "Other": 0.0,
-    "Merger/Acquisition": 0.1527,
-    "Macroeconomic": 0.1671,
-    "Regulatory/Legal": 0.0217,
-    "Natural Disaster/Supply Chain": 0.4981,
-    "Credit Event": 0.4926,
-    "Cyber/Operational": 0.2068,
-    "Geopolitical": 0.1488,
-    "Product Launch": 0.4299,
-    "__default__": 0.333
+    "Natural Disaster/Supply Chain": 0.65,
+    "Other": 0.0816,
+    "Regulatory/Legal": 0.615,
+    "Merger/Acquisition": 0.2105,
+    "Earnings": 0.9847,
+    "Management Change": 0.0797,
+    "Geopolitical": 0.6583,
+    "Credit Event": 0.8636,
+    "Product Launch": 0.3333,
+    "Cyber/Operational": 0.4981,
+    "Macroeconomic": 0.65,
+    "__default__": 0.3607
+  },
+  "h_measured_on": {
+    "methods": [
+      "8k_item",
+      "rule"
+    ],
+    "n_by_type": {
+      "Credit Event": 2,
+      "Cyber/Operational": 7,
+      "Earnings": 632,
+      "Geopolitical": 5,
+      "Management Change": 368,
+      "Merger/Acquisition": 37,
+      "Other": 190,
+      "Product Launch": 1,
+      "Regulatory/Legal": 2
+    }
+  },
+  "tail_coverage": {
+    "S_severity": {
+      "threshold": 0.8,
+      "required": 30,
+      "observed": 8
+    }
   },
   "weights": {
     "expert": {
@@ -48,26 +72,26 @@
       "H_historical_reaction": 0.15
     },
     "fitted": {
-      "S_severity": 0.0,
-      "M_sentiment_magnitude": 0.0942,
-      "E_entity_importance": 0.0976,
+      "S_severity": 0.1603,
+      "M_sentiment_magnitude": 0.0379,
+      "E_entity_importance": 0.0535,
       "N_novelty": 0.0,
-      "V_volume_corroboration": 0.2624,
+      "V_volume_corroboration": 0.2206,
       "Q_source_credibility": 0.0,
-      "H_historical_reaction": 0.5457
+      "H_historical_reaction": 0.5276
     },
     "final": {
-      "S_severity": 0.0,
-      "M_sentiment_magnitude": 0.0894,
-      "E_entity_importance": 0.0926,
+      "S_severity": 0.25,
+      "M_sentiment_magnitude": 0.15,
+      "E_entity_importance": 0.15,
       "N_novelty": 0.1,
       "V_volume_corroboration": 0.1,
       "Q_source_credibility": 0.1,
-      "H_historical_reaction": 0.518
+      "H_historical_reaction": 0.15
     }
   },
   "identifiable_factors": {
-    "S_severity": true,
+    "S_severity": false,
     "M_sentiment_magnitude": true,
     "E_entity_importance": true,
     "N_novelty": false,
@@ -76,173 +100,173 @@
     "H_historical_reaction": true
   },
   "model_selection_inner_check_spearman": {
-    "expert": 0.2997,
-    "fitted": 0.3264,
-    "blended": 0.3214
+    "expert": 0.3105,
+    "fitted": 0.3233,
+    "blended": 0.3212
   },
-  "chosen": "blended",
-  "config_hash": "sha256:314ebfc5785759ff",
+  "chosen": "expert",
+  "config_hash": "sha256:813a7887981a6f2a",
   "test": {
     "final": {
       "n": 1003,
-      "spearman": 0.299,
+      "spearman": 0.3319,
       "spearman_ci95": [
-        0.2431,
-        0.36
+        0.273,
+        0.39
       ],
-      "auc_large_move": 0.6997,
-      "base_rate_large_move": 0.1924,
-      "trigger_precision_impact_ge_7": 0.625,
-      "n_triggered": 48,
-      "buckets": [
-        {
-          "impact": "1-4",
-          "n": 597,
-          "mean_abs_scar": 0.941,
-          "share_large_move": 0.109
-        },
-        {
-          "impact": "4-7",
-          "n": 358,
-          "mean_abs_scar": 1.564,
-          "share_large_move": 0.274
-        },
-        {
-          "impact": "7-8.5",
-          "n": 31,
-          "mean_abs_scar": 3.005,
-          "share_large_move": 0.613
-        },
-        {
-          "impact": "8.5-10",
-          "n": 17,
-          "mean_abs_scar": 2.889,
-          "share_large_move": 0.647
-        }
-      ]
-    },
-    "expert": {
-      "n": 1003,
-      "spearman": 0.2943,
-      "spearman_ci95": [
-        0.2362,
-        0.3562
-      ],
-      "auc_large_move": 0.6946,
+      "auc_large_move": 0.7259,
       "base_rate_large_move": 0.1924,
       "trigger_precision_impact_ge_7": 0.58,
       "n_triggered": 50,
       "buckets": [
         {
           "impact": "1-4",
-          "n": 623,
-          "mean_abs_scar": 0.946,
-          "share_large_move": 0.108
+          "n": 600,
+          "mean_abs_scar": 0.9,
+          "share_large_move": 0.098
         },
         {
           "impact": "4-7",
-          "n": 330,
-          "mean_abs_scar": 1.61,
-          "share_large_move": 0.294
+          "n": 353,
+          "mean_abs_scar": 1.651,
+          "share_large_move": 0.297
         },
         {
           "impact": "7-8.5",
-          "n": 29,
-          "mean_abs_scar": 3.084,
-          "share_large_move": 0.621
+          "n": 28,
+          "mean_abs_scar": 2.988,
+          "share_large_move": 0.607
         },
         {
           "impact": "8.5-10",
-          "n": 21,
-          "mean_abs_scar": 2.558,
-          "share_large_move": 0.524
+          "n": 22,
+          "mean_abs_scar": 2.606,
+          "share_large_move": 0.545
+        }
+      ]
+    },
+    "expert": {
+      "n": 1003,
+      "spearman": 0.3319,
+      "spearman_ci95": [
+        0.273,
+        0.39
+      ],
+      "auc_large_move": 0.7259,
+      "base_rate_large_move": 0.1924,
+      "trigger_precision_impact_ge_7": 0.58,
+      "n_triggered": 50,
+      "buckets": [
+        {
+          "impact": "1-4",
+          "n": 600,
+          "mean_abs_scar": 0.9,
+          "share_large_move": 0.098
+        },
+        {
+          "impact": "4-7",
+          "n": 353,
+          "mean_abs_scar": 1.651,
+          "share_large_move": 0.297
+        },
+        {
+          "impact": "7-8.5",
+          "n": 28,
+          "mean_abs_scar": 2.988,
+          "share_large_move": 0.607
+        },
+        {
+          "impact": "8.5-10",
+          "n": 22,
+          "mean_abs_scar": 2.606,
+          "share_large_move": 0.545
         }
       ]
     },
     "fitted": {
       "n": 1003,
-      "spearman": 0.3033,
+      "spearman": 0.3454,
       "spearman_ci95": [
-        0.2476,
-        0.3626
+        0.2862,
+        0.4019
       ],
-      "auc_large_move": 0.7059,
+      "auc_large_move": 0.7378,
       "base_rate_large_move": 0.1924,
-      "trigger_precision_impact_ge_7": 0.6364,
-      "n_triggered": 44,
+      "trigger_precision_impact_ge_7": 0.5435,
+      "n_triggered": 46,
       "buckets": [
         {
           "impact": "1-4",
-          "n": 635,
-          "mean_abs_scar": 0.938,
-          "share_large_move": 0.106
+          "n": 597,
+          "mean_abs_scar": 0.874,
+          "share_large_move": 0.09
         },
         {
           "impact": "4-7",
-          "n": 324,
-          "mean_abs_scar": 1.646,
-          "share_large_move": 0.302
+          "n": 360,
+          "mean_abs_scar": 1.716,
+          "share_large_move": 0.317
         },
         {
           "impact": "7-8.5",
-          "n": 29,
-          "mean_abs_scar": 2.967,
-          "share_large_move": 0.586
+          "n": 23,
+          "mean_abs_scar": 2.868,
+          "share_large_move": 0.565
         },
         {
           "impact": "8.5-10",
-          "n": 15,
-          "mean_abs_scar": 3.261,
-          "share_large_move": 0.733
+          "n": 23,
+          "mean_abs_scar": 2.548,
+          "share_large_move": 0.522
         }
       ]
     },
     "blended": {
       "n": 1003,
-      "spearman": 0.299,
+      "spearman": 0.3395,
       "spearman_ci95": [
-        0.2431,
-        0.36
+        0.2797,
+        0.3983
       ],
-      "auc_large_move": 0.6997,
+      "auc_large_move": 0.7324,
       "base_rate_large_move": 0.1924,
-      "trigger_precision_impact_ge_7": 0.625,
-      "n_triggered": 48,
+      "trigger_precision_impact_ge_7": 0.5882,
+      "n_triggered": 51,
       "buckets": [
         {
           "impact": "1-4",
-          "n": 597,
-          "mean_abs_scar": 0.941,
-          "share_large_move": 0.109
+          "n": 592,
+          "mean_abs_scar": 0.871,
+          "share_large_move": 0.09
         },
         {
           "impact": "4-7",
-          "n": 358,
-          "mean_abs_scar": 1.564,
-          "share_large_move": 0.274
+          "n": 360,
+          "mean_abs_scar": 1.676,
+          "share_large_move": 0.306
         },
         {
           "impact": "7-8.5",
-          "n": 31,
+          "n": 29,
           "mean_abs_scar": 3.005,
-          "share_large_move": 0.613
+          "share_large_move": 0.621
         },
         {
           "impact": "8.5-10",
-          "n": 17,
-          "mean_abs_scar": 2.889,
-          "share_large_move": 0.647
+          "n": 22,
+          "mean_abs_scar": 2.623,
+          "share_large_move": 0.545
         }
       ]
     },
     "baselines": {
       "severity_only": {
-        "spearman": 0.1558,
+        "spearman": 0.2928,
         "spearman_ci95": [
-          0.0994,
-          0.2182
+          0.2351,
+          0.3449
         ],
-        "auc_large_move": 0.5726
+        "auc_large_move": 0.6815
       },
       "sentiment_magnitude_only": {
         "spearman": 0.0402,
@@ -253,21 +277,22 @@
         "auc_large_move": 0.5375
       },
       "historical_reaction_only": {
-        "spearman": 0.2775,
+        "spearman": 0.3212,
         "spearman_ci95": [
-          0.2214,
-          0.334
+          0.2612,
+          0.376
         ],
-        "auc_large_move": 0.6619
+        "auc_large_move": 0.7022
       }
     },
     "ablation_drop_one_factor": {
-      "M_sentiment_magnitude": 0.2833,
-      "E_entity_importance": 0.294,
-      "N_novelty": 0.3025,
-      "V_volume_corroboration": 0.2978,
-      "Q_source_credibility": 0.2993,
-      "H_historical_reaction": 0.1292
+      "S_severity": 0.3085,
+      "M_sentiment_magnitude": 0.3195,
+      "E_entity_importance": 0.3439,
+      "N_novelty": 0.3405,
+      "V_volume_corroboration": 0.3318,
+      "Q_source_credibility": 0.3315,
+      "H_historical_reaction": 0.2478
     }
   },
   "scope_note": "Validated only on firm-specific 8-K events with exact timestamps; macro, geopolitical and social-only events have no single stock to test."

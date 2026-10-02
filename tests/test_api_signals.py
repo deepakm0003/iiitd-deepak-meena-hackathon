@@ -87,3 +87,11 @@ def test_risk_levels():
     assert risk_level(7.2, levels) == ("High", "Urgent")
     assert risk_level(5.0, levels) == ("Medium", "Watch")
     assert risk_level(2.0, levels) == ("Low", "Log")
+
+
+def test_favourable_news_is_material_but_not_a_critical_risk_alert():
+    levels = {"high": 8.0, "medium": 6.0, "low": 4.0}
+    assert risk_level(9.5, levels, "adverse")[0] == "Critical"
+    assert risk_level(9.5, levels, "neutral")[0] == "Critical"
+    assert risk_level(9.5, levels, "favourable") == ("Medium", "Watch")
+    assert risk_level(3.0, levels, "favourable")[0] == "Low"

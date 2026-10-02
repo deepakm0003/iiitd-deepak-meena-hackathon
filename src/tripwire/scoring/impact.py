@@ -22,6 +22,10 @@ FACTORS = ["S_severity", "M_sentiment_magnitude", "E_entity_importance", "N_nove
 BANDS = [(0.0, 1.0), (0.5, 3.0), (0.8, 5.0), (0.95, 7.0), (1.0, 10.0)]  # (percentile, impact)
 SHRINK_K = 20  # pseudo-events pulling small classes' H toward their expert prior
 MIN_ANCHOR_N = 30  # event types with at least this many calibration events define the H scale
+# A weight can only be learned for the part of a factor's range the data covers. Severity is learnable only if
+# the calibration sample holds enough genuinely severe events (defaults, bankruptcies, sanctions); a 2023-25
+# large-cap 8-K sample holds almost none, so a fitted S weight would say nothing about the severe tail.
+TAIL_COVERAGE = {"S_severity": (0.80, 30)}  # factor: (tail threshold, minimum calibration events in the tail)
 
 
 @dataclass
@@ -142,15 +146,26 @@ def fit_weights(rows: list[dict[str, float]], target: list[float]) -> dict[str, 
     return {f: round(float(v), 4) for f, v in zip(FACTORS, w, strict=True)}
 
 
-def identifiable(rows: list[dict[str, float]], min_variation: float = 0.2) -> dict[str, bool]:
+def identifiable(rows: list[dict[str, float]], min_variation: float = 0.2,
+                 tail: dict[str, tuple[float, int]] | None = None) -> dict[str, bool]:
     """A factor is identifiable from the calibration data if at least `min_variation` of rows differ from its
-    most common value. Weights for non-identifiable factors cannot be learned from this data."""
+    most common value and, for factors in `tail`, at least n rows reach the tail threshold. Weights for
+    non-identifiable factors cannot be learned from this data."""
+    tail = TAIL_COVERAGE if tail is None else tail
     out = {}
     for f in FACTORS:
         values = [round(r[f], 3) for r in rows]
         mode_share = max(values.count(v) for v in set(values)) / len(values) if values else 1.0
         out[f] = (1 - mode_share) >= min_variation
+        if f in tail:
+            threshold, n_min = tail[f]
+            out[f] = out[f] and sum(v >= threshold for v in values) >= n_min
     return out
+
+
+def tail_counts(rows: list[dict[str, float]], tail: dict[str, tuple[float, int]] | None = None) -> dict[str, dict]:
+    tail = TAIL_COVERAGE if tail is None else tail
+    return {f: {"threshold": t, "required": n, "observed": sum(r[f] >= t for r in rows)} for f, (t, n) in tail.items()}
 
 
 def blend_weights(expert: dict[str, float], fitted: dict[str, float], ident: dict[str, bool]) -> dict[str, float]:

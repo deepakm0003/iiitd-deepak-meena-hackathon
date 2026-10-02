@@ -29,7 +29,21 @@ FACTOR_PROVENANCE = {
 }
 
 
-def risk_level(impact: float, levels: dict[str, float]) -> tuple[str, str]:
+FAVOURABLE_CAP = ("Medium", "Watch")
+
+
+def risk_level(impact: float, levels: dict[str, float], direction: str = "adverse") -> tuple[str, str]:
+    """Downside alert level. Impact measures how material an item is in either direction (validated against the
+    size of market moves); a clearly favourable item is material but not a risk alert, so it is capped at
+    Medium. Direction comes from sentiment only, which is why neutral items are not capped."""
+    level = _level(impact, levels)
+    order = ["Low", "Medium", "High", "Critical"]
+    if direction == "favourable" and order.index(level[0]) > order.index(FAVOURABLE_CAP[0]):
+        return FAVOURABLE_CAP
+    return level
+
+
+def _level(impact: float, levels: dict[str, float]) -> tuple[str, str]:
     if impact >= levels["high"]:
         return "Critical", "Flash"
     if impact >= levels["medium"]:
@@ -67,7 +81,8 @@ def build_signals(store, model: ImpactModel, since: datetime | None = None) -> l
         r["factors"]["H_historical_reaction"] = model.h_table.get(r["event_type"], default_h)
         scored = model.score(r["factors"], r["relevance"])
         conf = confidence(r["event_confidence"], r["sentiment"], r["link_confidence"], r["corroboration"])
-        level, tier = risk_level(scored["impact"], cfg["risk_levels"])
+        direction = "adverse" if r["sentiment"] < -0.15 else "favourable" if r["sentiment"] > 0.15 else "neutral"
+        level, tier = risk_level(scored["impact"], cfg["risk_levels"], direction)
         members = [annotations[i] for i in r["doc_ids"] if i in annotations]
         rep = rec.representative(members) if members else {}
         evidence = [
@@ -105,6 +120,7 @@ def build_signals(store, model: ImpactModel, since: datetime | None = None) -> l
             "impact_breakdown": scored,
             "p_large_move": scored["p_large_move"],
             "confidence": conf,
+            "direction": direction,
             "risk_level": level,
             "severity_tier": tier,
             "explanation": explanation(r, scored, conf),

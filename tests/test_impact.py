@@ -95,10 +95,19 @@ def test_blend_keeps_expert_weight_where_data_is_silent():
     from tripwire.scoring.impact import blend_weights, identifiable
 
     rows = [{**{f: i / 10 for f in FACTORS}, "Q_source_credibility": 1.0} for i in range(10)]
-    ident = identifiable(rows)
+    ident = identifiable(rows, tail={})
     assert ident["Q_source_credibility"] is False and ident["H_historical_reaction"] is True
     fitted = {**dict.fromkeys(FACTORS, 0.0), "H_historical_reaction": 1.0}
     w = blend_weights(EXPERT, fitted, ident)
     assert w["Q_source_credibility"] == EXPERT["Q_source_credibility"]
     assert w["H_historical_reaction"] == pytest.approx(1 - EXPERT["Q_source_credibility"])
     assert sum(w.values()) == pytest.approx(1.0, abs=1e-3)
+
+
+def test_severity_needs_the_severe_tail_in_the_data_to_be_learned():
+    from tripwire.scoring.impact import identifiable
+
+    routine = [{**dict.fromkeys(FACTORS, 0.5), "S_severity": s} for s in (0.1, 0.3, 0.4, 0.5, 0.6) * 20]
+    assert identifiable(routine)["S_severity"] is False  # varies, but no severe events: weight not learnable
+    severe = routine + [{**dict.fromkeys(FACTORS, 0.5), "S_severity": 0.9}] * 30
+    assert identifiable(severe)["S_severity"] is True
