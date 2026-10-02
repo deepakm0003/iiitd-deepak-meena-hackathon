@@ -6,6 +6,7 @@ Exit code 1 with a reason per file if anything is blocked. Standard library only
 
 import re
 import sys
+from datetime import datetime
 from pathlib import Path, PurePosixPath
 
 MAX_BYTES = 5 * 1024 * 1024
@@ -36,6 +37,17 @@ def luhn_ok(digits: str) -> bool:
     return total % 10 == 0
 
 
+def is_timestamp(digits: str) -> bool:
+    """GDELT-style YYYYMMDDHHMMSS stamps are 14 digits and common in our data; they are not card numbers."""
+    if len(digits) != 14:
+        return False
+    try:
+        datetime.strptime(digits, "%Y%m%d%H%M%S")
+    except ValueError:
+        return False
+    return True
+
+
 def check_path(path: str) -> list[str]:
     posix = PurePosixPath(path.replace("\\", "/")).as_posix()
     reasons = []
@@ -62,7 +74,10 @@ def check_content(path: Path) -> list[str]:
         reasons.append("tabular file with card_number/cvv columns")
     for match in CARD_LIKE.finditer(text):
         digits = re.sub(r"\D", "", match.group())
-        if 13 <= len(digits) <= 19 and luhn_ok(digits):
+        # Payment card numbers start with 2-6 (Mastercard 2/5, Amex 3, Visa 4, Discover 6); epoch
+        # timestamps in ms/us start with 1 and would otherwise trip the Luhn check by chance.
+        plausible = 13 <= len(digits) <= 19 and digits[0] in "23456" and not is_timestamp(digits)
+        if plausible and luhn_ok(digits):
             reasons.append("contains a card-number-like value (passes Luhn check)")
             break
     if PRIVATE_KEY.search(text):

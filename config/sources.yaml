@@ -1,0 +1,105 @@
+# Live collector settings. Rate limits stay well inside each provider's published limits.
+gdelt:
+  interval_minutes: 15
+  base_url: http://data.gdeltproject.org/gdeltv2
+  max_files_per_run: 8            # catch up at most 2 hours per run after downtime
+  # Keep a GKG record if an organisation matches the universe or these macro bodies...
+  macro_orgs:
+    - federal reserve
+    - federal reserve bank
+    - european central bank
+    - international monetary fund
+    - reserve bank of india
+    - securities and exchange commission
+    - bank of england
+    - bank of japan
+    - world bank
+    - opec
+  # ...or it carries one of these market-relevant themes (GDELT GKG theme codes).
+  finance_themes:
+    - ECON_BANKRUPTCY
+    - ECON_CENTRALBANK
+    - WB_1235_CENTRAL_BANKS
+    - ECON_INTEREST_RATES
+    - ECON_INFLATION
+    - ECON_STOCKMARKET
+    - ECON_DEBT
+    - ECON_SOVEREIGN_DEBT
+    - ECON_TRADE_DISPUTE
+    - ECON_CURRENCY_EXCHANGE_RATE
+    - ECON_OILPRICE
+  # Theme-only records (no matched organisation) need one strong theme, or at least this many finance themes:
+  # broad themes such as ECON_DEBT alone let through unrelated stories in testing.
+  strong_themes:
+    - ECON_BANKRUPTCY
+    - ECON_CENTRALBANK
+    - WB_1235_CENTRAL_BANKS
+    - ECON_INTEREST_RATES
+    - ECON_SOVEREIGN_DEBT
+  min_theme_hits: 2
+  # Geopolitical/disaster themes are kept only together with a finance theme or matched organisation.
+  risk_themes:
+    - SANCTIONS
+    - ARMEDCONFLICT
+    - CYBER_ATTACK
+    - NATURAL_DISASTER
+    - MANMADE_DISASTER
+    - TERROR
+
+finnhub:
+  interval_minutes: 10
+  calls_per_minute: 50            # free tier allows 60
+  lookback_days: 3
+  general_news: true
+
+edgar:
+  interval_minutes: 10
+  requests_per_second: 5          # SEC fair-access limit is 10
+  forms: ["8-K", "8-K/A"]
+  initial_lookback_days: 7
+
+rss:
+  interval_minutes: 30
+  feeds:
+    - name: rbi
+      url: https://www.rbi.org.in/pressreleases_rss.xml
+      source_type: regulator
+      utc_offset_minutes: 330     # RBI dates carry no timezone; they are IST
+    - name: fed
+      url: https://www.federalreserve.gov/feeds/press_all.xml
+      source_type: regulator
+      utc_offset_minutes: 0
+
+bluesky:
+  endpoint: wss://jetstream2.us-east.bsky.network/subscribe
+  window_seconds: 60              # each fetch listens this long, then checkpoints the cursor
+  languages: [en]
+  # A post is kept if it has a universe cashtag ($JPM), or a company alias plus one of these words.
+  finance_keywords:
+    - stock
+    - shares
+    - earnings
+    - revenue
+    - guidance
+    - bankrupt
+    - bankruptcy
+    - default
+    - downgrade
+    - upgrade
+    - lawsuit
+    - sued
+    - layoffs
+    - merger
+    - acquisition
+    - acquire
+    - buyout
+    - sec
+    - fed
+    - rate cut
+    - rate hike
+    - tariff
+    - sanctions
+    - recall
+    - breach
+    - outage
+    - dividend

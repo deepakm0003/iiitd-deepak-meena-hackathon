@@ -14,7 +14,16 @@ def utc_now() -> datetime:
     return datetime.now(UTC)
 
 
-class RawDocument(BaseModel):
+class _UtcModel(BaseModel):
+    @field_validator("published_at", "fetched_at", "normalized_at", check_fields=False)
+    @classmethod
+    def _require_utc(cls, value: datetime) -> datetime:
+        if value.tzinfo is None:
+            raise ValueError("timestamps must be timezone-aware")
+        return value.astimezone(UTC)
+
+
+class RawDocument(_UtcModel):
     """One item exactly as a collector received it (provenance: OBSERVED)."""
 
     source: str
@@ -27,13 +36,6 @@ class RawDocument(BaseModel):
     fetched_at: datetime = Field(default_factory=utc_now)
     payload: dict[str, Any] = Field(default_factory=dict)
 
-    @field_validator("published_at", "fetched_at")
-    @classmethod
-    def _require_utc(cls, value: datetime) -> datetime:
-        if value.tzinfo is None:
-            raise ValueError("timestamps must be timezone-aware")
-        return value.astimezone(UTC)
-
     @property
     def dedup_key(self) -> str:
         return dedup_key(
@@ -43,3 +45,31 @@ class RawDocument(BaseModel):
             title=self.title,
             published_date=self.published_at.date().isoformat(),
         )
+
+
+class Document(_UtcModel):
+    """A cleaned document ready for NLP. Text is still OBSERVED; only formatting was normalised."""
+
+    raw_id: int
+    dedup_key: str
+    source: str
+    source_type: SourceType
+    title: str
+    lead: str = ""
+    lang: str = "en"
+    url: str | None = None
+    published_at: datetime
+    normalized_at: datetime = Field(default_factory=utc_now)
+    # Source-provided hints for entity linking (e.g. Finnhub 'related', EDGAR ticker/CIK, GDELT organisations).
+    hints: dict[str, Any] = Field(default_factory=dict)
+
+
+class RunStats(BaseModel):
+    source: str
+    started_at: datetime
+    finished_at: datetime | None = None
+    fetched: int = 0
+    inserted: int = 0
+    duplicates: int = 0
+    status: Literal["ok", "error"] = "ok"
+    error: str | None = None

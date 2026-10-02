@@ -34,6 +34,10 @@ def test_blocks_card_number_but_not_ordinary_numbers(tmp_path):
     ok = tmp_path / "ok.md"
     ok.write_text("13,305,915 rows; merchant 59935; year 2019", encoding="utf-8")
     assert guard.check_content(ok) == []
+    timestamps = tmp_path / "ts.json"
+    timestamps.write_text('{"time_us": 1790000000000000, "ms": 1790902415474, "gdelt": "20261002021500"}',
+                          encoding="utf-8")
+    assert guard.check_content(timestamps) == []
 
 
 def test_blocks_sensitive_csv_header(tmp_path):

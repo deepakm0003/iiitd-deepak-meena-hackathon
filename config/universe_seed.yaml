@@ -1,0 +1,86 @@
+# Hand-curated company universe: ticker, GICS-style sector, and news aliases.
+# `python -m tripwire universe --refresh` adds SEC CIK, legal name and SIC (OBSERVED) into universe.yaml.
+# Banks are over-weighted on purpose: Module B is a wholesale-banking credit book.
+companies:
+  # Information Technology
+  - {ticker: AAPL, sector: Information Technology, aliases: [Apple]}
+  - {ticker: MSFT, sector: Information Technology, aliases: [Microsoft]}
+  - {ticker: NVDA, sector: Information Technology, aliases: [Nvidia]}
+  - {ticker: ORCL, sector: Information Technology, aliases: [Oracle]}
+  - {ticker: CRM, sector: Information Technology, aliases: [Salesforce]}
+  - {ticker: ADBE, sector: Information Technology, aliases: [Adobe]}
+  - {ticker: INTC, sector: Information Technology, aliases: [Intel]}
+  - {ticker: AMD, sector: Information Technology, aliases: [AMD, Advanced Micro Devices]}
+  - {ticker: CSCO, sector: Information Technology, aliases: [Cisco]}
+  - {ticker: IBM, sector: Information Technology, aliases: [IBM]}
+  - {ticker: QCOM, sector: Information Technology, aliases: [Qualcomm]}
+  # Communication Services
+  - {ticker: GOOGL, sector: Communication Services, aliases: [Alphabet, Google]}
+  - {ticker: META, sector: Communication Services, aliases: [Meta Platforms, Facebook]}
+  - {ticker: DIS, sector: Communication Services, aliases: [Disney, Walt Disney]}
+  - {ticker: T, sector: Communication Services, aliases: [AT&T]}
+  - {ticker: VZ, sector: Communication Services, aliases: [Verizon]}
+  # Consumer Discretionary
+  - {ticker: AMZN, sector: Consumer Discretionary, aliases: [Amazon]}
+  - {ticker: TSLA, sector: Consumer Discretionary, aliases: [Tesla]}
+  - {ticker: HD, sector: Consumer Discretionary, aliases: [Home Depot]}
+  - {ticker: MCD, sector: Consumer Discretionary, aliases: [McDonald's, McDonalds]}
+  - {ticker: NKE, sector: Consumer Discretionary, aliases: [Nike]}
+  - {ticker: SBUX, sector: Consumer Discretionary, aliases: [Starbucks]}
+  - {ticker: F, sector: Consumer Discretionary, aliases: [Ford Motor, Ford]}
+  - {ticker: GM, sector: Consumer Discretionary, aliases: [General Motors]}
+  # Consumer Staples
+  - {ticker: WMT, sector: Consumer Staples, aliases: [Walmart]}
+  - {ticker: COST, sector: Consumer Staples, aliases: [Costco]}
+  - {ticker: KO, sector: Consumer Staples, aliases: [Coca-Cola, Coca Cola]}
+  - {ticker: PEP, sector: Consumer Staples, aliases: [PepsiCo, Pepsi]}
+  - {ticker: PG, sector: Consumer Staples, aliases: [Procter & Gamble, P&G]}
+  - {ticker: TGT, sector: Consumer Staples, aliases: [Target Corp, Target]}
+  # Health Care
+  - {ticker: JNJ, sector: Health Care, aliases: [Johnson & Johnson, J&J]}
+  - {ticker: UNH, sector: Health Care, aliases: [UnitedHealth]}
+  - {ticker: PFE, sector: Health Care, aliases: [Pfizer]}
+  - {ticker: MRK, sector: Health Care, aliases: [Merck]}
+  - {ticker: ABBV, sector: Health Care, aliases: [AbbVie]}
+  - {ticker: LLY, sector: Health Care, aliases: [Eli Lilly, Lilly]}
+  # Financials: money-centre and regional banks, card lenders, asset managers, insurers
+  - {ticker: JPM, sector: Financials, aliases: [JPMorgan Chase, JPMorgan, JP Morgan]}
+  - {ticker: BAC, sector: Financials, aliases: [Bank of America, BofA]}
+  - {ticker: WFC, sector: Financials, aliases: [Wells Fargo]}
+  - {ticker: C, sector: Financials, aliases: [Citigroup, Citi, Citibank]}
+  - {ticker: GS, sector: Financials, aliases: [Goldman Sachs, Goldman]}
+  - {ticker: MS, sector: Financials, aliases: [Morgan Stanley]}
+  - {ticker: USB, sector: Financials, aliases: [U.S. Bancorp, US Bancorp]}
+  - {ticker: PNC, sector: Financials, aliases: [PNC Financial, PNC]}
+  - {ticker: TFC, sector: Financials, aliases: [Truist]}
+  - {ticker: SCHW, sector: Financials, aliases: [Charles Schwab, Schwab]}
+  - {ticker: COF, sector: Financials, aliases: [Capital One]}
+  - {ticker: BNY, sector: Financials, aliases: [BNY Mellon, Bank of New York Mellon, BNY]}
+  - {ticker: KEY, sector: Financials, aliases: [KeyCorp, KeyBank]}
+  - {ticker: CFG, sector: Financials, aliases: [Citizens Financial]}
+  - {ticker: FITB, sector: Financials, aliases: [Fifth Third]}
+  - {ticker: RF, sector: Financials, aliases: [Regions Financial, Regions Bank]}
+  - {ticker: HBAN, sector: Financials, aliases: [Huntington Bancshares, Huntington Bank]}
+  - {ticker: ZION, sector: Financials, aliases: [Zions Bancorporation, Zions]}
+  - {ticker: WAL, sector: Financials, aliases: [Western Alliance]}
+  - {ticker: AXP, sector: Financials, aliases: [American Express, Amex]}
+  - {ticker: BLK, sector: Financials, aliases: [BlackRock]}
+  - {ticker: MET, sector: Financials, aliases: [MetLife]}
+  - {ticker: AIG, sector: Financials, aliases: [American International Group, AIG]}
+  - {ticker: BRK-B, sector: Financials, aliases: [Berkshire Hathaway]}
+  # Energy
+  - {ticker: XOM, sector: Energy, aliases: [ExxonMobil, Exxon Mobil, Exxon]}
+  - {ticker: CVX, sector: Energy, aliases: [Chevron]}
+  - {ticker: COP, sector: Energy, aliases: [ConocoPhillips]}
+  # Industrials
+  - {ticker: BA, sector: Industrials, aliases: [Boeing]}
+  - {ticker: CAT, sector: Industrials, aliases: [Caterpillar]}
+  - {ticker: GE, sector: Industrials, aliases: [GE Aerospace, General Electric]}
+  - {ticker: UPS, sector: Industrials, aliases: [United Parcel Service, UPS]}
+  - {ticker: HON, sector: Industrials, aliases: [Honeywell]}
+  - {ticker: LMT, sector: Industrials, aliases: [Lockheed Martin]}
+  # Utilities, Materials, Real Estate
+  - {ticker: NEE, sector: Utilities, aliases: [NextEra Energy, NextEra]}
+  - {ticker: DUK, sector: Utilities, aliases: [Duke Energy]}
+  - {ticker: LIN, sector: Materials, aliases: [Linde]}
+  - {ticker: PLD, sector: Real Estate, aliases: [Prologis]}

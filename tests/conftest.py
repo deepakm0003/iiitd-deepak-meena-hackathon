@@ -21,7 +21,7 @@ def make_doc():
             "source_type": "news",
             "title": "Regional bank discloses liquidity shortfall",
             "url": "https://www.example.com/news/bank-liquidity?utm_source=feed",
-            "published_at": datetime(2026, 10, 2, 9, 14, tzinfo=UTC),
+            "published_at": datetime(2026, 10, 1, 9, 14, tzinfo=UTC),
         }
         fields.update(overrides)
         return RawDocument(**fields)
