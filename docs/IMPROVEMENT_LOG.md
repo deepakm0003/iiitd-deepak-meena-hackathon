@@ -81,9 +81,82 @@ Findings:
 - Nothing is changed on this proxy (tweets, out of domain). Both the verifier and temperature scaling are decided
   on the gold dev split, in domain; `eval-gold` sweeps both.
 
+## 2026-10-03 (evaluation on our own sources)
+
+### Labels
+- The 296 stratified candidates were labelled by an LLM (silver, `data/gold/silver_llm.jsonl`), blind to the
+  pipeline's predictions and the strata. Not human gold; see `docs/ai_usage.md`.
+- Human spot-check of a fixed random 50 (entity and event type only): entity agreement 72% (kappa 0.66), event
+  type 50% (kappa 0.40; 0.37 without 2 primed items). About 7 of the 25 event disagreements are items where the
+  labelling guide has an explicit rule that the LLM label follows; most others are genuinely ambiguous classes.
+
+### First 11-class measurement on our sources (silver, test split, before any fix)
+On-sample accuracy 0.585, macro-F1 0.585 over all 11 classes: far below the 0.879 of the 7-class tweet proxy.
+Pipeline precision by predicted class: Cyber/Operational 0.88, Macroeconomic 0.73, Earnings 0.71, Product
+Launch 0.71, Regulatory/Legal 0.58, Management Change 0.58, Natural Disaster 0.47, Geopolitical 0.36,
+Credit Event 0.28, Merger/Acquisition 0.27 (`docs/results/silver_eval_prefix.json`).
+
+### Error analysis and fixes (done on these labels, so post-fix numbers are optimistic)
+| Change | Evidence | Before | After |
+|---|---|---|---|
+| Six text rules rewritten to need context, 26 regression cases tested | `downgrade` matched "ope-rating" and stock ratings; `default` matched "by default on"; `operations` matched "memory recall"; `disaster` matched "flood the Play Store", "Wildfire Video", "Hurricane Protection"; `launch` matched government budgets and buybacks; `legal` matched "investigation time" | | |
+| Zero-shot verifier threshold 0.10 -> 0.20 | gold dev split: false-positive rate 0.57 -> 0.30, recall unchanged | | |
+| Merger/Acquisition added to the verified classes | gold dev split: head M&A labels 0 of 6 correct (weak labels from the Twitter topic "M&A / Investments") | | |
+| Gold population precision now follows current predictions (inverse-probability weights) | the first estimator measured precision inside the sampling strata, which are fixed by the old predictions | | |
+
+Final state after all changes of 2026-10-03 (test split, silver labels, optimistic for the rule fixes): event
+accuracy 0.637, macro-F1 0.659, weighted F1 0.638; entity 0.722; sentiment 0.604; factuality 0.618
+(`docs/results/silver_eval.json`). Population precision (current predictions, approximate 95% CI): Cyber 1.00
+(0.70-1.00), Natural Disaster 1.00 (0.61-1.00), Product Launch 0.85 (0.64-0.95), Merger/Acquisition 0.75
+(0.44-0.97), Regulatory/Legal 0.75 (0.41-0.93), Macroeconomic 0.74 (0.49-0.88), Earnings 0.72 (0.48-0.89),
+Other 0.71 (0.61-0.80), Management Change 0.59 (0.36-0.82), Credit Event 0.47 (0.25-0.70), Geopolitical 0.38
+(0.16-0.61).
+
+Post-fix, before the entity threshold change (test split, optimistic): on-sample accuracy 0.585 -> 0.637, macro-F1 0.585 -> 0.659, weighted F1
+0.583 -> 0.638, entity accuracy 0.717 -> 0.736. Regression found and kept visible: Cyber/Operational F1 0.92 ->
+0.56. Part of the old 0.92 was luck (the old `operations` rule matched "pilot recalls cockpit attack"); the rest
+is the 0.20 verifier rejecting security incidents. Not re-tuned on the test split.
+
+### Impact after re-annotation
+Recalibrated on the re-annotated corpus (with the score daemon paused: a concurrent rebuild of the events table
+had emptied the inner-check set and crashed calibration; `calibrate` now fails with a clear message instead).
+Out-of-time test unchanged within noise: Spearman 0.327 (0.267-0.384), AUC 0.725, PR-AUC 0.392, Brier 0.139,
+large move 58% at Impact >= 7 (n = 50); event-type-only baseline 0.318 / 0.701.
+
+### Event-classifier retraining experiment (negative result; nothing shipped)
+`scripts/event_head_experiment.py`, results in `docs/results/event_head_experiment*.json`. Protocol fixed before
+running: no evaluation item or near-duplicate (same normalised title, or MiniLM cosine >= 0.85) in training;
+whole pipeline evaluated (8-K items and rules first, then head, Earnings guard, verifier); candidates compared on
+the dev split (84 items) only.
+
+| Head (encoder, training data) | Dev accuracy | Dev macro-F1 | Non-Other precision | Non-Other recall |
+|---|---|---|---|---|
+| current: MiniLM, base (tweets + 8-K + seeds) | 0.667 | 0.609 | 0.714 | 0.577 |
+| MiniLM, v2 (Twitter M&A and Politics mappings repaired + 1,251 in-domain rule-labelled items) | 0.607 | 0.605 | 0.660 | 0.635 |
+| MiniLM, v3 (v2 with in-domain items given priority) | 0.619 | 0.605 | 0.681 | 0.615 |
+| mpnet-base, base / v2 | 0.655 / 0.583 | 0.586 / 0.578 | 0.691 / 0.615 | 0.558 / 0.615 |
+| bge-base, base / v2 / v3 | 0.631 / 0.607 / 0.643 | 0.573 / 0.633 / 0.635 | 0.718 / 0.654 / 0.711 | 0.539 / 0.654 / 0.615 |
+
+Retraining the MiniLM head on the base data reproduces the production head exactly (a check on the harness).
+No candidate is clearly better: the best macro-F1 (bge v3, +0.026) comes with lower accuracy (-0.024), about
+two items either way out of 84. The production head is kept. Reading: the head's weakness on our sources comes
+from its weak labels (tweets, rules), not from the encoder; more in-domain human labels are the fix.
+
+### Entity linking and sentiment (dev split decisions)
+- Primary-entity threshold 0.35 -> 0.60 (`nlp/engine.py`): dev entity accuracy 0.702 -> 0.750 (0.55: 0.738;
+  0.65: 0.679). Passing mentions ("pasta sold at Walmart", "a lease at Google's center") sat at relevance
+  0.49-0.57. A simulation from stored annotations reproduced all 14,983 stored decisions before the sweep.
+  Counting a verified macro ML label as macro evidence made no difference on dev and was not adopted.
+  Test split (read once after the change): entity accuracy 0.736 at 0.35 -> 0.722 at 0.60. The dev gain (+4 of
+  84 items) did not replicate (-3 of 212); both moves are within noise, so the threshold has no measurable effect
+  on entity accuracy. Kept as chosen on dev (changing it back on test evidence would be tuning on the test set);
+  its practical effect is fewer company signals from passing mentions.
+- Sentiment neutral band: dev agreement 0.57-0.61 for any band from 0.05 to 0.35, so 0.15 is kept. Most
+  disagreements are the model scoring a clearly directional item near neutral (23 of 35): a model limitation.
+
 ### Still open
 
-- Human labels for the 296 gold candidates (then `eval-gold`).
+- More human labels (with the guide) to turn the silver set into gold.
 - Verifier keep/drop and probability calibration, on the gold dev split.
 - Some filing texts lost curly quotes when decoded (shown as U+FFFD); fixing needs a re-fetch of those filings.
 - Large models (entity sentiment 418 MB, SetFit 87 MB) are not in git: publish as release assets with a download
