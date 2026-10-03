@@ -38,7 +38,7 @@ export function CaseBand() {
               From evidence to capital impact.
             </h2>
             <p className="mt-4 max-w-lg text-cream/80">
-              One 8-K line, "{WAL.evidence}", becomes a confirmed Credit Event, an Impact of {WAL.impact.toFixed(1)}, a{" "}
+              One 8-K line, "{WAL.evidence}", becomes a Credit Event (liquidity stress), an Impact of {WAL.impact.toFixed(1)}, a{" "}
               {fmtMoney(WAL.pnl)} stress loss and CET1 moving from {fmtPct(WAL.cet1Before)} to {fmtPct(WAL.cet1After)}.
             </p>
           </div>
@@ -135,7 +135,7 @@ export function Features() {
 }
 
 const STEPS = [
-  ["Collect", "SEC EDGAR 8-Ks, GDELT, Finnhub, Fed and RBI releases, Bluesky. Deduplicated every 10–30 minutes."],
+  ["Collect", "SEC EDGAR 8-Ks, GDELT, Finnhub, Fed and RBI releases polled every 10–30 minutes, Bluesky streamed. Deduplicated."],
   ["Understand", "8-K item map, context rules, a fine-tuned classifier and a zero-shot verifier. Evidence span kept."],
   ["Score", "Impact 1–10 from severity, sentiment, entity, novelty, corroboration, credibility and history."],
   ["Map", "Linked to the book by name, sector and geography. Early-warning watchlist: Green, Amber, Red."],
@@ -285,7 +285,7 @@ export function Sources() {
 
 const TRUST: [LucideIcon, string, string][] = [
   [Quote, "Evidence on every alert", "The exact sentence that triggered a classification is stored and shown."],
-  [ShieldCheck, "Confirmed alert tier", "Alerts from 8-K items and high-precision rules are marked separately from model guesses."],
+  [ShieldCheck, "Confirmed alert tier", "Alerts from 8-K items and the most precise rules are marked separately from model guesses."],
   [BookOpenCheck, "Assumptions register", "28 documented assumptions, each with its rationale and where it is used."],
   [Lock, "Locked test sets", "Final accuracy measured once on held-out data. Never used for tuning."],
   [Landmark, "Basel III capital maths", "CET1 net of tax, RWA from rating migration, 7% Basel and 8% RBI floors."],

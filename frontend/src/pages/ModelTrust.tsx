@@ -31,7 +31,7 @@ export const CARDS = [
   {
     tag: "Limitation 01",
     title: "Credit recall is the weak spot",
-    body: "On the locked test, Credit Event recall from the model fell to 0.38. Credit alerts from 8-K items and rules are marked confirmed; model-only credit alerts are not.",
+    body: "On the locked test, Credit Event recall fell from 0.75 to 0.38 (8 test items). Only credit events from 8-K items, such as 1.03 bankruptcy, are marked confirmed; rule and model credit alerts stay standard.",
   },
   {
     tag: "Limitation 02",

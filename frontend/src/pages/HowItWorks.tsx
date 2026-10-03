@@ -113,7 +113,7 @@ export default function HowItWorks() {
           <p className="mt-6 max-w-md leading-relaxed text-mute">
             When a filer declares an 8-K item, that is the answer. Precise rules come next. Only what both miss goes to the
             model, and the model's answer has to survive an independent verifier. Every alert records which layer decided
-            it, and alerts from the first two layers are marked confirmed.
+            it; 8-K items and the most precise rules are marked as the confirmed tier.
           </p>
         </Reveal>
         <DecisionLayers />

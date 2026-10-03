@@ -23,7 +23,7 @@ import { WAL } from "../lib/caseStudy";
 
 const MODULE_A: [LucideIcon, string, string][] = [
   [Tag, "Event classification", "11 classes. 8-K items, context rules, then a classifier checked by a verifier."],
-  [MessageSquareQuote, "Sentiment and factuality", "FinBERT sentiment, plus whether it is confirmed, announced, rumour or opinion."],
+  [MessageSquareQuote, "Sentiment and factuality", "FinBERT fine-tuned per company (macro-F1 0.89 vs 0.66 plain FinBERT), plus whether it is confirmed, rumour or opinion."],
   [Building2, "Entity resolution", "Names resolved to tickers and CIKs with GLiNER and the SEC company list."],
   [Gauge, "Impact score", "1–10 from seven named factors, with a calibrated probability of a large move."],
 ];
@@ -163,7 +163,7 @@ function SignalCard() {
         <span className="flex items-center gap-2 font-mono text-xs text-mute">
           <Radar className="h-4 w-4 text-gold" /> {WAL.eventId}
         </span>
-        <span className="rounded-full border border-sage/40 px-2.5 py-0.5 text-[11px] text-sage">confirmed tier</span>
+        <span className="rounded-full border border-gold/40 px-2.5 py-0.5 text-[11px] text-gold">standard tier · {WAL.method}</span>
       </div>
       <div className="p-6">
         <p className="text-xs text-mute">
@@ -214,7 +214,7 @@ function TriggerChecks() {
     ["Class has a shock definition", "Credit Event"],
     ["A fact, not talk", "factuality: confirmed"],
     ["Adverse by nature", "liquidity_stress, despite sentiment +0.86"],
-    ["Impact clears the exposure bar", "7.48 ≥ bar of 5.5–7.0"],
+    ["Impact clears the exposure bar", "7.48 ≥ 6.0 (direct exposure 0.88% of the book)"],
   ];
   return (
     <div className="rounded-xl border border-line bg-ink-2 p-6">
