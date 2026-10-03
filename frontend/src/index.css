@@ -1,0 +1,75 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ink: #111111;
+  --color-ink-2: #171717;
+  --color-ink-3: #1f1f1f;
+  --color-line: #2b2b2b;
+  --color-bone: #ede9e0;
+  --color-mute: #9a958b;
+  --color-gold: #d9b46c;
+  --color-gold-deep: #c9a15a;
+  --color-ember: #b5523a;
+  --color-ember-bright: #d0663f;
+  --color-cream: #f3f0e8;
+  --color-paper: #faf8f3;
+  --color-sage: #7fa287;
+
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Cormorant Garamond", ui-serif, Georgia, serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-ink text-bone font-sans antialiased;
+  }
+  ::selection {
+    background: var(--color-gold);
+    color: var(--color-ink);
+  }
+}
+
+@layer components {
+  .eyebrow {
+    @apply font-mono text-[11px] font-medium uppercase tracking-[0.18em];
+  }
+  .container-x {
+    @apply mx-auto w-full max-w-[1240px] px-4 sm:px-8;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* Footer wordmark: dark graphite letters with a brass sheen that sweeps across slowly. */
+.wordmark-letter {
+  display: inline-block;
+  color: transparent;
+  background-image: linear-gradient(
+    100deg,
+    #1f1f1f 0%,
+    #1f1f1f 40%,
+    rgba(217, 180, 108, 0.55) 50%,
+    #1f1f1f 60%,
+    #1f1f1f 100%
+  );
+  background-size: 800% 100%;
+  background-attachment: fixed;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: sheen 9s linear infinite;
+}
+@keyframes sheen {
+  from { background-position: 100% 0; }
+  to { background-position: 0% 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .wordmark-letter { animation: none; background-position: 0 0; }
+}
