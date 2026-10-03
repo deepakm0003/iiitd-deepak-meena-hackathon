@@ -288,8 +288,31 @@ model freeze), labelled the same way.
 Accuracy on the 296 development items: 0.676 -> 0.679 after these changes (optimistic: same data). Correction
 recorded: an earlier "top alerts 100% / 90.5%" reading ignored ties at confidence 0.90 and was withdrawn.
 
+### Fresh out-of-time TEST (run once, 2026-10-03, after the round-2 freeze)
+
+182 articles collected after the model freeze (10:43 IST), sampled the same stratified way and labelled by the
+author (3 labels revised after a guideline-consistency check, flagged `revised`; the model's predictions were not
+shown). Evaluated once with the frozen pipeline (`docs/results/gold_eval_fresh.json`,
+`docs/results/fresh_tier_precision.json`).
+
+| Metric | Old locked test (212) | Fresh test (182) |
+|---|---|---|
+| Event accuracy | 0.660 | **0.632** |
+| Event macro-F1 | 0.636 | **0.612** |
+| Weighted F1 | 0.655 | 0.649 |
+| Entity accuracy | 0.759 | **0.665** |
+| Confirmed-tier precision | 96.7% on dev (59/61) | **54.5% (6/11, 95% CI 28-79%)** |
+| Standard-tier precision | 56.8% on dev | 58.7% (71/121) |
+
+Reading: overall accuracy held roughly (0.63 vs 0.66) on new data from a different week. The confirmed tier did
+**not** hold: the dev estimate was optimistic, because the rules were chosen and checked on the same 296 items.
+On fresh data `rule:disaster` fired on court cases about climate damage (1/4 correct) and `rule:macro_data` on
+round-ups that merely mention inflation (4/6). The fresh set has no 8-K filings (EDGAR added 2 documents in the
+window), so the 8-K part of the tier, 0.95 on dev, is untested here. Weakest classes on fresh data: Product Launch
+precision 0.25 (20 predicted, 5 true), M&A 0.27, Credit Event 0.33 (6 predicted, 2 true), and Other recall 0.49
+(noise is pushed into risk classes). This fresh set is now spent; further changes need another fresh set.
+
 ### Still open
-- Fresh out-of-time test set to validate overall accuracy and the confirmed tier.
 - Consistency review of the first 50 human labels (made before the definitions card; 15 conflict with an explicit
   card rule), to be decided by the labeller.
 - Credit Event recall: dev has only 2 credit events; the fresh test set is the only fair measure.

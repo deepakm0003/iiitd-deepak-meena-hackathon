@@ -22,6 +22,8 @@ SPECIAL = {"o": "OTHER", "m": "MACRO", "n": "NONE"}
 
 
 def main(argv: list[str]) -> int:
+    # Windows consoles default to cp1252, which cannot print emoji or the rupee sign in headlines
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     flags: dict[str, set[int]] = {}
     for flag in ("--primed", "--revised"):
         if flag in argv:

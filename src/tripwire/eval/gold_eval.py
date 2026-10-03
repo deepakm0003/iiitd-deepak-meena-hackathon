@@ -81,6 +81,8 @@ def selective(rows: list[dict], min_p: float, verify: set[str], verifier_min_p: 
 
 def threshold_sweep(rows: list[dict], verify: set[str]) -> list[dict]:
     """Coverage / precision / recall / F1 / false-positive rate of non-Other ML labels at each threshold pair."""
+    if not rows:  # e.g. the fresh test set has no dev split
+        return []
     y = [r["gold"] for r in rows]
     out = []
     for min_p in (0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 0.50):

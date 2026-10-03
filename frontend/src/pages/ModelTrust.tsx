@@ -15,8 +15,8 @@ export const STATS = [
 export const CARDS = [
   {
     tag: "Validation 01",
-    title: "Locked human test",
-    body: "On a 212-item test set labelled by a person and evaluated once, event accuracy rose from 61.8% to 66.0% and macro-F1 from 0.59 to 0.64. Company resolution: 75.9%.",
+    title: "Two locked human tests",
+    body: "212-item test, evaluated once: event accuracy 61.8% to 66.0%, macro-F1 0.59 to 0.64. A fresh 182-item set collected after the model freeze: 63.2% accuracy, macro-F1 0.61, company resolution 66.5%.",
   },
   {
     tag: "Validation 02",
@@ -40,8 +40,8 @@ export const CARDS = [
   },
   {
     tag: "Limitation 03",
-    title: "Novel events are harder",
-    body: "Events without strong historical analogues can be under-scored. Analysts always see the contributing factors and the evidence, not just the score.",
+    title: "The confirmed tier was optimistic",
+    body: "Confirmed alerts were 96.7% precise on development data but 6 of 11 on the fresh set: a disaster rule fired on climate court cases and a macro rule on round-ups. Fixing it needs a new fresh set to prove.",
   },
 ];
 

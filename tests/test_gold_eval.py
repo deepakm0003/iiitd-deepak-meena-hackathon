@@ -55,3 +55,7 @@ def test_threshold_sweep_trades_coverage_for_precision():
     loose, verified = sweep[(0.1, None)], sweep[(0.1, 0.1)]
     assert loose["coverage"] == 0.75 and loose["precision"] == pytest.approx(2 / 3, abs=1e-4)
     assert verified["precision"] == 1.0 and verified["false_positive_rate"] == 0.0
+
+
+def test_threshold_sweep_handles_a_set_without_that_split():
+    assert ge.threshold_sweep([], {"A"}) == []
