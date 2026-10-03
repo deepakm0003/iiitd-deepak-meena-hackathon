@@ -35,9 +35,9 @@ rules:
   - {id: bankruptcy, class: Credit Event, subtype: bankruptcy,
      pattern: "chapter (7|11)\\b|files? for bankruptcy|bankruptcy (filing|protection)|enters? receivership|insolven"}
   - {id: default, class: Credit Event, subtype: default_or_covenant_breach,
-     pattern: "\\bdefault(s|ed)? on\\b|missed (a |an )?(interest|coupon|debt) payment|covenant (breach|waiver)|going[- ]concern"}
+     pattern: "(?<!by )\\bdefault(s|ed)? on (its |their |a |an |the |some )?(?:[^.]|\\.(?=\\d)){0,40}\\b(debt|loans?|bonds?|notes|payments?|obligations?|interest|coupons?|mortgages?)\\b|missed (a |an )?(interest|coupon|debt) payment|covenant (breach|waiver)|going[- ]concern"}
   - {id: downgrade, class: Credit Event, subtype: rating_downgrade,
-     pattern: "(downgrade[sd]?|cuts?) .{0,40}(credit )?rating|rating .{0,30}(downgrade|cut to|lowered)|outlook (to|revised to) negative"}
+     pattern: "\\b(downgrade[sd]?|cuts?|lowers?|lowered)\\b.{0,40}\\b(credit|debt|bond|issuer|sovereign|default) ratings?\\b|\\b(moody'?s|s&p(?! ?500)( global)?|fitch|dbrs)\\b[^.]{0,60}\\b(downgrade[sd]?|cuts?|lowers?|lowered)\\b|\\bdowngrade[sd]? to (junk|non-investment grade)\\b|outlook (to|revised to|cut to) negative"}
   - {id: bank_run, class: Credit Event, subtype: liquidity_stress,
      pattern: "bank run|deposit (outflows?|flight)|liquidity (crisis|crunch|shortfall)|seized by regulators"}
   - {id: sanctions, class: Geopolitical, subtype: sanctions,
@@ -53,16 +53,16 @@ rules:
   - {id: mna, class: Merger/Acquisition, subtype: deal,
      pattern: "\\b(to acquire|acquires|acquisition of|agrees? to buy|to buy .{0,40} for \\$|merger|merge with|takeover|buyout|tender offer|spin[- ]?off)\\b"}
   - {id: legal, class: Regulatory/Legal, subtype: litigation_or_enforcement,
-     pattern: "\\b(sued|lawsuit|class action|settle[sd]? .{0,30}(charges|claims|lawsuit|probe)|fined|penalty|antitrust|indicted|subpoena|probe|investigation)\\b"}
+     pattern: "\\b(sued|sues|lawsuit|class action|settle[sd]? .{0,30}(charges|claims|lawsuit|probe)|fined|civil penalty|penalty (of|up to)|antitrust|indicted|subpoena(ed|s)?)\\b|\\b(sec|doj|ftc|fbi|cfpb|regulators?|federal|criminal|antitrust|congressional) (probe|investigation)s?\\b|\\b(probe|investigation) (into|of)\\b|\\bunder investigation\\b"}
   - {id: approval, class: Regulatory/Legal, subtype: regulatory_decision,
      pattern: "\\b(fda|ftc|doj|sec|cfpb|occ|eu commission) (approves|clears|rejects|blocks|sues|charges)\\b"}
   - {id: cyber, class: Cyber/Operational, subtype: cyber_or_outage,
      pattern: "\\b(data breach|cyber ?attack|ransomware|hack(ed|ers)?|outage|systems? (down|failure))\\b"}
   - {id: operations, class: Cyber/Operational, subtype: operational_disruption,
-     pattern: "\\b(recall(s|ed)?|strike (by|at)|workers strike|plant (fire|explosion|shutdown)|grounded)\\b"}
+     pattern: "\\b(strike (by|at)|workers strike|plant (fire|explosion|shutdown)|grounded)\\b|\\brecall(s|ed|ing)?\\b(?:[^.]|\\.(?=\\d)){0,80}\\b(defects?|hazards?|risks?|contamination|listeria|salmonella|airbags?|fire)\\b|\\b(product|safety|vehicle|food|listeria|salmonella) recalls?\\b|\\brecall (alert|notice|expanded)\\b"}
   # "pandemic" is not a cue: in 2023+ filings and news it is almost always retrospective ("since the pandemic")
   - {id: disaster, class: Natural Disaster/Supply Chain, subtype: disaster,
-     pattern: "\\b(hurricane|typhoon|earthquake|wildfires?|floods?|flooding|tornado)\\b"}
+     pattern: "\\b(hurricane|typhoon|cyclone|earthquake|tornado|wildfires?)\\b(?! (protection|insurance|shutters|video))|\\b(flash floods?|floods? (hit|hits|swamp|ravage|kill|warning|waters|damage|victims)|flood(ed|ing)? (in|across|hits|forces|closes|halts|disrupts)|(heavy|severe|deadly|major|catastrophic) flood(s|ing)?|flood-(hit|affected|ravaged)|due to flood(s|ing)?|after (the )?flood(s|ing)?)\\b"}
   - {id: supply, class: Natural Disaster/Supply Chain, subtype: supply_disruption,
      pattern: "supply (chain )?(disruption|shortage|crunch)|chip shortage|port (closure|congestion)"}
   - {id: earnings, class: Earnings, subtype: results,
@@ -70,4 +70,4 @@ rules:
   - {id: management, class: Management Change, subtype: officer_change,
      pattern: "\\b(ceo|cfo|chief executive|chairman|president) .{0,40}(steps down|resigns|to retire|departs|ousted|fired)|(names|appoints|hires) .{0,40}(ceo|cfo|chief executive)|new (ceo|cfo)"}
   - {id: launch, class: Product Launch, subtype: launch,
-     pattern: "\\b(launches|unveils|introduces|rolls out|debuts)\\b"}
+     pattern: "\\b(launches|unveils|introduces|rolls out|debuts)\\b(?![^.]{0,50}\\b(budget|buyback|repurchase|strategy|executive order|probe|investigation|review|push|campaign|initiative|edition|outlook|guidance|forecast|results)\\b)"}

@@ -197,3 +197,45 @@ def test_conditional_warnings_are_opinion_not_fact():
 
 def test_weighing_a_policy_is_a_rumour_not_a_fact():
     assert factuality("Trump weighed a diesel export ban")[0] == "rumour"
+
+
+RULE_CASES = [
+    # (rule id, text, should fire) -- negatives are real false matches found in gold-set error analysis
+    ("default", "Windows 11 will back up settings by default on eligible company devices", False),
+    ("default", "The developer defaulted on its dollar bonds after missing a coupon", True),
+    ("downgrade", "Nike CEO warned employees to expect further job cuts next year as the company changes its "
+                  "operating model", False),
+    ("downgrade", "ExxonMobil (NYSE:XOM) Stock Rating Lowered by Wells Fargo & Company", False),
+    ("downgrade", "Analysts at Wells Fargo cut their rating on Netflix", False),
+    ("downgrade", "S&P 500 falls as the Fed cuts rates", False),
+    ("downgrade", "Moody's downgrades the regional lender to junk", True),
+    ("downgrade", "S&P cuts the carmaker's credit rating to BB+", True),
+    ("operations", "cognitive load and memory recall dropped with LLM use", False),
+    ("operations", "S3 Vectors supports metadata pre-filtering for higher recall on filtered searches", False),
+    ("operations", "GM Recalls Silverado And Sierra Trucks For Airbag Defect", True),
+    ("operations", "Walmart announced the recall of 4.4 million grill brushes due to an ingestion hazard", True),
+    ("disaster", "Vibe coded apps are about to flood the Play Store", False),
+    ("disaster", "Rankings.io Acquires Wildfire Video, Launches Rankings Video Marketing", False),
+    ("disaster", "EMS broadens its offering across fencing and hurricane protection", False),
+    ("disaster", "Neptune Makes Flood Insurance Ready for the AI Agent Era", False),
+    ("disaster", "Toyota halted Thai operations until October 10 due to flooding", True),
+    ("disaster", "Hurricane Melissa forces refinery shutdowns along the Gulf Coast", True),
+    ("launch", "France unveils cost-cutting 2027 budget as borrowing costs rise", False),
+    ("launch", "Nvidia unveils record $150 billion buyback increase", False),
+    ("launch", "Ministry of Finance launches a new edition of Fidelis", False),
+    ("launch", "UPS unveils UPS Secure Commerce for end-to-end protection against fraud", True),
+    ("legal", "integrated tools that reduce costs, errors and investigation time", False),
+    ("legal", "SEC investigation into the bank's trading desk widens", True),
+    ("legal", "New Mexico asks judge to fine Meta up to $40 billion; seeks penalty of $40 billion", True),
+]
+
+
+@pytest.mark.parametrize("rule_id, text, fires", RULE_CASES)
+def test_rules_need_context_not_just_a_keyword(rules, rule_id, text, fires):
+    fired = {e.source.split(":", 1)[1] for e in rules.evidence(d(text)) if e.source.startswith("rule:")}
+    assert (rule_id in fired) is fires
+
+
+def test_a_decimal_point_does_not_end_the_sentence_for_rules(rules):
+    fired = {e.source for e in rules.evidence(d("The developer defaulted on its $1.5 billion bonds"))}
+    assert "rule:default" in fired
