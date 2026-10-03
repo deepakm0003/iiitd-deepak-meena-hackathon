@@ -1,0 +1,224 @@
+{
+  "n": 296,
+  "accuracy_all_296": 0.6791,
+  "sources": {
+    "ml": {
+      "alerts": 79,
+      "correct": 41,
+      "precision": 0.519,
+      "ci95": [
+        0.4105,
+        0.6257
+      ],
+      "errors": [
+        "pred Product Launch / human Regulatory/Legal: IT Operations Analytics Market Report 2026: Capitalize on the AI-led rebound fro",
+        "pred Regulatory/Legal / human Other: Consumer Groups Press Congress to Probe Scams on Tech Platforms",
+        "pred Regulatory/Legal / human Other: Exxon, Suncor Bid to Block Climate Suits at US Supreme Court",
+        "pred Product Launch / human Management Change: Apple streamlines management as analysts urge faster AI innovation",
+        "pred Geopolitical / human Other: Trump Doing 'Free PR' For AI Bosses, Says Ro Khanna: He Also Let Xi Jinping 'Wal",
+        "pred Product Launch / human Other: Application Integration Market Report 2026: Capitalize on the $60.73 Billion Mar"
+      ]
+    },
+    "rule:launch": {
+      "alerts": 24,
+      "correct": 23,
+      "precision": 0.9583,
+      "ci95": [
+        0.7976,
+        0.9926
+      ],
+      "errors": [
+        "pred Product Launch / human Other: What Target (TGT)'s Holiday Price Cuts and Premium Brand Push Mean For Sharehold"
+      ]
+    },
+    "8k_item": {
+      "alerts": 20,
+      "correct": 19,
+      "precision": 0.95,
+      "ci95": [
+        0.7639,
+        0.9911
+      ],
+      "errors": [
+        "pred Management Change / human Regulatory/Legal: ADOBE INC. files 8-K: Item 5.02 Departure or Election of Directors or Officers; "
+      ]
+    },
+    "rule:macro_data": {
+      "alerts": 8,
+      "correct": 8,
+      "precision": 1.0,
+      "ci95": [
+        0.6756,
+        1.0
+      ],
+      "errors": []
+    },
+    "rule:operations": {
+      "alerts": 5,
+      "correct": 4,
+      "precision": 0.8,
+      "ci95": [
+        0.3755,
+        0.9638
+      ],
+      "errors": [
+        "pred Cyber/Operational / human Natural Disaster/Supply Chain: Bettergoods Lemon Alfredo Fettuccine Listeria Recall Expanded to All Lots"
+      ]
+    },
+    "rule:legal": {
+      "alerts": 5,
+      "correct": 2,
+      "precision": 0.4,
+      "ci95": [
+        0.1176,
+        0.7693
+      ],
+      "errors": [
+        "pred Regulatory/Legal / human Other: Contentious lawsuit exposes High Limit interest; late model driver quits; Pittsb",
+        "pred Regulatory/Legal / human Merger/Acquisition: Paramount Skydance Falls 5% Despite Antitrust Clearance and $41.4B Debt Pricing,",
+        "pred Regulatory/Legal / human Product Launch: UnitedHealthcare Rolls Out 2027 Medicare Plans With $0 Premiums, Drug Copays And"
+      ]
+    },
+    "rule:mna": {
+      "alerts": 4,
+      "correct": 3,
+      "precision": 0.75,
+      "ci95": [
+        0.3006,
+        0.9544
+      ],
+      "errors": [
+        "pred Merger/Acquisition / human Regulatory/Legal: EMS Broadens Product Offering Across Fencing and Hurricane Protection with Acqui"
+      ]
+    },
+    "rule:bankruptcy": {
+      "alerts": 4,
+      "correct": 3,
+      "precision": 0.75,
+      "ci95": [
+        0.3006,
+        0.9544
+      ],
+      "errors": [
+        "pred Credit Event / human Merger/Acquisition: National retailer files Chapter 11 after 80 stores closed in 2026"
+      ]
+    },
+    "rule:sanctions": {
+      "alerts": 3,
+      "correct": 2,
+      "precision": 0.6667,
+      "ci95": [
+        0.2077,
+        0.9385
+      ],
+      "errors": [
+        "pred Geopolitical / human Management Change: US moves to choke off Russia\u2019s $17 billion A7 network Oct 02 2026 11:00 UTC US s"
+      ]
+    },
+    "rule:central_bank": {
+      "alerts": 3,
+      "correct": 3,
+      "precision": 1.0,
+      "ci95": [
+        0.4385,
+        1.0
+      ],
+      "errors": []
+    },
+    "rule:disaster": {
+      "alerts": 3,
+      "correct": 3,
+      "precision": 1.0,
+      "ci95": [
+        0.4385,
+        1.0
+      ],
+      "errors": []
+    },
+    "rule:regulator_action": {
+      "alerts": 3,
+      "correct": 3,
+      "precision": 1.0,
+      "ci95": [
+        0.4385,
+        1.0
+      ],
+      "errors": []
+    },
+    "rule:macro_markets": {
+      "alerts": 2,
+      "correct": 2,
+      "precision": 1.0,
+      "ci95": [
+        0.3424,
+        1.0
+      ],
+      "errors": []
+    },
+    "rule:supply": {
+      "alerts": 2,
+      "correct": 0,
+      "precision": 0.0,
+      "ci95": [
+        0.0,
+        0.6576
+      ],
+      "errors": [
+        "pred Natural Disaster/Supply Chain / human Macroeconomic: Diesel\u2019s supply crunch may hit CFOs through freight contracts",
+        "pred Natural Disaster/Supply Chain / human Other: A record S&P 500 close on Sept. 28 while Goldman's equity positioning gauge hit "
+      ]
+    },
+    "rule:cyber": {
+      "alerts": 2,
+      "correct": 2,
+      "precision": 1.0,
+      "ci95": [
+        0.3424,
+        1.0
+      ],
+      "errors": []
+    },
+    "rule:earnings": {
+      "alerts": 2,
+      "correct": 2,
+      "precision": 1.0,
+      "ci95": [
+        0.3424,
+        1.0
+      ],
+      "errors": []
+    },
+    "rule:bank_run": {
+      "alerts": 1,
+      "correct": 0,
+      "precision": 0.0,
+      "ci95": [
+        0.0,
+        0.7935
+      ],
+      "errors": [
+        "pred Credit Event / human Earnings: WESTERN ALLIANCE BANCORPORATION files 8-K: Item 7.01 Regulation FD Disclosure"
+      ]
+    },
+    "rule:distress": {
+      "alerts": 1,
+      "correct": 1,
+      "precision": 1.0,
+      "ci95": [
+        0.2065,
+        1.0
+      ],
+      "errors": []
+    },
+    "rule:tariffs": {
+      "alerts": 1,
+      "correct": 1,
+      "precision": 1.0,
+      "ci95": [
+        0.2065,
+        1.0
+      ],
+      "errors": []
+    }
+  }
+}

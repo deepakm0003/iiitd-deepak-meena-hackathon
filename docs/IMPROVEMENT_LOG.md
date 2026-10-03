@@ -271,8 +271,28 @@ and the new head), Macroeconomic recall fell, and Product Launch precision fell 
 that class. Small supports make several per-class moves 1-3 items. Impact model after recalibration on the new
 labels: out-of-time Spearman 0.332, AUC 0.728, PR-AUC 0.396, Brier 0.138, 59% large moves at Impact >= 7.
 
+## 2026-10-03 (round 2: recall, alert tiers)
+
+Protocol: the 212-item test split was evaluated once (above) and is retired; all 296 human-labelled items are now
+development data. The next result will be validated on a fresh out-of-time test set (articles collected after the
+model freeze), labelled the same way.
+
+| Change | Evidence (development data) | Result |
+|---|---|---|
+| Zero-shot rescue for abstentions (tau 0.4-0.7) | dev: each recovered Credit/Macro item cost 2-4 false positives, accuracy never above current | **rejected** (`docs/results/rescue_experiment.json`) |
+| Rules `distress` (companies collapsed, creditor protection, into liquidation / administration, insolvencies rise) and `macro_markets` (borrowing costs, sovereign yields, fiscal / bailout packages, currency moves) | written from domain knowledge (only 2 credit events in dev); dev accuracy 0.702 -> 0.714, Macro recall 6/9 -> 7/9, no new false positive | shipped, with positive and negative tests ("failed to agree", "Trump administration") |
+| `bank_run` needs an actual run | 0 of 3 correct before: warnings and history pieces ("warns of a bank run if ...") | shipped |
+| Question / ranking headlines -> Other (labelling guide tie-breaker 3, title only) | fires on 13 of 296; 10 agree with the labeller; earnings previews excluded because the labeller labels them Earnings (guide updated) | shipped |
+| Alert tier `confirmed` / `standard` on every signal | per-source precision on 296 items (`docs/results/tier_experiment.json`): 8-K items 0.95, `launch` 0.96, `macro_data`, `central_bank`, `disaster`, `regulator_action` 1.00; ML head 0.52 | confirmed tier 59/61 = **96.7%** (95% CI 88.8-99.1%), 35% of alerts; standard tier 56.8% |
+
+Accuracy on the 296 development items: 0.676 -> 0.679 after these changes (optimistic: same data). Correction
+recorded: an earlier "top alerts 100% / 90.5%" reading ignored ties at confidence 0.90 and was withdrawn.
+
 ### Still open
-- Credit Event recall (3 of 8 on test) and Macroeconomic recall: the next targets, to be fixed on dev only.
+- Fresh out-of-time test set to validate overall accuracy and the confirmed tier.
+- Consistency review of the first 50 human labels (made before the definitions card; 15 conflict with an explicit
+  card rule), to be decided by the labeller.
+- Credit Event recall: dev has only 2 credit events; the fresh test set is the only fair measure.
 - Training labels are the bottleneck (`docs/ML_LABEL_AUDIT.md`): no Product Launch examples, 10-16 seed
   examples for Credit / Natural Disaster / Cyber, contaminated Twitter mappings for M&A and Geopolitical.
 - Verifier keep/drop and probability calibration, on the gold dev split.

@@ -385,7 +385,7 @@ def cmd_eval_gold(args: argparse.Namespace) -> int:
         return 1
     annotators = sorted({row.get("annotator", "unknown") for row in labels})
     silver = any("LLM" in a for a in annotators)
-    candidates = {c["key"]: c for c in gold.read_jsonl(gold_dir / "candidates.jsonl")}
+    candidates = {c["key"]: c for c in gold.read_jsonl(gold_dir / args.candidates)}
     store = build_store(settings)
     ann = {a["dedup_key"]: a for a in store.get_annotations()}
     docs = {d.dedup_key: d for d in store.iter_documents()}
@@ -436,7 +436,8 @@ def cmd_eval_gold(args: argparse.Namespace) -> int:
             "sweep_test_for_reference_only": ge.threshold_sweep([r for r in ml if r["split"] == "test"], verify),
         },
     }
-    out = settings.data_dir.parent / "docs" / "results" / ("silver_eval.json" if silver else "gold_eval.json")
+    name = "silver_eval.json" if silver else ("gold_eval_fresh.json" if "fresh" in args.labels else "gold_eval.json")
+    out = settings.data_dir.parent / "docs" / "results" / name
     out.write_text(json.dumps(report, indent=2), encoding="utf-8")
     print(json.dumps({k: report[k] for k in ("labels", "entity_accuracy_test", "sentiment_accuracy_test")}, indent=2))
     print(json.dumps(report["population_test"], indent=1))
@@ -773,6 +774,7 @@ def main(argv: list[str] | None = None) -> int:
 
     eval_gold = sub.add_parser("eval-gold", help="evaluate the event pipeline on the gold (or silver) labels")
     eval_gold.add_argument("--labels", default="gold.jsonl", help="labels file in data/gold (silver_llm.jsonl)")
+    eval_gold.add_argument("--candidates", default="candidates.jsonl", help="candidates file in data/gold")
     eval_gold.set_defaults(func=cmd_eval_gold)
 
     eval_sent = sub.add_parser("eval-sentiment", help="entity-level sentiment accuracy on SEntFiN")

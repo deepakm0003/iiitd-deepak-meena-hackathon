@@ -95,3 +95,14 @@ def test_favourable_news_is_material_but_not_a_critical_risk_alert():
     assert risk_level(9.5, levels, "neutral")[0] == "Critical"
     assert risk_level(9.5, levels, "favourable") == ("Medium", "Watch")
     assert risk_level(3.0, levels, "favourable")[0] == "Low"
+
+
+def test_alert_tier_follows_the_measured_sources():
+    from tripwire.scoring.signals import alert_tier
+
+    confirmed = {"8k_item", "rule:launch"}
+    assert alert_tier("8k_item:2.02", "Earnings", confirmed) == "confirmed"
+    assert alert_tier("rule:launch", "Product Launch", confirmed) == "confirmed"
+    assert alert_tier("head+zs", "Credit Event", confirmed) == "standard"
+    assert alert_tier("rule:legal", "Regulatory/Legal", confirmed) == "standard"
+    assert alert_tier("head:abstain", "Other", confirmed) == "none"

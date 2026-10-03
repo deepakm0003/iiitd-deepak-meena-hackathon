@@ -1,5 +1,5 @@
 {
-  "computed_at": "2026-10-03T03:04:14.488423+00:00",
+  "computed_at": "2026-10-03T05:48:52.132878+00:00",
   "periods": {
     "calibration": [
       "2023-01-01",
@@ -18,7 +18,7 @@
     "large_moves": 565
   },
   "counts": {
-    "events_scored": 6035,
+    "events_scored": 6086,
     "calibration_events": 2452,
     "calibration_with_returns": 1933,
     "test_with_returns": 1003

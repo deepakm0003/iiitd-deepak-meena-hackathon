@@ -63,8 +63,18 @@ def explanation(record: dict, scored: dict, conf: float) -> str:
             f"{record['sentiment']:+.2f}; confidence {conf:.2f}.")
 
 
+def alert_tier(event_method: str, event_type: str, confirmed: set[str]) -> str:
+    """'confirmed' if the label comes from a source measured at >= 90% precision (config/event_rules.yaml), else
+    'standard'. 'Other' is never an alert."""
+    if event_type == "Other":
+        return "none"
+    source = "8k_item" if event_method.startswith("8k_item") else event_method
+    return "confirmed" if source in confirmed else "standard"
+
+
 def build_signals(store, model: ImpactModel, since: datetime | None = None) -> list[dict]:
     cfg = load_yaml("impact_weights.yaml")
+    confirmed = set(load_yaml("event_rules.yaml").get("confirmed_sources", []))
     from tripwire.universe import load_universe
 
     universe = {c.ticker: c for c in load_universe()}
@@ -107,6 +117,7 @@ def build_signals(store, model: ImpactModel, since: datetime | None = None) -> l
             "event_type": r["event_type"],
             "event_subtype": r["event_subtype"],
             "event_method": r["event_method"],
+            "alert_tier": alert_tier(r["event_method"], r["event_type"], confirmed),
             "event_type_probs": rep.get("event_probabilities", {}),
             "sentiment_score": r["sentiment"],
             "sentiment_label": "negative" if r["sentiment"] < -0.15 else "positive" if r["sentiment"] > 0.15

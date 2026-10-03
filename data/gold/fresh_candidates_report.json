@@ -1,0 +1,55 @@
+{
+  "n": 182,
+  "by_stratum": {
+    "pred:Other": 30,
+    "pred:Geopolitical": 20,
+    "pred:Regulatory/Legal": 20,
+    "pred:Macroeconomic": 20,
+    "pred:Product Launch": 20,
+    "pred:Merger/Acquisition": 15,
+    "pred:Earnings": 10,
+    "pred:Management Change": 8,
+    "pred:Cyber/Operational": 7,
+    "pred:Credit Event": 6,
+    "pred:Natural Disaster/Supply Chain": 6,
+    "recall:Cyber/Operational": 5,
+    "recall:Product Launch": 5,
+    "recall:Natural Disaster/Supply Chain": 5,
+    "recall:Credit Event": 5
+  },
+  "by_source": {
+    "gdelt": 127,
+    "bluesky": 52,
+    "finnhub": 3
+  },
+  "by_split": {
+    "test": 182
+  },
+  "by_month": {
+    "2026-10": 182
+  },
+  "stratum_population": {
+    "pred:Merger/Acquisition": 18,
+    "pred:Cyber/Operational": 7,
+    "pred:Geopolitical": 35,
+    "pred:Regulatory/Legal": 26,
+    "pred:Other": 780,
+    "pred:Macroeconomic": 102,
+    "pred:Product Launch": 99,
+    "recall:Cyber/Operational": 13,
+    "pred:Credit Event": 6,
+    "pred:Natural Disaster/Supply Chain": 6,
+    "pred:Earnings": 24,
+    "recall:Product Launch": 8,
+    "recall:Natural Disaster/Supply Chain": 6,
+    "pred:Management Change": 8,
+    "recall:Credit Event": 18
+  },
+  "strata_short_of_plan": {
+    "Management Change": 8,
+    "Cyber/Operational": 7,
+    "Credit Event": 6,
+    "Natural Disaster/Supply Chain": 6
+  },
+  "frozen_at": "2026-10-03T05:13:07.144083+00:00"
+}

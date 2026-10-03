@@ -35,6 +35,8 @@ Read the item (title + lead). Judge only what the text says, not what you know h
 1. If two classes fit, choose the one with the **larger potential market impact** (e.g. "bank downgraded after loan losses in Q3 results" is Credit Event, not Earnings).
 2. A filing titled "Item 2.02 Results of Operations" is Earnings even if the title is all you see.
 3. Headlines phrased as questions or rankings ("3 bank stocks to buy") are `opinion`, class `Other`, material `n`.
+   Exception (2026-10-03, from the labeller's consistent practice): an earnings preview ("... Q3 Earnings:
+   What to Expect") is class `Earnings`.
 4. When unsure, pick the best label and type a short note; notes are reviewed later and never change the test set retroactively without a recorded reason.
 
 ## Quality check

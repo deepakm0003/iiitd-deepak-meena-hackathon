@@ -261,3 +261,51 @@ def test_rule_evidence_is_the_exact_source_text(rules):
     doc = d("Regional lender files for Chapter 11 bankruptcy protection after deposit flight")
     ev = next(e for e in rules.evidence(doc) if e.source == "rule:bankruptcy")
     assert ev.phrase.lower() in doc.title.lower() and ev.phrase in ev.context
+
+
+@pytest.mark.parametrize("text, cls", [
+    ("Sixteen trucking companies collapsed in under a month", "Credit Event"),
+    ("The retailer entered administration after talks with lenders failed", "Credit Event"),
+    ("Developer files for creditor protection in Canada", "Credit Event"),
+    ("Sharp rise in business insolvencies in Switzerland: insolvencies rose 12%", "Credit Event"),
+    ("France unveils cost-cutting 2027 budget as borrowing costs rise", "Macroeconomic"),
+    ("Bailout package for Swiss electricity firms will not be extended", "Macroeconomic"),
+    ("Rupee falls to a record low against the dollar", "Macroeconomic"),
+])
+def test_distress_and_macro_phrasing(rules, text, cls):
+    assert rules.decide(rules.evidence(d(text))).event_type == cls
+
+
+@pytest.mark.parametrize("text", [
+    "The Trump administration announced new hiring rules",
+    "Our administration team is growing",
+    "Two firms failed to agree on a partnership",
+])
+def test_distress_rule_needs_real_distress(rules, text):
+    assert not any(e.source == "rule:distress" for e in rules.evidence(d(text)))
+
+
+@pytest.mark.parametrize("title", [
+    "Top 3 EV Stocks To Watch In October 2026",
+    "What Does Weaker Viewing Actually Cost Netflix Stock?",
+    "PepsiCo vs. Keurig: Which Stock Stands Out in the Beverage Race?",
+    "Morgan Stanley Resets Okta Stock Price Target For Rest of Year",
+])
+def test_question_and_ranking_headlines_are_other(rules, title):
+    decision = rules.decide(rules.evidence(d(title, "Rising bond yields rise and tariffs hit the sector")))
+    assert decision.event_type == "Other" and decision.source == "rule:opinion_headline"
+
+
+def test_an_8k_item_beats_an_opinion_style_title(rules):
+    doc = d("X files 8-K: Item 2.02 Results? ", source="edgar", hints={"items": ["2.02"]})
+    assert rules.decide(rules.evidence(doc)).event_type == "Earnings"
+
+
+@pytest.mark.parametrize("text, fires", [
+    ("Apollo's Torsten Slok warns of a 'bank run' if households start using AI", False),
+    ("The fastest bank run in US history; now an economist warns AI could trigger the next one", False),
+    ("Regional lender hit by a bank run as depositors pull $42 billion", True),
+    ("Bank faces deposit flight after losses", True),
+])
+def test_bank_run_needs_an_actual_run(rules, text, fires):
+    assert any(e.source == "rule:bank_run" for e in rules.evidence(d(text))) is fires

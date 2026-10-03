@@ -13,6 +13,16 @@ from tripwire.models import Document
 
 ITEM_CONFIDENCE = 0.95  # the filer itself declared the item: strongest evidence we have
 RULE_CONFIDENCE = 0.90
+# Labelling guide, tie-breaker 3: headlines phrased as questions or rankings ("3 bank stocks to buy") are opinion,
+# class Other. Checked on the title only; beats topical text rules, not an 8-K item.
+# Earnings previews ("... Earnings: What to Expect") are not included: the labeller consistently labels
+# them Earnings (labelling guide, exception to tie-breaker 3).
+OPINION_HEADLINE = re.compile(
+    r"\?\s*$|^\s*(top\s+)?\d+\s+[^.]{0,40}\b(stocks?|shares|picks|reasons|things|ways|etfs?)\b|"
+    r"\bstocks? to (buy|sell|watch)\b|\bshould you (buy|sell)\b|\bis it time to\b|\b(bull|bear) case\b|"
+    r"\bprice target\b",
+    re.IGNORECASE,
+)
 OVERRIDE_PRIOR = 0.90  # text rules at least this severe (bankruptcy, default) may override a specific 8-K item
 
 
@@ -67,6 +77,9 @@ class EventRules:
                 lo, hi = max(0, match.start() - 80), min(len(haystack), match.end() + 80)
                 found.append(EventEvidence(cls, subtype, f"rule:{rule_id}", RULE_CONFIDENCE, match.group(),
                                            haystack[lo:hi].strip()))
+        if match := OPINION_HEADLINE.search(doc.title):
+            found.append(EventEvidence("Other", "opinion_headline", "rule:opinion_headline", RULE_CONFIDENCE,
+                                       match.group().strip() or doc.title[-40:], doc.title))
         return found
 
     def decide(self, evidence: list[EventEvidence]) -> EventEvidence | None:
@@ -76,6 +89,10 @@ class EventRules:
         """
         if not evidence:
             return None
+        has_item = any(e.source.startswith("8k_item") and e.event_type != "Other" for e in evidence)
+        opinion = [e for e in evidence if e.source == "rule:opinion_headline"]
+        if opinion and not has_item:
+            return opinion[0]
         specific = [e for e in evidence if e.event_type != "Other"] or evidence
         # A specific 8-K item is what the filer itself says the filing is about; a text rule firing on a word in
         # a long press release is only a mention (found on live data: bank earnings releases that mention

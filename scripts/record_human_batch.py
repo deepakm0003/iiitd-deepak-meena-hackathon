@@ -18,7 +18,6 @@ from tripwire.config import load_yaml
 from tripwire.universe import load_universe
 
 ROOT = Path(__file__).resolve().parents[1]
-CHECK = ROOT / "data" / "gold" / "human_check.jsonl"
 SPECIAL = {"o": "OTHER", "m": "MACRO", "n": "NONE"}
 
 
@@ -30,13 +29,19 @@ def main(argv: list[str]) -> int:
             flags[flag] = {int(x) for x in argv[i + 1].split(",")}
             argv = argv[:i] + argv[i + 2:]
     primed, revised = flags.get("--primed", set()), flags.get("--revised", set())
+    fresh = "--fresh" in argv          # the fresh out-of-time test set: its own candidates and labels files
+    argv = [x for x in argv if x != "--fresh"]
+    check = ROOT / "data" / "gold" / ("fresh_labels.jsonl" if fresh else "human_check.jsonl")
     classes = [c["name"] for c in load_yaml("taxonomy.yaml")["classes"]]
     tickers = {c.ticker for c in load_universe()}
-    candidates = gold.read_jsonl(ROOT / "data" / "gold" / "candidates.jsonl")
-    sample = gold.human_check_sample(candidates)
-    first = {c["key"] for c in sample}
-    order = sample + [c for c in candidates if c["key"] not in first]
-    done = {r["key"] for r in gold.read_jsonl(CHECK)}
+    if fresh:
+        order = gold.read_jsonl(ROOT / "data" / "gold" / "fresh_candidates.jsonl")
+    else:
+        candidates = gold.read_jsonl(ROOT / "data" / "gold" / "candidates.jsonl")
+        sample = gold.human_check_sample(candidates)
+        first = {c["key"] for c in sample}
+        order = sample + [c for c in candidates if c["key"] not in first]
+    done = {r["key"] for r in gold.read_jsonl(check)}
     todo = [c for c in order if c["key"] not in done]
     if argv and argv[0] == "--show":
         for n, c in enumerate(todo[: int(argv[1])], 1):
@@ -66,11 +71,12 @@ def main(argv: list[str]) -> int:
             "material": None,
             "note": "answer was shown as a format example before labelling" if n in primed
             else "revised by the labeller after a guideline-consistency check" if n in revised else "",
-            "annotator": "deepak (human, quick check given in chat)", "labeled_at": datetime.now(UTC).isoformat(),
+            "annotator": "deepak (human, quick check given in chat)", "test_set": item.get("test_set"),
+            "labeled_at": datetime.now(UTC).isoformat(),
         })
     for row in rows:
-        gold.append_jsonl(CHECK, row)
-    print(f"saved {len(rows)}; total {len(gold.read_jsonl(CHECK))} of {len(order)}")
+        gold.append_jsonl(check, row)
+    print(f"saved {len(rows)}; total {len(gold.read_jsonl(check))} of {len(order)}")
     return 0
 
 

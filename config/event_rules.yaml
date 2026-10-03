@@ -38,8 +38,15 @@ rules:
      pattern: "(?<!by )\\bdefault(s|ed)? on (its |their |a |an |the |some )?(?:[^.]|\\.(?=\\d)){0,40}\\b(debt|loans?|bonds?|notes|payments?|obligations?|interest|coupons?|mortgages?)\\b|missed (a |an )?(interest|coupon|debt) payment|covenant (breach|waiver)|going[- ]concern"}
   - {id: downgrade, class: Credit Event, subtype: rating_downgrade,
      pattern: "\\b(downgrade[sd]?|cuts?|lowers?|lowered)\\b.{0,40}\\b(credit|debt|bond|issuer|sovereign|default) ratings?\\b|\\b(moody'?s|s&p(?! ?500)( global)?|fitch|dbrs)\\b[^.]{0,60}\\b(downgrade[sd]?|cuts?|lowers?|lowered)\\b|\\bdowngrade[sd]? to (junk|non-investment grade)\\b|outlook (to|revised to|cut to) negative"}
+  # Corporate distress phrased without the word "bankruptcy" (added 2026-10-03 from domain knowledge; the gold dev
+  # split has only two credit events, so nothing here is tuned on data). "Administration" only with into/enters,
+  # so "the Trump administration" never matches.
+  - {id: distress, class: Credit Event, subtype: default_or_covenant_breach,
+     pattern: "\\b(companies|firms|carriers|lenders|retailers|banks|developers|operators)\\b[^.]{0,30}\\b(collapsed|went bust|went under|failed)\\b(?! to\\b)|\\bcreditor protection\\b|\\b(into|enters?|entered|placed into) (liquidation|administration|receivership)\\b|\\bliquidation proceedings\\b|\\bdistressed (exchange|debt)\\b|\\brestructuring support agreement\\b|\\b(bankruptcies|insolvencies) (rise|rose|surge|jump|hit|climb)"}
   - {id: bank_run, class: Credit Event, subtype: liquidity_stress,
-     pattern: "bank run|deposit (outflows?|flight)|liquidity (crisis|crunch|shortfall)|seized by regulators"}
+     # An actual run, not a mention: warnings and history pieces ("warns of a bank run if ...", "the fastest
+     # bank run in history ... could trigger the next") are commentary (human gold: labelled Macro / Other).
+     pattern: "\\b(faces?|facing|suffer(s|ed)?|amid|hit by|experienc(es|ed|ing)|sparked|triggered) (a )?(bank )?run\\b|\\bbank run (on|at|hits?)\\b|deposit (outflows?|flight)|liquidity (crisis|crunch|shortfall)|seized by regulators"}
   - {id: sanctions, class: Geopolitical, subtype: sanctions,
      pattern: "\\bsanction(s|ed)?\\b|export (controls?|ban)|embargo"}
   - {id: tariffs, class: Geopolitical, subtype: trade_restriction,
@@ -48,6 +55,9 @@ rules:
      pattern: "\\b(invasion|invades|airstrikes?|missile (strike|attack)s?|military (strike|offensive)|ceasefire collapses)\\b"}
   - {id: central_bank, class: Macroeconomic, subtype: central_bank_decision,
      pattern: "(fed|federal reserve|fomc|ecb|bank of england|bank of japan|rbi|reserve bank).{0,40}(rate|rates|hike|cut|holds|pause|policy)|repo rate|monetary policy"}
+  # Market-wide fiscal, rates and currency moves (headline phrasing; added 2026-10-03).
+  - {id: macro_markets, class: Macroeconomic, subtype: macro_data_surprise,
+     pattern: "\\b(borrowing costs|sovereign (debt|yields?|rating)|(10|ten|2|two|30|thirty)-year (yield|treasury)|bond yields? (rise|rose|climb|jump|fall|fell|slump|surge|soar)|budget deficit|fiscal (plan|deficit|policy|package)|bailout package|stimulus package|current account deficit|(rupee|yuan|euro|yen|dollar|sterling) (falls?|fell|slumps?|plunges?|rall(y|ies)|hits? record))\\b"}
   - {id: macro_data, class: Macroeconomic, subtype: macro_data_surprise,
      pattern: "\\b(cpi|inflation|payrolls|jobs report|unemployment rate|gdp|recession|pmi|government (stock|securities)|treasury (bills?|auction)|bond auction)\\b"}
   - {id: mna, class: Merger/Acquisition, subtype: deal,
@@ -75,3 +85,9 @@ rules:
      pattern: "\\b(ceo|cfo|chief executive|chairman|president) .{0,40}(steps down|resigns|to retire|departs|ousted|fired)|(names|appoints|hires) .{0,40}(ceo|cfo|chief executive)|new (ceo|cfo)"}
   - {id: launch, class: Product Launch, subtype: launch,
      pattern: "\\b(launches|unveils|introduces|rolls out|debuts)\\b(?![^.]{0,50}\\b(budget|buyback|repurchase|strategy|executive order|probe|investigation|review|push|campaign|initiative|edition|outlook|guidance|forecast|results)\\b)"}
+
+# Alert tiers (2026-10-03). "confirmed" = the event label comes from a source measured at >= 90% precision with
+# at least 3 cases on the 296 human-labelled development items (scripts/tier_experiment.py,
+# docs/results/tier_experiment.json): 59 of 61 correct (96.7%, 95% CI 88.8-99.1%), 35% of all alerts. Every other
+# alert is "standard" (56.8%). To be validated on the fresh out-of-time test set.
+confirmed_sources: [8k_item, rule:launch, rule:macro_data, rule:central_bank, rule:disaster, rule:regulator_action]

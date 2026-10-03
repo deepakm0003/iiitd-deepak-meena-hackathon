@@ -1,0 +1,294 @@
+{
+  "n_dev": 84,
+  "current": {
+    "accuracy": 0.7143,
+    "macro_f1": 0.6226,
+    "Credit Event": "TP1/2 FP1",
+    "Macroeconomic": "TP7/9 FP1"
+  },
+  "rescue_any_0.4": {
+    "accuracy": 0.6786,
+    "macro_f1": 0.6166,
+    "Credit Event": "TP2/2 FP3",
+    "Macroeconomic": "TP7/9 FP5"
+  },
+  "rescue_cm_0.4": {
+    "accuracy": 0.6786,
+    "macro_f1": 0.6111,
+    "Credit Event": "TP2/2 FP3",
+    "Macroeconomic": "TP7/9 FP5"
+  },
+  "rescue_any_0.5": {
+    "accuracy": 0.6905,
+    "macro_f1": 0.6089,
+    "Credit Event": "TP1/2 FP2",
+    "Macroeconomic": "TP7/9 FP3"
+  },
+  "rescue_cm_0.5": {
+    "accuracy": 0.6905,
+    "macro_f1": 0.6034,
+    "Credit Event": "TP1/2 FP2",
+    "Macroeconomic": "TP7/9 FP3"
+  },
+  "rescue_any_0.6": {
+    "accuracy": 0.6905,
+    "macro_f1": 0.6043,
+    "Credit Event": "TP1/2 FP2",
+    "Macroeconomic": "TP7/9 FP2"
+  },
+  "rescue_cm_0.6": {
+    "accuracy": 0.7024,
+    "macro_f1": 0.6087,
+    "Credit Event": "TP1/2 FP2",
+    "Macroeconomic": "TP7/9 FP2"
+  },
+  "rescue_any_0.7": {
+    "accuracy": 0.7024,
+    "macro_f1": 0.6101,
+    "Credit Event": "TP1/2 FP2",
+    "Macroeconomic": "TP7/9 FP1"
+  },
+  "rescue_cm_0.7": {
+    "accuracy": 0.7143,
+    "macro_f1": 0.6144,
+    "Credit Event": "TP1/2 FP2",
+    "Macroeconomic": "TP7/9 FP1"
+  },
+  "selective_curve_current": [
+    {
+      "min_confidence": 0.95,
+      "alerts": 1,
+      "precision": 1.0
+    },
+    {
+      "min_confidence": 0.95,
+      "alerts": 2,
+      "precision": 1.0
+    },
+    {
+      "min_confidence": 0.9,
+      "alerts": 3,
+      "precision": 1.0
+    },
+    {
+      "min_confidence": 0.9,
+      "alerts": 4,
+      "precision": 1.0
+    },
+    {
+      "min_confidence": 0.9,
+      "alerts": 5,
+      "precision": 1.0
+    },
+    {
+      "min_confidence": 0.9,
+      "alerts": 6,
+      "precision": 1.0
+    },
+    {
+      "min_confidence": 0.9,
+      "alerts": 7,
+      "precision": 1.0
+    },
+    {
+      "min_confidence": 0.9,
+      "alerts": 8,
+      "precision": 1.0
+    },
+    {
+      "min_confidence": 0.9,
+      "alerts": 9,
+      "precision": 1.0
+    },
+    {
+      "min_confidence": 0.9,
+      "alerts": 10,
+      "precision": 1.0
+    },
+    {
+      "min_confidence": 0.9,
+      "alerts": 11,
+      "precision": 1.0
+    },
+    {
+      "min_confidence": 0.9,
+      "alerts": 12,
+      "precision": 1.0
+    },
+    {
+      "min_confidence": 0.9,
+      "alerts": 13,
+      "precision": 1.0
+    },
+    {
+      "min_confidence": 0.9,
+      "alerts": 14,
+      "precision": 1.0
+    },
+    {
+      "min_confidence": 0.9,
+      "alerts": 15,
+      "precision": 1.0
+    },
+    {
+      "min_confidence": 0.9,
+      "alerts": 16,
+      "precision": 1.0
+    },
+    {
+      "min_confidence": 0.9,
+      "alerts": 17,
+      "precision": 1.0
+    },
+    {
+      "min_confidence": 0.9,
+      "alerts": 18,
+      "precision": 1.0
+    },
+    {
+      "min_confidence": 0.9,
+      "alerts": 19,
+      "precision": 1.0
+    },
+    {
+      "min_confidence": 0.9,
+      "alerts": 20,
+      "precision": 1.0
+    },
+    {
+      "min_confidence": 0.9,
+      "alerts": 21,
+      "precision": 1.0
+    },
+    {
+      "min_confidence": 0.9,
+      "alerts": 22,
+      "precision": 0.9545
+    },
+    {
+      "min_confidence": 0.9,
+      "alerts": 23,
+      "precision": 0.913
+    },
+    {
+      "min_confidence": 0.9,
+      "alerts": 24,
+      "precision": 0.875
+    },
+    {
+      "min_confidence": 0.9,
+      "alerts": 25,
+      "precision": 0.84
+    },
+    {
+      "min_confidence": 0.9,
+      "alerts": 26,
+      "precision": 0.8077
+    },
+    {
+      "min_confidence": 0.9,
+      "alerts": 27,
+      "precision": 0.7778
+    },
+    {
+      "min_confidence": 0.5543,
+      "alerts": 28,
+      "precision": 0.7857
+    },
+    {
+      "min_confidence": 0.4277,
+      "alerts": 29,
+      "precision": 0.7931
+    },
+    {
+      "min_confidence": 0.3852,
+      "alerts": 30,
+      "precision": 0.8
+    },
+    {
+      "min_confidence": 0.2865,
+      "alerts": 31,
+      "precision": 0.7742
+    },
+    {
+      "min_confidence": 0.2717,
+      "alerts": 32,
+      "precision": 0.7812
+    },
+    {
+      "min_confidence": 0.2715,
+      "alerts": 33,
+      "precision": 0.7879
+    },
+    {
+      "min_confidence": 0.2446,
+      "alerts": 34,
+      "precision": 0.7941
+    },
+    {
+      "min_confidence": 0.2427,
+      "alerts": 35,
+      "precision": 0.8
+    },
+    {
+      "min_confidence": 0.2125,
+      "alerts": 36,
+      "precision": 0.7778
+    },
+    {
+      "min_confidence": 0.178,
+      "alerts": 37,
+      "precision": 0.7838
+    },
+    {
+      "min_confidence": 0.147,
+      "alerts": 38,
+      "precision": 0.7895
+    },
+    {
+      "min_confidence": 0.1444,
+      "alerts": 39,
+      "precision": 0.7692
+    },
+    {
+      "min_confidence": 0.1412,
+      "alerts": 40,
+      "precision": 0.75
+    },
+    {
+      "min_confidence": 0.1381,
+      "alerts": 41,
+      "precision": 0.7317
+    },
+    {
+      "min_confidence": 0.1374,
+      "alerts": 42,
+      "precision": 0.7381
+    },
+    {
+      "min_confidence": 0.1278,
+      "alerts": 43,
+      "precision": 0.7442
+    },
+    {
+      "min_confidence": 0.0801,
+      "alerts": 44,
+      "precision": 0.7273
+    },
+    {
+      "min_confidence": 0.0146,
+      "alerts": 45,
+      "precision": 0.7111
+    },
+    {
+      "min_confidence": 0.0104,
+      "alerts": 46,
+      "precision": 0.6957
+    },
+    {
+      "min_confidence": 0.0076,
+      "alerts": 47,
+      "precision": 0.6809
+    }
+  ]
+}
