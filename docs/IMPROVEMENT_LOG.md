@@ -154,9 +154,38 @@ from its weak labels (tweets, rules), not from the encoder; more in-domain human
 - Sentiment neutral band: dev agreement 0.57-0.61 for any band from 0.05 to 0.35, so 0.15 is kept. Most
   disagreements are the model scoring a clearly directional item near neutral (23 of 35): a model limitation.
 
+### Human gold set (all 296 items labelled by the author)
+Test split (212 items), human labels, pipeline as deployed (`docs/results/gold_eval.json`). This is the
+11-class result to quote; the 0.879 figure is a 7-class tweet proxy.
+
+| | Value |
+|---|---|
+| Event accuracy | 0.618 |
+| Event macro-F1 (11 classes) | 0.585 |
+| Event weighted F1 | 0.628 |
+| Entity accuracy | 0.759 |
+
+| Class | Precision | Recall | F1 | Support |
+|---|---|---|---|---|
+| Product Launch | 0.95 | 0.59 | 0.73 | 32 |
+| Cyber/Operational | 0.89 | 0.62 | 0.73 | 13 |
+| Earnings | 0.87 | 0.81 | 0.84 | 16 |
+| Macroeconomic | 0.72 | 0.57 | 0.63 | 23 |
+| Management Change | 0.69 | 0.64 | 0.67 | 14 |
+| Merger/Acquisition | 0.67 | 0.50 | 0.57 | 8 |
+| Natural Disaster/Supply Chain | 0.67 | 0.50 | 0.57 | 8 |
+| Other | 0.56 | 0.70 | 0.62 | 70 |
+| Regulatory/Legal | 0.50 | 0.24 | 0.32 | 17 |
+| Credit Event | 0.40 | 0.75 | 0.52 | 8 |
+| Geopolitical | 0.14 | 0.67 | 0.24 | 3 |
+
+Reading: precision is high where the event has a clear form (launches, outages, results); Credit Event and
+Geopolitical are over-predicted and Regulatory/Legal is under-detected. Small supports (3-17) make several
+class numbers rough. Human vs LLM agreement on the same items: event kappa 0.67, entity kappa 0.71.
+
 ### Still open
 
-- More human labels (with the guide) to turn the silver set into gold.
+- Regulatory/Legal recall (0.24) and Credit Event / Geopolitical precision; decided on the dev split only.
 - Verifier keep/drop and probability calibration, on the gold dev split.
 - Some filing texts lost curly quotes when decoded (shown as U+FFFD); fixing needs a re-fetch of those filings.
 - Large models (entity sentiment 418 MB, SetFit 87 MB) are not in git: publish as release assets with a download

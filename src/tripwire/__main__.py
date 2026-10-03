@@ -358,6 +358,14 @@ def cmd_eval_events(args: argparse.Namespace) -> int:
     return 0
 
 
+def _labelled_accuracy(rows: list[dict], field: str) -> float | None:
+    """Accuracy over items that carry this label; None if none do (quick labels have only entity and event)."""
+    labelled = [r for r in rows if r[f"{field}_gold"] is not None]
+    if not labelled:
+        return None
+    return round(sum(r[f"{field}_gold"] == r[f"{field}_pred"] for r in labelled) / len(labelled), 4)
+
+
 def cmd_eval_gold(args: argparse.Namespace) -> int:
     """Evaluate the deployed pipeline on the human gold set (test split); choose thresholds on the dev split."""
     from tripwire import gold
@@ -420,8 +428,8 @@ def cmd_eval_gold(args: argparse.Namespace) -> int:
         "population_test": ge.population(test, classes),
         "on_sample_test": ge.on_sample([r["gold"] for r in test], [r["pred"] for r in test]) if test else None,
         "entity_accuracy_test": round(sum(entity_ok) / n_test, 4),
-        "sentiment_accuracy_test": round(sum(r["sentiment_gold"] == r["sentiment_pred"] for r in test) / n_test, 4),
-        "factuality_accuracy_test": round(sum(r["factuality_gold"] == r["factuality_pred"] for r in test) / n_test, 4),
+        "sentiment_accuracy_test": _labelled_accuracy(test, "sentiment"),
+        "factuality_accuracy_test": _labelled_accuracy(test, "factuality"),
         "thresholds": {
             "current": {"min_p": cfg["min_confidence"], "verifier_min_p": cfg["verify"]["min_p"]},
             "sweep_dev": ge.threshold_sweep([r for r in ml if r["split"] == "dev"], verify),

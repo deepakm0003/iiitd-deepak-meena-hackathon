@@ -17,16 +17,17 @@ computed from them is reported as a **silver** result (`docs/results/silver_eval
   pipeline's predictions or the sampling strata, and followed `docs/labeling_guide.md`.
 - Seven ambiguous items carry a note explaining the choice.
 - The same LLM helped write the pipeline, so its labels may share the pipeline's view of the taxonomy.
-- **Human spot-check:** the author labelled a fixed random 50 of the items blind, entity and event type only
-  (`gold check --quick`; 30 in the tool, 20 given in batches in chat and recorded by
-  `scripts/record_human_batch.py`). Agreement with the LLM labels (`docs/results/silver_agreement.json`):
-  entity 72%, Cohen's kappa 0.66; event type 50%, kappa 0.40 (0.37 without 2 items whose answers had been
-  shown as a format example). About 7 of the 25 event disagreements are items where the labelling guide has an
-  explicit rule that the LLM label follows (sanctions, recalls, bankruptcy, debt issuance); most of the rest
-  are genuinely ambiguous between classes. The silver labels are therefore only partly confirmed by a human,
-  and every classifier number computed from them is presented with this caveat.
-- Error analysis was done on these labels, and generic rule bugs found there were fixed. Results after the fix
-  are therefore labelled optimistic; the pre-fix results are kept alongside them
-  (`docs/results/silver_eval_prefix.json`).
+- **Human labels for the whole set:** the author then labelled all 296 items (entity and event type), 50 in the
+  `gold check --quick` tool and the rest in batches given in chat and recorded verbatim by
+  `scripts/record_human_batch.py` (`data/gold/human_check.jsonl`). These human labels are the test labels for
+  every reported classifier number (`docs/results/gold_eval.json`); the LLM silver labels are kept for
+  comparison only.
+- **Guideline-consistency check:** after each batch, the assistant listed answers that contradicted an explicit
+  rule on the definitions card (for example a bankruptcy labelled as a merger); the author confirmed or
+  changed each one. 29 items were revised this way or had an answer shown as a format example; they carry a
+  note in the file.
+- **Human vs LLM agreement** (`docs/results/silver_agreement.json`): all 296 items, event type 73% (Cohen's
+  kappa 0.67), entity 75% (kappa 0.71); without the 29 revised or primed items, event kappa 0.63, entity 0.71.
+  The first 50-item check, done before the definitions card was used, gave event kappa 0.40.
 
 _Edit this page so it stays accurate as the project progresses._

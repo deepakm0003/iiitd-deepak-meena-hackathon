@@ -1,12 +1,12 @@
 {
-  "n": 50,
+  "n": 296,
   "event_type": {
-    "agreement": 0.5,
-    "cohen_kappa": 0.4028
+    "agreement": 0.7297,
+    "cohen_kappa": 0.6715
   },
   "entity": {
-    "agreement": 0.72,
-    "cohen_kappa": 0.6649
+    "agreement": 0.75,
+    "cohen_kappa": 0.7055
   },
   "sentiment": {
     "agreement": null,
@@ -145,18 +145,293 @@
       "title": "Retail battlefield: Economic complexities between Lagos traders and Chinese merchants",
       "human": "Macroeconomic",
       "llm": "Other"
+    },
+    {
+      "title": "Apollo's Torsten Slok warns of a 'bank run' if households starts using AI to improve their investments",
+      "human": "Macroeconomic",
+      "llm": "Credit Event"
+    },
+    {
+      "title": "Diesel\u2019s supply crunch may hit CFOs through freight contracts",
+      "human": "Macroeconomic",
+      "llm": "Natural Disaster/Supply Chain"
+    },
+    {
+      "title": "Foghorn Therapeutics Provides Update on FHD-909 and Strategic Priorities",
+      "human": "Product Launch",
+      "llm": "Other"
+    },
+    {
+      "title": "US lawmaker calls on Starbucks to close new stores in China's Xinjiang in light of Uyghur repression",
+      "human": "Other",
+      "llm": "Geopolitical"
+    },
+    {
+      "title": "Boeing wins $20 billion Navy award for next-generation fighter jet; shares rise",
+      "human": "Product Launch",
+      "llm": "Other"
+    },
+    {
+      "title": "A Fresh Look at Cash Balance Pensions",
+      "human": "Macroeconomic",
+      "llm": "Other"
+    },
+    {
+      "title": "'Hegseth to Unveil New Pentagon Drone Group, Senator Says' - Bloomberg",
+      "human": "Macroeconomic",
+      "llm": "Other"
+    },
+    {
+      "title": "Mass shootings show the face of South African murder is changing",
+      "human": "Natural Disaster/Supply Chain",
+      "llm": "Other"
+    },
+    {
+      "title": "Kazakhstan targets computing power exports starting in 2027",
+      "human": "Macroeconomic",
+      "llm": "Other"
+    },
+    {
+      "title": "'I was fighting for my life': Indian pilot hailed as hero recalls FlyDubai cockpit attack | News",
+      "human": "Other",
+      "llm": "Cyber/Operational"
+    },
+    {
+      "title": "Lamont touts credit rating upgrades as critics question broader fiscal record",
+      "human": "Merger/Acquisition",
+      "llm": "Other"
+    },
+    {
+      "title": "A record S&P 500 close on Sept. 28 while Goldman's equity positioning gauge hit \u22120.9, matching its March low. The calm i",
+      "human": "Other",
+      "llm": "Macroeconomic"
+    },
+    {
+      "title": "'I was fighting for my life': Indian pilot hailed as hero recalls FlyDubai cockpit attack :: WRAL.com",
+      "human": "Other",
+      "llm": "Cyber/Operational"
+    },
+    {
+      "title": "4th Circuit Provides Clarity on Automatic Stays in Bankruptcy Pet",
+      "human": "Credit Event",
+      "llm": "Regulatory/Legal"
+    },
+    {
+      "title": "Jamie Dimon has a plan to revive the West: A 'big, beautiful' deal with Europe",
+      "human": "Other",
+      "llm": "Geopolitical"
+    },
+    {
+      "title": "'I Couldn't Let All Those People Die' \u2014 Indian Pilot Recounts Flydubai Hijack Ordeal",
+      "human": "Other",
+      "llm": "Cyber/Operational"
+    },
+    {
+      "title": "America\u2019s Critical Supply Chain Is Breaking",
+      "human": "Credit Event",
+      "llm": "Natural Disaster/Supply Chain"
+    },
+    {
+      "title": "'I was fighting for my life': Hero pilot recalls FlyDubai cockpit attack | Harwich and Manningtree Standard",
+      "human": "Other",
+      "llm": "Cyber/Operational"
+    },
+    {
+      "title": "Romania: Romanian finance minister confident ahead of S&P review, (\u2026)",
+      "human": "Other",
+      "llm": "Macroeconomic"
+    },
+    {
+      "title": "Bitcoin Holds US$84,853; Latin America Stablecoins",
+      "human": "Other",
+      "llm": "Macroeconomic"
+    },
+    {
+      "title": "'I was fighting for my life': Pilot hailed as hero recalls FlyDubai cockpit attack",
+      "human": "Other",
+      "llm": "Cyber/Operational"
+    },
+    {
+      "title": "Beyond The Cockpit Door: Why Aviation Security Must Pivot To Cyber, Supply Chains, And Zero Trust",
+      "human": "Natural Disaster/Supply Chain",
+      "llm": "Cyber/Operational"
+    },
+    {
+      "title": "Indian pilot hailed as hero recalls FlyDubai cockpit attack \u2013 NBC 5 Dallas-Fort Worth",
+      "human": "Other",
+      "llm": "Cyber/Operational"
+    },
+    {
+      "title": "Housing Crisis Is Forcing Young People Out of Mass., Experts Say",
+      "human": "Other",
+      "llm": "Macroeconomic"
+    },
+    {
+      "title": "Indian pilot hailed as hero recalls FlyDubai cockpit attack \u2013 NBC Bay Area",
+      "human": "Other",
+      "llm": "Cyber/Operational"
+    },
+    {
+      "title": "Indian pilot hailed as hero recalls FlyDubai cockpit attack \u2013 NBC Connecticut",
+      "human": "Product Launch",
+      "llm": "Cyber/Operational"
+    },
+    {
+      "title": "'I was fighting for my life': Indian pilot hailed as hero recalls FlyDubai cockpit attack | Nation & World",
+      "human": "Other",
+      "llm": "Cyber/Operational"
+    },
+    {
+      "title": "UAE calls for greater food supply resilience",
+      "human": "Macroeconomic",
+      "llm": "Natural Disaster/Supply Chain"
+    },
+    {
+      "title": "What Does Ford Motor (F) Michigan Battery Lead Mean For Its EV Supply Chain?",
+      "human": "Other",
+      "llm": "Geopolitical"
+    },
+    {
+      "title": "OpenAI fires 3 employees following AI security revelations",
+      "human": "Other",
+      "llm": "Cyber/Operational"
+    },
+    {
+      "title": "'Fighting for my life': Indian pilot recalls FlyDubai cockpit attack",
+      "human": "Other",
+      "llm": "Cyber/Operational"
+    },
+    {
+      "title": "Boeing engineers and technical workers approve new contract, avoiding strike",
+      "human": "Cyber/Operational",
+      "llm": "Other"
+    },
+    {
+      "title": "Bank of New York Earnings Preview: What to Expect",
+      "human": "Earnings",
+      "llm": "Other"
+    },
+    {
+      "title": "Apple CEO Ternus plots restructure to supercharge products, report says",
+      "human": "Management Change",
+      "llm": "Other"
+    },
+    {
+      "title": "'I was fighting for my life': Hero pilot recalls FlyDubai cockpit attack",
+      "human": "Other",
+      "llm": "Cyber/Operational"
+    },
+    {
+      "title": "ADOBE INC. files 8-K: Item 5.02 Departure or Election of Directors or Officers; Compensatory Arrangements; Item 5.03 Ame",
+      "human": "Regulatory/Legal",
+      "llm": "Other"
+    },
+    {
+      "title": "SPEEA approved a four-year $BA deal with average pay up about 32%, ending a strike threat that could have delayed the 73",
+      "human": "Cyber/Operational",
+      "llm": "Other"
+    },
+    {
+      "title": "Diesel stocks: EU debating release amid to U.S. pressure",
+      "human": "Macroeconomic",
+      "llm": "Natural Disaster/Supply Chain"
+    },
+    {
+      "title": "PM Modi Speaks to Captain Smit Machchhar, Praises Courage During Flydubai Crisis",
+      "human": "Other",
+      "llm": "Cyber/Operational"
+    },
+    {
+      "title": "Aurangzeb vows to strengthen key drivers of sovereign ratings",
+      "human": "Other",
+      "llm": "Macroeconomic"
+    },
+    {
+      "title": "EU rejects request for early disbursement of part of loan",
+      "human": "Regulatory/Legal",
+      "llm": "Macroeconomic"
+    },
+    {
+      "title": "Neptune Makes Flood Insurance Ready for the AI Agent Era",
+      "human": "Other",
+      "llm": "Product Launch"
+    },
+    {
+      "title": "What IBM (IBM)'s Self\u2011Hosted AI Push and Board Addition Mean For Shareholders",
+      "human": "Other",
+      "llm": "Management Change"
+    },
+    {
+      "title": "Sharp rise in business insolvencies in Switzerland",
+      "human": "Credit Event",
+      "llm": "Macroeconomic"
+    },
+    {
+      "title": "AT&T's Q3 2026 Earnings: What to Expect",
+      "human": "Earnings",
+      "llm": "Other"
+    },
+    {
+      "title": "Indian pilot hailed as hero recalls FlyDubai cockpit attack \u2013 NBC 6 South Florida",
+      "human": "Other",
+      "llm": "Cyber/Operational"
+    },
+    {
+      "title": "Tesla Expands Cybercab Fleet to Strengthen Robotaxi Operations",
+      "human": "Product Launch",
+      "llm": "Other"
+    },
+    {
+      "title": "flydubai attack: 'Free Palestine' leaflets found in Omani co-pilot's belongings, says report",
+      "human": "Other",
+      "llm": "Cyber/Operational"
+    },
+    {
+      "title": "Injured Flydubai Pilot Smit Machchhar Recalls Reciting Hanuman Chalisa During Mid-Air Crisis",
+      "human": "Other",
+      "llm": "Cyber/Operational"
+    },
+    {
+      "title": "CAPITAL ONE FINANCIAL CORP files 8-K: Item 8.01 Other Events",
+      "human": "Other",
+      "llm": "Regulatory/Legal"
+    },
+    {
+      "title": "Copper theft, flooding and empty beds plague L.A. homeless housing, report finds",
+      "human": "Natural Disaster/Supply Chain",
+      "llm": "Other"
+    },
+    {
+      "title": "Fitch upgrades American Express to \u2019A+\u2019 on fee business strength and premium reach",
+      "human": "Credit Event",
+      "llm": "Other"
+    },
+    {
+      "title": "OpenAI fires workers for mishandling 'sensitive information'",
+      "human": "Other",
+      "llm": "Cyber/Operational"
+    },
+    {
+      "title": "White House Accord on Super Intelligence that Silicon Valley's top executives hailed as 'historic concord' may have Mark",
+      "human": "Product Launch",
+      "llm": "Regulatory/Legal"
+    },
+    {
+      "title": "The Fastest Bank Run In U.S. History Saw Customers Pull $42 Billion In A Single Day. Now Apollo\u2019s Chief Economist Warns ",
+      "human": "Macroeconomic",
+      "llm": "Credit Event"
     }
   ],
-  "excluding_primed_items": {
-    "n": 48,
+  "excluding_revised_or_primed": {
+    "n": 267,
     "event_type": {
-      "agreement": 0.4792,
-      "cohen_kappa": 0.3714
+      "agreement": 0.7041,
+      "cohen_kappa": 0.6326
     },
     "entity": {
-      "agreement": 0.7083,
-      "cohen_kappa": 0.6454
+      "agreement": 0.7528,
+      "cohen_kappa": 0.7088
     },
-    "note": "2 items whose answers were shown as a format example before labelling"
+    "note": "items the labeller revised after the assistant flagged a conflict with a guide rule, or whose answer was shown as an example"
   }
 }
