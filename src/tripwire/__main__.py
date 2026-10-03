@@ -225,6 +225,21 @@ def cmd_gold(args: argparse.Namespace) -> int:
             gold.append_jsonl(Path(candidates_path), row)
         print(f"{len(docs)} documents since {args.since}; added {len(added)} candidates to {candidates_path}")
         return 0
+    if args.action in ("check", "agreement"):
+        check_path, silver_path = gold_dir / "human_check.jsonl", gold_dir / "silver_llm.jsonl"
+        sample = gold.human_check_sample(gold.read_jsonl(candidates_path))
+        if args.action == "check":
+            from tripwire.universe import load_universe
+
+            print(f"Human check: {len(sample)} items, labelled blind. Commands: s=skip  b=undo last  q=quit")
+            n = gold.label_loop(sample, check_path, {c.ticker for c in load_universe()}, quick=args.quick)
+            print(f"Saved {n} labels this session; total {len(gold.read_jsonl(check_path))} of {len(sample)}")
+            return 0
+        report = gold.agreement(gold.read_jsonl(check_path), gold.read_jsonl(silver_path))
+        out = settings.data_dir.parent / "docs" / "results" / "silver_agreement.json"
+        out.write_text(json.dumps(report, indent=2), encoding="utf-8")
+        print(json.dumps({k: v for k, v in report.items() if k != "event_disagreements"}, indent=2))
+        return 0
     if args.action == "label":
         candidates = gold.read_jsonl(candidates_path)
         if not candidates:
@@ -355,10 +370,13 @@ def cmd_eval_gold(args: argparse.Namespace) -> int:
 
     settings = get_settings()
     gold_dir = settings.data_dir / "gold"
-    labels = gold.read_jsonl(gold_dir / "gold.jsonl")
+    labels_path = gold_dir / args.labels
+    labels = gold.read_jsonl(labels_path)
     if not labels:
-        print("No human labels yet (data/gold/gold.jsonl is empty): nothing to evaluate.", file=sys.stderr)
+        print(f"No labels in {labels_path}: nothing to evaluate.", file=sys.stderr)
         return 1
+    annotators = sorted({row.get("annotator", "unknown") for row in labels})
+    silver = any("LLM" in a for a in annotators)
     candidates = {c["key"]: c for c in gold.read_jsonl(gold_dir / "candidates.jsonl")}
     store = build_store(settings)
     ann = {a["dedup_key"]: a for a in store.get_annotations()}
@@ -392,7 +410,10 @@ def cmd_eval_gold(args: argparse.Namespace) -> int:
                  for r in test]
     n_test = max(1, len(test))
     report = {
-        "labels": {"n": len(labels), "joined": len(rows), "test": len(test), "dev": len(rows) - len(test)},
+        "labels": {"n": len(labels), "joined": len(rows), "test": len(test), "dev": len(rows) - len(test),
+                   "file": labels_path.name, "annotators": annotators,
+                   "kind": "LLM-annotated SILVER labels, not human gold; see the human agreement check" if silver
+                   else "human gold labels"},
         "note": "population = corpus-level estimates (stratified sampling, see eval/gold_eval.py); on_sample = "
                 "metrics on the labelled test items, which over-represent rare classes by design. This is the full "
                 "11-class gold result, distinct from the 7-class validation-proxy result in event_selective.json.",
@@ -407,7 +428,7 @@ def cmd_eval_gold(args: argparse.Namespace) -> int:
             "sweep_test_for_reference_only": ge.threshold_sweep([r for r in ml if r["split"] == "test"], verify),
         },
     }
-    out = settings.data_dir.parent / "docs" / "results" / "gold_eval.json"
+    out = settings.data_dir.parent / "docs" / "results" / ("silver_eval.json" if silver else "gold_eval.json")
     out.write_text(json.dumps(report, indent=2), encoding="utf-8")
     print(json.dumps({k: report[k] for k in ("labels", "entity_accuracy_test", "sentiment_accuracy_test")}, indent=2))
     print(json.dumps(report["population_test"], indent=1))
@@ -696,7 +717,8 @@ def main(argv: list[str] | None = None) -> int:
     eval_ev.add_argument("--per-class", type=int, default=64)
     eval_ev.set_defaults(func=cmd_eval_events)
 
-    eval_gold = sub.add_parser("eval-gold", help="evaluate the event pipeline on the human gold set")
+    eval_gold = sub.add_parser("eval-gold", help="evaluate the event pipeline on the gold (or silver) labels")
+    eval_gold.add_argument("--labels", default="gold.jsonl", help="labels file in data/gold (silver_llm.jsonl)")
     eval_gold.set_defaults(func=cmd_eval_gold)
 
     eval_sent = sub.add_parser("eval-sentiment", help="entity-level sentiment accuracy on SEntFiN")
@@ -736,10 +758,11 @@ def main(argv: list[str] | None = None) -> int:
     train_sent.set_defaults(func=cmd_train_sentiment)
 
     gold_cmd = sub.add_parser("gold", help="gold test set: sample candidates, label them, show stats")
-    gold_cmd.add_argument("action", choices=["stratify", "sample", "label", "stats"])
+    gold_cmd.add_argument("action", choices=["stratify", "sample", "label", "check", "agreement", "stats"])
     gold_cmd.add_argument("--since", default="2026-09-28", help="sample documents published after this date")
     gold_cmd.add_argument("--n", type=int, default=200)
     gold_cmd.add_argument("--seed", type=int, default=7)
+    gold_cmd.add_argument("--quick", action="store_true", help="check: ask only entity and event type")
     gold_cmd.set_defaults(func=cmd_gold)
 
     sub.add_parser("status", help="store counts and recent collector runs").set_defaults(func=cmd_status)

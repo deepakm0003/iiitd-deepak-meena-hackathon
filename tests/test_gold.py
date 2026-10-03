@@ -101,3 +101,34 @@ def test_candidates_are_not_grouped_by_predicted_class():
     rows = sample_stratified(docs, predicted, plan={"Credit Event": 20, "Other": 20}, recall_per_class=0)
     first_half = [r["stratum"] for r in rows[:20]]
     assert 0 < first_half.count("pred:Credit Event") < 20
+
+
+def test_cohen_kappa_and_agreement():
+    from tripwire.gold import agreement, cohen_kappa
+
+    assert cohen_kappa(["A", "B", "A", "B"], ["A", "B", "A", "B"]) == 1.0
+    assert cohen_kappa(["A", "A", "B", "B"], ["A", "B", "A", "B"]) == 0.0      # chance-level agreement
+    row = {"title": "t", "entity": "X", "sentiment": 0, "factuality": "confirmed", "material": False}
+    human = [{**row, "key": "k1", "event_type": "Earnings"}, {**row, "key": "k2", "event_type": "Other"}]
+    silver = [{**row, "key": "k1", "event_type": "Earnings"}, {**row, "key": "k2", "event_type": "Credit Event"}]
+    rep = agreement(human, silver)
+    assert rep["n"] == 2 and rep["event_type"]["agreement"] == 0.5
+    assert rep["event_disagreements"] == [{"title": "t", "human": "Other", "llm": "Credit Event"}]
+
+
+def test_human_check_sample_is_fixed():
+    from tripwire.gold import human_check_sample
+
+    items = [{"key": f"k{i}"} for i in range(300)]
+    assert human_check_sample(items) == human_check_sample(items) and len(human_check_sample(items)) == 50
+
+
+def test_quick_mode_asks_only_entity_and_event(tmp_path):
+    answers = iter(["JPM", "1"])
+    item = {"key": "k1", "split": "test", "stratum": "pred:Credit Event", "source": "finnhub",
+            "published_at": "2026-10-01T00:00:00+00:00", "title": "JPMorgan downgraded by Moody's"}
+    path = tmp_path / "check.jsonl"
+    n = gold.label_loop([item], path, {"JPM"}, ask=lambda _: next(answers), quick=True)
+    row = gold.read_jsonl(path)[0]
+    assert n == 1 and row["entity"] == "JPM" and row["event_type"] == "Credit Event"
+    assert row["sentiment"] is None and row["factuality"] is None and row["material"] is None

@@ -3,12 +3,9 @@
 The candidates were sampled in strata (tripwire.gold.sample_stratified), so two kinds of numbers are reported
 and never mixed up:
 
-1. Population estimates, valid for the whole corpus:
-   - precision of class c = share correct among items in stratum "pred:c" (a random sample of everything the
-     pipeline put in c; for small classes the stratum is the whole class);
-   - recall of class c = weighted true positives / weighted true c, each item weighted by
-     stratum_population / items sampled from its stratum (inverse sampling probability).
-   Wilson 95% intervals for precision; recall intervals are not given (weights make them unreliable at n < 300).
+1. Population estimates, valid for the whole corpus: precision and recall of the current predictions with each
+   item weighted by stratum_population / items sampled from its stratum (inverse sampling probability).
+   Approximate Wilson 95% intervals for precision; none for recall (weights make them unreliable at n < 300).
 2. On-sample metrics ("as sampled"): per-class P/R/F1, support, macro- and weighted-F1, confusion matrix. They
    describe the labelled sample, which over-represents rare classes by design.
 
@@ -52,19 +49,23 @@ def on_sample(y_true: list[str], y_pred: list[str]) -> dict:
 
 
 def population(rows: list[dict], classes: list[str]) -> dict:
-    """rows: {"stratum", "stratum_population", "gold", "pred"}. Precision from pred strata, recall weighted."""
+    """rows: {"stratum", "stratum_population", "gold", "pred"}. Corpus-level precision and recall of the CURRENT
+    predictions, each item weighted by stratum_population / items sampled from its stratum (inverse sampling
+    probability). Valid after the pipeline changes too: the strata only define the weights, not the predictions.
+    The Wilson interval uses the unweighted count of items predicted c, so it is approximate."""
     sampled = Counter(r["stratum"] for r in rows)
     weight = {s: next(r["stratum_population"] for r in rows if r["stratum"] == s) / n for s, n in sampled.items()}
     out = {}
     for c in classes:
-        stratum = [r for r in rows if r["stratum"] == f"pred:{c}"]
-        k = sum(r["gold"] == c for r in stratum)
-        tp_w = sum(weight[r["stratum"]] for r in rows if r["gold"] == c and r["pred"] == c)
+        predicted = [r for r in rows if r["pred"] == c]
+        pred_w = sum(weight[r["stratum"]] for r in predicted)
+        tp_w = sum(weight[r["stratum"]] for r in predicted if r["gold"] == c)
         true_w = sum(weight[r["stratum"]] for r in rows if r["gold"] == c)
+        precision = tp_w / pred_w if pred_w else None
         out[c] = {
-            "precision": _r(k / len(stratum)) if stratum else None, "precision_ci95": wilson(k, len(stratum)),
-            "precision_n": len(stratum), "stratum_population": stratum[0]["stratum_population"] if stratum else 0,
-            "census": bool(stratum) and len(stratum) == stratum[0]["stratum_population"],
+            "precision": _r(precision),
+            "precision_ci95_approx": wilson(round(precision * len(predicted)), len(predicted)) if predicted else None,
+            "predicted_n": len(predicted),
             "recall_weighted": _r(tp_w / true_w) if true_w else None,
             "true_items_found": sum(r["gold"] == c for r in rows),
         }

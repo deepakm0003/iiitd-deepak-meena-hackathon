@@ -169,6 +169,46 @@ def _count(rows: list[dict[str, Any]], field: str) -> dict[str, int]:
     return out
 
 
+# ---- human check of the LLM silver labels --------------------------------------------------------------
+HUMAN_CHECK_N = 50
+HUMAN_CHECK_SEED = 2026
+
+
+def human_check_sample(candidates: list[dict[str, Any]], n: int = HUMAN_CHECK_N,
+                       seed: int = HUMAN_CHECK_SEED) -> list[dict[str, Any]]:
+    """A fixed simple-random sample of candidates for a human to label blind (never shown the silver labels)."""
+    rng = random.Random(seed)
+    return rng.sample(candidates, min(n, len(candidates)))
+
+
+def cohen_kappa(a: list[str], b: list[str]) -> float | None:
+    if not a:
+        return None
+    n = len(a)
+    observed = sum(x == y for x, y in zip(a, b, strict=True)) / n
+    labels = set(a) | set(b)
+    expected = sum((a.count(c) / n) * (b.count(c) / n) for c in labels)
+    return round((observed - expected) / (1 - expected), 4) if expected < 1 else 1.0
+
+
+def agreement(human: list[dict[str, Any]], silver: list[dict[str, Any]]) -> dict[str, Any]:
+    """Agreement between human and LLM labels on the items both labelled, per field."""
+    by_key = {r["key"]: r for r in silver}
+    pairs = [(h, by_key[h["key"]]) for h in human if h["key"] in by_key]
+    out: dict[str, Any] = {"n": len(pairs)}
+    for field in ("event_type", "entity", "sentiment", "factuality", "material"):
+        both = [(h, s) for h, s in pairs if h.get(field) is not None]  # quick mode leaves some fields empty
+        a = [str(h[field]) for h, _ in both]
+        b = [str(s[field]) for _, s in both]
+        out[field] = {"agreement": round(sum(x == y for x, y in zip(a, b, strict=True)) / len(a), 4) if a else None,
+                      "cohen_kappa": cohen_kappa(a, b)}
+    out["event_disagreements"] = [
+        {"title": h["title"][:120], "human": h["event_type"], "llm": s["event_type"]}
+        for h, s in pairs if h["event_type"] != s["event_type"]
+    ]
+    return out
+
+
 def read_jsonl(path: Path) -> list[dict[str, Any]]:
     if not path.exists():
         return []
@@ -196,7 +236,9 @@ def label_loop(
     tickers: set[str],
     ask: Callable[[str], str] = input,
     annotator: str = "deepak",
+    quick: bool = False,
 ) -> int:
+    """quick=True asks only entity and event type (the human check of the silver labels needs only those)."""
     classes = [c["name"] for c in load_yaml("taxonomy.yaml")["classes"]]
     done = {row["key"] for row in read_jsonl(gold_path)}
     todo = [c for c in candidates if c["key"] not in done]
@@ -218,6 +260,8 @@ def label_loop(
             ("  factuality (c=confirmed a=announced r=rumour d=denied o=opinion): ", lambda a: a in FACTUALITY),
             ("  material for a risk analyst? (y/n): ", lambda a: a in {"y", "n"}),
         ]
+        if quick:
+            prompts = prompts[:2]
         for prompt, valid in prompts:
             answer = _ask(prompt, valid, ask)
             answers.append(answer)
@@ -235,8 +279,8 @@ def label_loop(
                 i = history.pop()
                 print("  (undid the last saved label)")
             continue
-        entity, event, sentiment, factuality, material = answers
-        note = ask("  evidence span or note (optional, Enter to skip): ").strip()
+        entity, event, sentiment, factuality, material = answers + [None] * (5 - len(answers))
+        note = "" if quick else ask("  evidence span or note (optional, Enter to skip): ").strip()
         append_jsonl(gold_path, {
             "key": item["key"],
             "document_id": item.get("document_id"),
@@ -247,9 +291,9 @@ def label_loop(
             "title": item["title"],
             "entity": ENTITY_SPECIAL.get(entity.lower(), entity.upper()),
             "event_type": classes[int(event) - 1],
-            "sentiment": SENTIMENT[sentiment],
-            "factuality": FACTUALITY[factuality],
-            "material": material == "y",
+            "sentiment": SENTIMENT.get(sentiment),
+            "factuality": FACTUALITY.get(factuality),
+            "material": None if material is None else material == "y",
             "note": note,
             "annotator": annotator,
             "labeled_at": datetime.now(UTC).isoformat(),

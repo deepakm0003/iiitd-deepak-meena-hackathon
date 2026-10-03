@@ -31,8 +31,19 @@ def test_population_precision_from_its_stratum_and_weighted_recall():
         + [{"stratum": "pred:Other", "stratum_population": 100, "gold": "Other", "pred": "Other"}] * 4
     )
     pop = ge.population(rows, ["A", "Other"])
-    assert pop["A"]["precision"] == 0.8 and pop["A"]["census"] is True
+    assert pop["A"]["precision"] == 0.8 and pop["A"]["predicted_n"] == 10
     assert pop["A"]["recall_weighted"] == pytest.approx(8 / (8 + 20), abs=1e-4)   # 8 found, ~20 missed
+
+
+def test_population_precision_follows_the_current_predictions_not_the_sampling_strata():
+    # after a pipeline change, an item sampled from stratum pred:A may now be predicted Other, and vice versa
+    rows = ([{"stratum": "pred:A", "stratum_population": 10, "gold": "A", "pred": "A"}] * 5
+            + [{"stratum": "pred:A", "stratum_population": 10, "gold": "Other", "pred": "Other"}] * 5
+            + [{"stratum": "pred:Other", "stratum_population": 100, "gold": "A", "pred": "A"}]
+            + [{"stratum": "pred:Other", "stratum_population": 100, "gold": "Other", "pred": "Other"}] * 4)
+    pop = ge.population(rows, ["A"])
+    assert pop["A"]["precision"] == 1.0           # everything now predicted A is A (5 x w1 + 1 x w20)
+    assert pop["A"]["predicted_n"] == 6
 
 
 def test_threshold_sweep_trades_coverage_for_precision():
