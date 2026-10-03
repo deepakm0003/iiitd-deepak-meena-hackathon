@@ -25,7 +25,7 @@ export default function HowItWorks() {
   // walk through the stages on a loop, like a trace being replayed; hovering a card takes over
   useEffect(() => {
     if (reduce || paused) return;
-    const t = setInterval(() => setActive((a) => (a + 1) % STEPS.length), 2200);
+    const t = setInterval(() => setActive((a) => (a + 1) % STEPS.length), 3600);
     return () => clearInterval(t);
   }, [reduce, paused]);
 

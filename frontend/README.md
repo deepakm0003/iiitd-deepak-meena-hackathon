@@ -9,4 +9,9 @@ npm run build
 ```
 
 The landing page replays the recorded Western Alliance trace (`src/lib/caseStudy.ts`, from
-`tests/golden/western_alliance.json`); the dashboard under `/app` reads the live API.
+`tests/golden/western_alliance.json`). The dashboard under `/app` (signals, reasoning trace, portfolio and
+stress tests, watchlist, model trust, data sources) reads the live API, so start it first from the repo root:
+
+```
+python -m uvicorn tripwire.api.app:create_app --factory --port 8000
+```

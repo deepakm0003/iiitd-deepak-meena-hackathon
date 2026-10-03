@@ -76,6 +76,10 @@ def test_api_endpoints(filled_store, model):
     assert one.status_code == 200 and one.json()["event_id"] == listed[0]["event_id"]
     assert client.get("/signals/evt_missing").status_code == 404
     assert client.get("/signals", params={"event_type": "Nonsense"}).status_code == 422
+    stats = client.get("/signals/stats", params={"days": 7}).json()
+    assert stats["total"] == 2 and sum(stats["by_type"].values()) == 2
+    assert sum(d["total"] for d in stats["by_day"]) == 2
+    assert all(s["event_type"] != "Other" for s in client.get("/signals", params={"exclude_other": True}).json())
     risk = client.get("/companies/jpm/risk").json()
     assert risk["n_events"] == 1 and risk["by_event_type"] == {"Credit Event": 1}
     assert client.get("/companies/XXXX/risk").status_code == 404

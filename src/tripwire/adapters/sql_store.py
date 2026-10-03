@@ -515,8 +515,10 @@ class SqlStore:
 
     def query_signals(self, min_impact: float | None = None, event_type: str | None = None,
                       entity: str | None = None, since: datetime | None = None, updated_since: datetime | None = None,
-                      limit: int = 100) -> list[dict]:
+                      limit: int = 100, exclude_other: bool = False) -> list[dict]:
         query = select(signals.c.payload).order_by(signals.c.first_seen.desc()).limit(limit)
+        if exclude_other:
+            query = query.where(signals.c.event_type != "Other")
         if min_impact is not None:
             query = query.where(signals.c.impact >= min_impact)
         if event_type:
@@ -529,6 +531,13 @@ class SqlStore:
             query = query.where(signals.c.updated_at > updated_since)
         with self.engine.connect() as conn:
             return [r[0] for r in conn.execute(query)]
+
+    def signal_rows(self, since: datetime) -> list[dict]:
+        cols = (signals.c.event_id, signals.c.event_type, signals.c.risk_level, signals.c.impact, signals.c.first_seen)
+        with self.engine.connect() as conn:
+            rows = conn.execute(select(*cols).where(signals.c.first_seen >= since))
+            return [{"event_id": r[0], "event_type": r[1], "risk_level": r[2], "impact": r[3], "first_seen": r[4]}
+                    for r in rows]
 
     def get_signal(self, event_id: str) -> dict | None:
         with self.engine.connect() as conn:

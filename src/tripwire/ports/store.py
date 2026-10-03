@@ -76,7 +76,12 @@ class Store(Protocol):
 
     def query_signals(self, min_impact: float | None = None, event_type: str | None = None,
                       entity: str | None = None, since: datetime | None = None,
-                      updated_since: datetime | None = None, limit: int = 100) -> list[dict]: ...
+                      updated_since: datetime | None = None, limit: int = 100,
+                      exclude_other: bool = False) -> list[dict]: ...
+
+    def signal_rows(self, since: datetime) -> list[dict]:
+        """Light rows (event_id, event_type, risk_level, impact, first_seen) for aggregate views; no payloads."""
+        ...
 
     def get_signal(self, event_id: str) -> dict | None: ...
 

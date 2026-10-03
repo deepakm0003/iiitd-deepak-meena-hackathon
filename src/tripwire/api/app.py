@@ -1,7 +1,8 @@
 """FastAPI app: the Risk Engine's output, for Module B and the dashboard (OpenAPI docs at /docs).
 
   GET  /health                       store and pipeline health
-  GET  /signals                      list, filters: min_impact, event_type, entity, since, limit
+  GET  /signals                      list, filters: min_impact, event_type, entity, since, exclude_other, limit
+  GET  /signals/stats                counts per day, event type and risk level over the last N days (dashboard)
   GET  /signals/{event_id}           one signal with breakdown, evidence and documents
   GET  /companies/{ticker}/risk      rolling 7-day view for one company
   GET  /ops/status                   collector status (per-source last run, failures, pauses)
@@ -69,11 +70,28 @@ def create_app(store=None, stress=None) -> FastAPI:
         entity: str | None = Query(None, description="ticker, MACRO"),
         since: datetime | None = None,
         limit: int = Query(100, ge=1, le=1000),
+        exclude_other: bool = Query(False, description="drop items classified Other (no risk event)"),
     ):
         if event_type and event_type not in EVENT_TYPES:
             raise HTTPException(422, f"unknown event_type; choose from {EVENT_TYPES}")
         return store.query_signals(min_impact=min_impact, event_type=event_type,
-                                   entity=entity.upper() if entity else None, since=since, limit=limit)
+                                   entity=entity.upper() if entity else None, since=since, limit=limit,
+                                   exclude_other=exclude_other)
+
+    @app.get("/signals/stats")
+    def signal_stats(days: int = Query(7, ge=1, le=90)):
+        rows = store.signal_rows(datetime.now(UTC) - timedelta(days=days))
+        by_day: dict[str, dict[str, int]] = {}
+        for r in rows:
+            day = by_day.setdefault(r["first_seen"].date().isoformat(), {})
+            day[r["event_type"]] = day.get(r["event_type"], 0) + 1
+        return {
+            "days": days,
+            "total": len(rows),
+            "by_type": _count(r["event_type"] for r in rows),
+            "by_risk": _count(r["risk_level"] for r in rows),
+            "by_day": [{"date": d, "total": sum(c.values()), "by_type": c} for d, c in sorted(by_day.items())],
+        }
 
     @app.get("/signals/{event_id}")
     def get_signal(event_id: str):

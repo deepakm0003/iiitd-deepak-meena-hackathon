@@ -2,9 +2,9 @@ import { useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { Nav } from "./Nav";
-import { Footer, Trust } from "./Sections";
+import { Footer } from "./Sections";
 
-/** Marketing pages share the nav, the governance grid and the footer with the large wordmark. */
+/** Marketing pages share the nav and the footer with the large wordmark. */
 export default function SiteLayout() {
   const { pathname } = useLocation();
   useEffect(() => {
@@ -24,7 +24,6 @@ export default function SiteLayout() {
           <Outlet />
         </motion.main>
       </AnimatePresence>
-      <Trust />
       <Footer />
     </>
   );

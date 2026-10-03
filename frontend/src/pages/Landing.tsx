@@ -1,5 +1,5 @@
 import { Hero } from "../components/site/Hero";
-import { CaseBand, Features, HowItWorks, Mission, Proof, Sources } from "../components/site/Sections";
+import { CaseBand, Features, HowItWorks, Mission, Proof, Sources, Trust } from "../components/site/Sections";
 
 export default function Landing() {
   return (
@@ -11,6 +11,7 @@ export default function Landing() {
       <HowItWorks />
       <Proof />
       <Sources />
+      <Trust />
     </>
   );
 }

@@ -86,7 +86,7 @@ export function Hero() {
             style={{ clipPath: "inset(0 0 0 45%)" }}
           />
           <motion.div
-            className="relative w-full max-w-[460px]"
+            className="relative w-full max-w-[520px]"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, delay: 0.35, ease }}
