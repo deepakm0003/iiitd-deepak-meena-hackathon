@@ -21,7 +21,10 @@ from tripwire.nlp.linking import EntityLinker, LinkedEntity
 from tripwire.nlp.ner import enrich_frame
 from tripwire.nlp.sentiment import FinbertSentiment
 
-PRIMARY_MIN_RELEVANCE = 0.35  # below this an entity is a passing mention, not the subject (A-17)
+# Below this an entity is a passing mention, not the subject (A-17). 0.35 -> 0.60 on the gold dev split (silver
+# labels): entity accuracy 0.702 -> 0.750; passing mentions ("pasta sold at Walmart", "a lease at Google's center")
+# sat at relevance 0.49-0.57. 0.65 and above lose real subjects (0.679).
+PRIMARY_MIN_RELEVANCE = 0.60
 MACRO_SOURCES = {"rbi", "fed"}
 MACRO_RULES = {"central_bank", "macro_data", "sanctions", "tariffs", "conflict", "disaster", "supply"}
 STRONG_FINANCE_THEMES = {"ECON_BANKRUPTCY", "ECON_CENTRALBANK", "WB_1235_CENTRAL_BANKS", "ECON_INTEREST_RATES",

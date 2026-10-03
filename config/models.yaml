@@ -18,8 +18,13 @@ event_classifier:
   path: models/event_setfit
   # Selective classification (chosen on the validation split; docs/results/event_selective.json):
   # an ML label needs head probability >= min_confidence, else the item is Other ("abstain").
+  # Kept at 0.30 on the in-domain gold dev split: 0.35 gained 0.04 precision on 44 items (noise).
   min_confidence: 0.30
-  verify:                           # stress-mappable classes (they drive Module B) also need the zero-shot
+  verify:                           # classes that also need the zero-shot NLI verifier to agree
+    # The 6 stress-mappable classes (they drive Module B), plus Merger/Acquisition: its weak training labels
+    # came from the Twitter topic "M&A | Investments", and on the gold dev split the head's M&A labels were
+    # 0 of 6 correct (partnerships, fundraises, launches); the verifier rejects 5 of the 6.
     classes: [Credit Event, Geopolitical, Macroeconomic, Regulatory/Legal, Cyber/Operational,
-              Natural Disaster/Supply Chain]
-    min_p: 0.10                     # NLI verifier to give the class at least this probability
+              Natural Disaster/Supply Chain, Merger/Acquisition]
+    # 0.10 -> 0.20 on the gold dev split (LLM silver labels): false-positive rate 0.57 -> 0.30, recall unchanged.
+    min_p: 0.20
