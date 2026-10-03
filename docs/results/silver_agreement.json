@@ -1,0 +1,162 @@
+{
+  "n": 50,
+  "event_type": {
+    "agreement": 0.5,
+    "cohen_kappa": 0.4028
+  },
+  "entity": {
+    "agreement": 0.72,
+    "cohen_kappa": 0.6649
+  },
+  "sentiment": {
+    "agreement": null,
+    "cohen_kappa": null
+  },
+  "factuality": {
+    "agreement": null,
+    "cohen_kappa": null
+  },
+  "material": {
+    "agreement": null,
+    "cohen_kappa": null
+  },
+  "event_disagreements": [
+    {
+      "title": "US moves to choke off Russia\u2019s $17 billion A7 network Oct 02 2026 11:00 UTC US sanctions now target the broader A7 Netwo",
+      "human": "Management Change",
+      "llm": "Geopolitical"
+    },
+    {
+      "title": "IT Operations Analytics Market Report 2026: Capitalize on the AI-led rebound from $23.43 billion in 2026 to $30.13 billi",
+      "human": "Regulatory/Legal",
+      "llm": "Other"
+    },
+    {
+      "title": "$TSLAQ $SPCX $TSLA $SPCQ With His Nibs\u2019 thumbs on the Grok scale, and Palmer Luckey and Newt Gingrich cheering him on, i",
+      "human": "Regulatory/Legal",
+      "llm": "Other"
+    },
+    {
+      "title": "WFC's Credit Rating Upgraded to 'A-' by S&P, Outlook Remains Stable",
+      "human": "Merger/Acquisition",
+      "llm": "Other"
+    },
+    {
+      "title": "Tesla Delays Roadster Reveal Over Severe Weather in Texas",
+      "human": "Cyber/Operational",
+      "llm": "Natural Disaster/Supply Chain"
+    },
+    {
+      "title": "\"This is a shocking and morally bankrupt decision by a company that prides itself on social responsibility,\" said Rep. J",
+      "human": "Other",
+      "llm": "Geopolitical"
+    },
+    {
+      "title": "EMS Broadens Product Offering Across Fencing and Hurricane Protection with Acquisition of AMD Supply",
+      "human": "Regulatory/Legal",
+      "llm": "Merger/Acquisition"
+    },
+    {
+      "title": "Consumer Groups Press Congress to Probe Scams on Tech Platforms",
+      "human": "Other",
+      "llm": "Regulatory/Legal"
+    },
+    {
+      "title": "Bettergoods Lemon Alfredo Fettuccine Listeria Recall Expanded to All Lots",
+      "human": "Natural Disaster/Supply Chain",
+      "llm": "Cyber/Operational"
+    },
+    {
+      "title": "Eli Lilly Launches Global Push to Expand Weight-Loss and Diabetes Drug Access in Lower Income Countries",
+      "human": "Product Launch",
+      "llm": "Other"
+    },
+    {
+      "title": "REGIONS FINANCIAL CORP files 8-K: Item 5.07 Submission of Matters to a Vote of Security Holders",
+      "human": "Management Change",
+      "llm": "Other"
+    },
+    {
+      "title": "National retailer files Chapter 11 after 80 stores closed in 2026",
+      "human": "Merger/Acquisition",
+      "llm": "Credit Event"
+    },
+    {
+      "title": "Exxon, Suncor Bid to Block Climate Suits at US Supreme Court",
+      "human": "Other",
+      "llm": "Regulatory/Legal"
+    },
+    {
+      "title": "Marvel unveils new look at a previously unannounced villain in new VisionQuest trailer",
+      "human": "Product Launch",
+      "llm": "Other"
+    },
+    {
+      "title": "LOCKHEED MARTIN CORP files 8-K: Item 1.01 Entry into a Material Definitive Agreement",
+      "human": "Regulatory/Legal",
+      "llm": "Other"
+    },
+    {
+      "title": "ELI LILLY & Co files 8-K: Item 8.01 Other Events",
+      "human": "Earnings",
+      "llm": "Other"
+    },
+    {
+      "title": "Vibe coded apps are about to flood the Play Store; Google's preparing for chaos",
+      "human": "Product Launch",
+      "llm": "Other"
+    },
+    {
+      "title": "Apple streamlines management as analysts urge faster AI innovation",
+      "human": "Management Change",
+      "llm": "Other"
+    },
+    {
+      "title": "AI and cybersecurity weekly: Malware meets ChatGPT, Nvidia builds a safety net for AI and more",
+      "human": "Natural Disaster/Supply Chain",
+      "llm": "Cyber/Operational"
+    },
+    {
+      "title": "Micron\u2019s AI-driven outlook; Nike to report - what\u2019s moving markets",
+      "human": "Earnings",
+      "llm": "Macroeconomic"
+    },
+    {
+      "title": "Trump Says Iran May be Linked to FlyDubai Copilot Who Tried to Crash Israel-Bound Jet",
+      "human": "Macroeconomic",
+      "llm": "Geopolitical"
+    },
+    {
+      "title": "GMI Cloud Raises Over $660 Million to Accelerate Global AI Infrastructure Expansion",
+      "human": "Regulatory/Legal",
+      "llm": "Other"
+    },
+    {
+      "title": "SoftBank stock investors see past credit risks to AI returns",
+      "human": "Merger/Acquisition",
+      "llm": "Other"
+    },
+    {
+      "title": "WESTERN ALLIANCE BANCORPORATION files 8-K: Item 7.01 Regulation FD Disclosure",
+      "human": "Earnings",
+      "llm": "Credit Event"
+    },
+    {
+      "title": "Retail battlefield: Economic complexities between Lagos traders and Chinese merchants",
+      "human": "Macroeconomic",
+      "llm": "Other"
+    }
+  ],
+  "excluding_primed_items": {
+    "n": 48,
+    "event_type": {
+      "agreement": 0.4792,
+      "cohen_kappa": 0.3714
+    },
+    "entity": {
+      "agreement": 0.7083,
+      "cohen_kappa": 0.6454
+    },
+    "note": "2 items whose answers were shown as a format example before labelling"
+  }
+}

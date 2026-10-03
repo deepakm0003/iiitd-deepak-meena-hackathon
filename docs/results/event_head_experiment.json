@@ -1,0 +1,161 @@
+{
+  "results": {
+    "current_head": {
+      "dev": {
+        "n": 84,
+        "accuracy": 0.6667,
+        "macro_f1": 0.6085,
+        "non_other_precision": 0.7143,
+        "non_other_recall": 0.5769
+      },
+      "test": {
+        "n": 212,
+        "accuracy": 0.6368,
+        "macro_f1": 0.6588,
+        "non_other_precision": 0.7016,
+        "non_other_recall": 0.6259
+      }
+    },
+    "all-MiniLM-L6-v2|base": {
+      "dev": {
+        "n": 84,
+        "accuracy": 0.6667,
+        "macro_f1": 0.6085,
+        "non_other_precision": 0.7143,
+        "non_other_recall": 0.5769
+      },
+      "test": {
+        "n": 212,
+        "accuracy": 0.6368,
+        "macro_f1": 0.6588,
+        "non_other_precision": 0.7016,
+        "non_other_recall": 0.6259
+      }
+    },
+    "all-MiniLM-L6-v2|v2": {
+      "dev": {
+        "n": 84,
+        "accuracy": 0.6071,
+        "macro_f1": 0.6051,
+        "non_other_precision": 0.66,
+        "non_other_recall": 0.6346
+      },
+      "test": {
+        "n": 212,
+        "accuracy": 0.5896,
+        "macro_f1": 0.6529,
+        "non_other_precision": 0.6383,
+        "non_other_recall": 0.6475
+      }
+    },
+    "all-mpnet-base-v2|base": {
+      "dev": {
+        "n": 84,
+        "accuracy": 0.6548,
+        "macro_f1": 0.5859,
+        "non_other_precision": 0.6905,
+        "non_other_recall": 0.5577
+      },
+      "test": {
+        "n": 212,
+        "accuracy": 0.6557,
+        "macro_f1": 0.6684,
+        "non_other_precision": 0.7227,
+        "non_other_recall": 0.6187
+      }
+    },
+    "all-mpnet-base-v2|v2": {
+      "dev": {
+        "n": 84,
+        "accuracy": 0.5833,
+        "macro_f1": 0.5776,
+        "non_other_precision": 0.6154,
+        "non_other_recall": 0.6154
+      },
+      "test": {
+        "n": 212,
+        "accuracy": 0.6085,
+        "macro_f1": 0.6661,
+        "non_other_precision": 0.6507,
+        "non_other_recall": 0.6835
+      }
+    },
+    "bge-base-en-v1.5|base": {
+      "dev": {
+        "n": 84,
+        "accuracy": 0.631,
+        "macro_f1": 0.5728,
+        "non_other_precision": 0.7179,
+        "non_other_recall": 0.5385
+      },
+      "test": {
+        "n": 212,
+        "accuracy": 0.6132,
+        "macro_f1": 0.6286,
+        "non_other_precision": 0.7248,
+        "non_other_recall": 0.5683
+      }
+    },
+    "bge-base-en-v1.5|v2": {
+      "dev": {
+        "n": 84,
+        "accuracy": 0.6071,
+        "macro_f1": 0.6327,
+        "non_other_precision": 0.6538,
+        "non_other_recall": 0.6538
+      },
+      "test": {
+        "n": 212,
+        "accuracy": 0.5896,
+        "macro_f1": 0.657,
+        "non_other_precision": 0.6547,
+        "non_other_recall": 0.6547
+      }
+    }
+  },
+  "train": {
+    "base": {
+      "n": 486,
+      "by_label": {
+        "Earnings": 64,
+        "Merger/Acquisition": 64,
+        "Macroeconomic": 64,
+        "Other": 64,
+        "Regulatory/Legal": 64,
+        "Management Change": 64,
+        "Geopolitical": 64,
+        "Cyber/Operational": 16,
+        "Credit Event": 12,
+        "Natural Disaster/Supply Chain": 10
+      },
+      "by_origin": {
+        "twitter": 385,
+        "8k": 59,
+        "seed": 42
+      }
+    },
+    "v2": {
+      "n": 1247,
+      "by_label": {
+        "Geopolitical": 150,
+        "Regulatory/Legal": 150,
+        "Earnings": 150,
+        "Other": 150,
+        "Merger/Acquisition": 150,
+        "Macroeconomic": 150,
+        "Management Change": 150,
+        "Product Launch": 122,
+        "Cyber/Operational": 51,
+        "Credit Event": 14,
+        "Natural Disaster/Supply Chain": 10
+      },
+      "by_origin": {
+        "twitter": 722,
+        "rule": 335,
+        "8k": 139,
+        "seed": 42,
+        "opinion_headline": 9
+      }
+    }
+  }
+}

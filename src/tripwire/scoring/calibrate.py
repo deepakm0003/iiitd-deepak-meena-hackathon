@@ -63,6 +63,8 @@ def _pr_auc(scores: list[float], labels: list[bool]) -> float | None:
 def _calibration(probs: list[float], labels: list[bool]) -> dict:
     """Brier score and expected calibration error (10 equal-count bins) of P(large move)."""
     n = len(probs)
+    if n == 0:
+        return {"brier": None, "brier_base_rate": None, "ece": None, "reliability": []}
     brier = sum((p - y) ** 2 for p, y in zip(probs, labels, strict=True)) / n
     order = sorted(range(n), key=lambda i: probs[i])
     bins, ece = [], 0.0
@@ -83,6 +85,9 @@ def evaluate(model: ImpactModel, rows: list[dict]) -> dict:
     target = [r["abs_scar"] for r in rows]
     large = [r["large"] for r in rows]
     probs = [model.p_large_move(v) for v in impacts]
+    if not rows:
+        raise ValueError("no events with returns in this period: is the events table being rebuilt by the score "
+                         "daemon? Stop it while calibrating.")
     buckets = []
     for lo, hi in ((1, 4), (4, 7), (7, 8.5), (8.5, 10.01)):
         idx = [i for i, v in enumerate(impacts) if lo <= v < hi]
