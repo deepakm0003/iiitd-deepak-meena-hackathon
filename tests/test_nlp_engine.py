@@ -167,3 +167,35 @@ def test_filings_are_classified_on_the_press_release_not_the_templated_title():
     assert classifier_text(Document(title=title, lead="", **base)) == ""
     lead = "KeyCorp will present at the Goldman Sachs financial services conference on December 9, 2025."
     assert classifier_text(Document(title=title, lead=lead, **base)) == lead
+
+
+def test_stress_classes_can_need_stronger_verification_than_others():
+    from tripwire.nlp.engine import _select
+
+    policy = {"min_confidence": 0.3, "verify_classes": {"Credit Event", "Macroeconomic"}, "verifier_min_p": 0.2,
+              "verifier_min_p_by_class": {"Credit Event": 0.4}}
+    zs = ClassResult("Credit Event", {"Credit Event": 0.3, "Macroeconomic": 0.3}, 0.3, "zero_shot")
+    credit = ClassResult("Credit Event", {"Credit Event": 0.5}, 0.5, "head")
+    macro = ClassResult("Macroeconomic", {"Macroeconomic": 0.5}, 0.5, "head")
+    assert _select(credit, zs, policy).event_type == "Other"           # 0.3 < 0.4 for Credit Event
+    assert _select(macro, zs, policy).event_type == "Macroeconomic"    # 0.3 >= 0.2 default
+
+
+def test_every_annotation_says_why_its_event_label_was_chosen(engine):
+    rule, other = engine.annotate([d(1, "Retailer files for Chapter 11 bankruptcy protection"),
+                                   d(2, "Company hosts investor day")])
+    assert rule.event_evidence["source"] == "rule:bankruptcy"
+    assert rule.event_evidence["phrase"].lower() in "retailer files for chapter 11 bankruptcy protection"
+    assert other.event_type == "Other" and other.event_evidence["note"]
+
+
+def test_ml_label_evidence_is_a_sentence_from_the_source(engine):
+    class Launch(FakeClassifier):
+        def predict(self, texts):
+            return [ClassResult("Product Launch", {"Product Launch": 0.9 if "unveil" in t else 0.4, "Other": 0.1},
+                                0.9, "head") for t in texts]
+
+    engine.classifier = Launch()
+    [a] = engine.annotate([d(1, "Busy week at the firm. It will unveil a new phone today. Shares were flat.")])
+    assert a.event_type == "Product Launch"
+    assert a.event_evidence["phrase"] == "It will unveil a new phone today."

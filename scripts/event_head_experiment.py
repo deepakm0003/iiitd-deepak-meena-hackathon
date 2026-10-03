@@ -56,7 +56,8 @@ def twitter_v2(path: Path) -> list:
 def main() -> int:
     settings = get_settings()
     store, http = build_store(settings), build_http(settings)
-    lines = (ROOT / "data/gold/silver_llm.jsonl").read_text(encoding="utf-8").splitlines()
+    labels_file = os.environ.get("LABELS", "human_check.jsonl")   # human gold by default
+    lines = (ROOT / "data/gold" / labels_file).read_text(encoding="utf-8").splitlines()
     silver = [json.loads(line) for line in lines if line.strip()]
     skeys = {s["key"] for s in silver}
     ann = {a["dedup_key"]: a for a in store.get_annotations()}
@@ -117,7 +118,8 @@ def main() -> int:
     zs = dict(zip(need, clf.predict_zero_shot([texts[i] for i in need]), strict=True))
     cfg = load_yaml("models.yaml")["event_classifier"]
     policy = {"min_confidence": cfg["min_confidence"], "verify_classes": set(cfg["verify"]["classes"]),
-              "verifier_min_p": cfg["verify"]["min_p"]}
+              "verifier_min_p": cfg["verify"]["min_p"],
+              "verifier_min_p_by_class": cfg["verify"].get("min_p_by_class", {})}
 
     def pipeline(head_probs) -> list[str]:
         out = []
@@ -150,8 +152,9 @@ def main() -> int:
 
     # current production head as the reference
     current = clf._predict_head(texts)
-    results = {"current_head": {"dev": scores(pipeline([r.probabilities for r in current]), "dev"),
-                                "test": scores(pipeline([r.probabilities for r in current]), "test")}}
+    # The TEST split is locked: only DEV is scored here.
+    current_pred = pipeline([r.probabilities for r in current])
+    results = {"labels": labels_file, "current_head": {"dev": scores(current_pred, "dev")}}
     print("current_head", results["current_head"])
     for enc_name in ENCODERS:
         enc = SentenceTransformer(enc_name, device="cuda")
@@ -168,9 +171,10 @@ def main() -> int:
             probs = [dict(zip(lr.classes_, row.tolist(), strict=True)) for row in lr.predict_proba(x_eval)]
             pred = pipeline(probs)
             key = f"{enc_name.split('/')[-1]}|{data_name}"
-            results[key] = {"dev": scores(pred, "dev"), "test": scores(pred, "test")}
+            results[key] = {"dev": scores(pred, "dev")}
             print(key, "DEV", results[key]["dev"])
-    out = ROOT / "var" / f"event_head_experiment_{os.environ.get('VARIANTS', 'base,v2').replace(',', '_')}.json"
+    tag = f"{labels_file.split('.')[0]}_{os.environ.get('VARIANTS', 'base,v2').replace(',', '_')}"
+    out = ROOT / "var" / f"event_head_experiment_{tag}.json"
     out.write_text(json.dumps({"results": results, "train": {"base": td.describe(base), "v2": td.describe(v2)}},
                               indent=2), encoding="utf-8")
     print("wrote", out)

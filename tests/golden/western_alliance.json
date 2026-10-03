@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-02T16:33:45.297095+00:00",
+ "generated_at": "2026-10-03T04:04:17.431861+00:00",
  "provenance": "OBSERVED source document (SEC 8-K, public); outputs recorded from the pipeline as deployed",
  "document": {
   "raw_id": 5818,
@@ -103,10 +103,10 @@
     "Q_source_credibility": 0.1,
     "H_historical_reaction": 0.1295
    },
-   "p_large_move": 0.4262,
-   "config_hash": "sha256:178e02ac5fbd9f22"
+   "p_large_move": 0.4239,
+   "config_hash": "sha256:9cc7874522c26cde"
   },
-  "p_large_move": 0.4262,
+  "p_large_move": 0.4239,
   "corroboration": {
    "n_articles": 1,
    "n_publishers": 1,

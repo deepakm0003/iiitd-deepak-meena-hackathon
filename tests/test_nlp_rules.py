@@ -239,3 +239,25 @@ def test_rules_need_context_not_just_a_keyword(rules, rule_id, text, fires):
 def test_a_decimal_point_does_not_end_the_sentence_for_rules(rules):
     fired = {e.source for e in rules.evidence(d("The developer defaulted on its $1.5 billion bonds"))}
     assert "rule:default" in fired
+
+
+@pytest.mark.parametrize("text, fires", [
+    ("Agencies reduce regulatory burden for community banks, increase eligibility for 18-month exam cycle", True),
+    ("Agencies seek comment on proposed third-party risk management guidance", True),
+    ("Federal Reserve Board announces approval of application by Peoples Bancorp Inc.", True),
+    ("Federal Reserve Board announces termination of enforcement action", True),
+    ("Regulators worry about the economy as markets slide", False),
+])
+def test_regulator_actions_are_regulatory(rules, text, fires):
+    assert any(e.source == "rule:regulator_action" for e in rules.evidence(d(text))) is fires
+
+
+def test_a_central_bank_rate_decision_stays_macroeconomic(rules):
+    doc = d("Federal Reserve Board approves a 25 basis point rate cut as policy eases")
+    assert rules.decide(rules.evidence(doc)).event_type == "Macroeconomic"
+
+
+def test_rule_evidence_is_the_exact_source_text(rules):
+    doc = d("Regional lender files for Chapter 11 bankruptcy protection after deposit flight")
+    ev = next(e for e in rules.evidence(doc) if e.source == "rule:bankruptcy")
+    assert ev.phrase.lower() in doc.title.lower() and ev.phrase in ev.context

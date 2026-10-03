@@ -1,0 +1,93 @@
+{
+  "n_dev": 84,
+  "current": {
+    "accuracy": 0.6429,
+    "macro_f1": 0.5538,
+    "weak": {
+      "Credit Event": "TP1 FP5 FN1",
+      "Geopolitical": "TP2 FP3 FN0",
+      "Regulatory/Legal": "TP4 FP2 FN2"
+    }
+  },
+  "credit_geo_vmin_0.3": {
+    "accuracy": 0.6667,
+    "macro_f1": 0.5799,
+    "weak": {
+      "Credit Event": "TP1 FP4 FN1",
+      "Geopolitical": "TP2 FP1 FN0",
+      "Regulatory/Legal": "TP4 FP2 FN2"
+    }
+  },
+  "credit_geo_vmin_0.4": {
+    "accuracy": 0.6786,
+    "macro_f1": 0.5909,
+    "weak": {
+      "Credit Event": "TP1 FP2 FN1",
+      "Geopolitical": "TP2 FP1 FN0",
+      "Regulatory/Legal": "TP4 FP2 FN2"
+    }
+  },
+  "credit_geo_vmin_0.5": {
+    "accuracy": 0.6786,
+    "macro_f1": 0.5733,
+    "weak": {
+      "Credit Event": "TP1 FP1 FN1",
+      "Geopolitical": "TP1 FP1 FN1",
+      "Regulatory/Legal": "TP4 FP2 FN2"
+    }
+  },
+  "credit_ml_off": {
+    "accuracy": 0.6667,
+    "macro_f1": 0.5778,
+    "weak": {
+      "Credit Event": "TP1 FP1 FN1",
+      "Geopolitical": "TP2 FP3 FN0",
+      "Regulatory/Legal": "TP4 FP2 FN2"
+    }
+  },
+  "credit_geo_ml_off": {
+    "accuracy": 0.6786,
+    "macro_f1": 0.5733,
+    "weak": {
+      "Credit Event": "TP1 FP1 FN1",
+      "Geopolitical": "TP1 FP1 FN1",
+      "Regulatory/Legal": "TP4 FP2 FN2"
+    }
+  },
+  "regulator_rule": {
+    "accuracy": 0.6548,
+    "macro_f1": 0.564,
+    "weak": {
+      "Credit Event": "TP1 FP5 FN1",
+      "Geopolitical": "TP2 FP3 FN0",
+      "Regulatory/Legal": "TP5 FP2 FN1"
+    }
+  },
+  "credit_ml_off_and_rule": {
+    "accuracy": 0.6786,
+    "macro_f1": 0.5879,
+    "weak": {
+      "Credit Event": "TP1 FP1 FN1",
+      "Geopolitical": "TP2 FP3 FN0",
+      "Regulatory/Legal": "TP5 FP2 FN1"
+    }
+  },
+  "credit_geo_ml_off_and_rule": {
+    "accuracy": 0.6905,
+    "macro_f1": 0.5834,
+    "weak": {
+      "Credit Event": "TP1 FP1 FN1",
+      "Geopolitical": "TP1 FP1 FN1",
+      "Regulatory/Legal": "TP5 FP2 FN1"
+    }
+  },
+  "credit_geo_vmin_0.4_and_rule": {
+    "accuracy": 0.6905,
+    "macro_f1": 0.601,
+    "weak": {
+      "Credit Event": "TP1 FP2 FN1",
+      "Geopolitical": "TP2 FP1 FN0",
+      "Regulatory/Legal": "TP5 FP2 FN1"
+    }
+  }
+}

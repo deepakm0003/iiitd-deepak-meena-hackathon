@@ -183,9 +183,98 @@ Reading: precision is high where the event has a clear form (launches, outages, 
 Geopolitical are over-predicted and Regulatory/Legal is under-detected. Small supports (3-17) make several
 class numbers rough. Human vs LLM agreement on the same items: event kappa 0.67, entity kappa 0.71.
 
-### Still open
+### Evaluation protocol from here on (test split locked)
+From this point the 212-item human test split is used once, after all changes are frozen; every decision below
+is made on the 84-item dev split. History, stated plainly: before the lock, the LLM silver labels covered both
+splits, and rule bugs were found by error analysis that included test items (those post-fix numbers are
+labelled optimistic above). The human test labels were looked at once, for the baseline in the table above,
+and not used for any decision since.
 
-- Regulatory/Legal recall (0.24) and Credit Event / Geopolitical precision; decided on the dev split only.
+### Weak classes (human gold dev split, `docs/results/weak_class_experiment.json`)
+| Policy (dev, n = 84) | Accuracy | Macro-F1 | Credit FP | Geo FP | Reg/Legal TP / FN |
+|---|---|---|---|---|---|
+| before | 0.643 | 0.554 | 5 | 3 | 4 / 2 |
+| Credit + Geopolitical verifier >= 0.40 | 0.679 | 0.591 | 2 | 1 | 4 / 2 |
+| + `regulator_action` rule (shipped) | 0.690 | 0.601 | 2 | 1 | 5 / 1 |
+Adopted: per-class verifier thresholds (Credit Event and Geopolitical 0.40; they trigger stress tests, so they
+need stronger evidence) and a rule for regulators' own actions (guidance, rules, approvals, enforcement), with
+tests. No true positive lost on dev. Small numbers: a few items each.
+
+### DeBERTa-v3-large class-specific verification (negative result; not shipped)
+`scripts/verifier_experiment.py`, `docs/results/verifier_experiment.json`, dev split only. MiniLM proposes the
+class; DeBERTa-v3-large (MIT licence, runs locally) verifies it with a per-class definition hypothesis plus
+exclusion hypotheses written from the definitions card (e.g. "a credit rating was upgraded" against Credit
+Event), at sentence level.
+| Variant | Dev accuracy | Dev macro-F1 |
+|---|---|---|
+| current (base, 11-way, per-class thresholds) | 0.690 | 0.601 |
+| large, 11-way | 0.631 | 0.549 |
+| large, class-specific, tau 0.5 / 0.7 / 0.9 | 0.667 / 0.643 / 0.643 | 0.569 / 0.530 / 0.530 |
+| + second candidate from the head | same as above | same |
+The larger verifier did not help: more Geopolitical false positives in 11-way mode; one fewer Credit false
+positive but a lost Regulatory/Legal true positive in class-specific mode. Same conclusion as the encoder test:
+the bottleneck is supervision, not model size.
+
+### Evidence for every event label (shipped)
+Each annotation now records `event_evidence`: for 8-K items and rules the exact phrase that fired and its
+surrounding source text; for an ML label the source sentence the head scores highest for that class; for an
+abstention, the reason. Carried into signals and `/signals/{id}/trace`. Never generated text (tests check this).
+
+### New event head (shipped): bge-base encoder, recipe v3
+Re-run of the head experiment against the human dev labels (the earlier runs used silver labels and pre-fix
+rules); `docs/results/event_head_experiment_human.json`.
+| Head (human gold DEV, n = 84) | Accuracy | Macro-F1 | Precision | Recall |
+|---|---|---|---|---|
+| previous: MiniLM, base data | 0.690 | 0.601 | 0.711 | 0.574 |
+| MiniLM, v2 / v3 | 0.655 / 0.643 | 0.593 / 0.577 | 0.625 / 0.617 | 0.638 / 0.617 |
+| bge-base, base / v2 | 0.667 / 0.667 | 0.582 / 0.627 | 0.703 / 0.635 | 0.553 / 0.702 |
+| bge-base, v3 (experiment) | 0.714 | 0.629 | 0.689 | 0.660 |
+| bge-base, v3 as shipped (`train-head`) | 0.702 | 0.615 | | |
+Recipe v3 (`nlp/training_data.py`): repaired Twitter mappings (M&A needs deal words, Geopolitical needs
+geopolitical words), 8-K examples, seeds, and 1,428 in-domain rule-labelled items plus 400 opinion / listicle
+headlines as Other, all given priority; every gold-set item and near-duplicate excluded. It is the first head
+trained with Product Launch examples (142). The shipped run differs from the experiment by four articles that
+arrived in between (one dev item). The gain is small (one to three dev items) but in the same direction on the
+silver labels earlier (+0.026 macro-F1); the locked test run below decides whether it holds.
+Cost: the head now embeds with bge-base (110M parameters) instead of MiniLM (22M); MiniLM is still used for
+clustering.
+
+### Final locked TEST evaluation (run once, after all changes above were frozen)
+Human gold test split, n = 212, 11 classes; baseline = the human gold result before this round
+(`docs/results/gold_eval_baseline.json`), final = `docs/results/gold_eval.json`.
+
+| | Baseline | Final |
+|---|---|---|
+| Event accuracy | 0.618 | **0.660** |
+| Event macro-F1 | 0.585 | **0.636** |
+| Event weighted F1 | 0.628 | **0.655** |
+| Entity accuracy | 0.759 | 0.759 |
+
+| Class (support) | Precision | Recall | F1 |
+|---|---|---|---|
+| Regulatory/Legal (17) | 0.50 -> 0.57 | 0.24 -> **0.47** | 0.32 -> **0.52** |
+| Geopolitical (3) | 0.14 -> **0.40** | 0.67 -> 0.67 | 0.24 -> 0.50 |
+| Management Change (14) | 0.69 -> 0.80 | 0.64 -> 0.86 | 0.67 -> **0.83** |
+| Merger/Acquisition (8) | 0.67 -> 0.71 | 0.50 -> 0.63 | 0.57 -> 0.67 |
+| Natural Disaster/Supply Chain (8) | 0.67 -> 1.00 | 0.50 -> 0.50 | 0.57 -> 0.67 |
+| Product Launch (32) | 0.95 -> 0.70 | 0.59 -> 0.81 | 0.73 -> 0.75 |
+| Earnings (16) | 0.87 -> 0.82 | 0.81 -> 0.88 | 0.84 -> 0.85 |
+| Other (70) | 0.56 -> 0.58 | 0.70 -> 0.71 | 0.62 -> 0.64 |
+| Cyber/Operational (13) | 0.89 -> 0.88 | 0.62 -> 0.54 | 0.73 -> 0.67 |
+| Macroeconomic (23) | 0.72 -> 0.82 | 0.57 -> **0.39** | 0.63 -> 0.53 |
+| Credit Event (8) | 0.40 -> 0.38 | 0.75 -> **0.38** | 0.52 -> **0.38** |
+
+Reading: the targeted problems improved (Regulatory/Legal recall doubled, Geopolitical precision nearly
+tripled, M&A and Management Change better), and overall accuracy and macro-F1 rose by 4 and 5 points. Three
+regressions are real and kept visible: Credit Event recall fell from 6 to 3 of 8 (the stricter 0.40 verifier
+and the new head), Macroeconomic recall fell, and Product Launch precision fell as the head started predicting
+that class. Small supports make several per-class moves 1-3 items. Impact model after recalibration on the new
+labels: out-of-time Spearman 0.332, AUC 0.728, PR-AUC 0.396, Brier 0.138, 59% large moves at Impact >= 7.
+
+### Still open
+- Credit Event recall (3 of 8 on test) and Macroeconomic recall: the next targets, to be fixed on dev only.
+- Training labels are the bottleneck (`docs/ML_LABEL_AUDIT.md`): no Product Launch examples, 10-16 seed
+  examples for Credit / Natural Disaster / Cyber, contaminated Twitter mappings for M&A and Geopolitical.
 - Verifier keep/drop and probability calibration, on the gold dev split.
 - Some filing texts lost curly quotes when decoded (shown as U+FFFD); fixing needs a re-fetch of those filings.
 - Large models (entity sentiment 418 MB, SetFit 87 MB) are not in git: publish as release assets with a download

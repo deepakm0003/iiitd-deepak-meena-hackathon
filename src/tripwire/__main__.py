@@ -443,6 +443,48 @@ def cmd_eval_gold(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_train_head(args: argparse.Namespace) -> int:
+    """Train the shipped event head with recipe v3 (repaired Twitter mappings + in-domain examples first),
+    excluding every gold-set item and near-duplicate. Chosen on the human gold dev split."""
+    import pickle
+    import shutil
+    from datetime import UTC, datetime
+
+    from sentence_transformers import SentenceTransformer
+    from sklearn.linear_model import LogisticRegression
+
+    from tripwire import gold
+    from tripwire.factory import build_http, build_store
+    from tripwire.nlp import training_data as td
+    from tripwire.nlp.classifier import HEAD_PATH
+    from tripwire.nlp.device import device
+    from tripwire.nlp.filing_lead import with_filing_leads
+
+    settings = get_settings()
+    store, http = build_store(settings), build_http(settings)
+    utc = lambda s: datetime.fromisoformat(s).replace(tzinfo=UTC)  # noqa: E731
+    exclude = {c["key"] for c in gold.read_jsonl(settings.data_dir / "gold" / "candidates.jsonl")}
+    docs = with_filing_leads(store, store.iter_documents())
+    rules, other = td.in_domain_examples(store, docs, exclude)
+    edgar = td.edgar_examples(store, utc("2023-01-01"), utc("2024-12-31"))
+    data = td.recipe_v3(edgar, td.download_twitter_topic(http, "train"), rules, other)
+    encoder = SentenceTransformer(args.encoder, device=device())
+    x = encoder.encode([e.text for e in data], batch_size=64, normalize_embeddings=True, show_progress_bar=False)
+    head = LogisticRegression(max_iter=3000, class_weight="balanced", C=2.0).fit(x, [e.label for e in data])
+    if HEAD_PATH.exists():
+        shutil.copy(HEAD_PATH, HEAD_PATH.with_name("event_head_previous.pkl"))
+    with open(HEAD_PATH, "wb") as fh:
+        pickle.dump({"classifier": head, "base_model": args.encoder, "labels": list(head.classes_)}, fh)
+    report = {"trained_at": datetime.now(UTC).isoformat(), "recipe": "v3", "encoder": args.encoder,
+              "train": td.describe(data), "in_domain_rule_examples": len(rules), "opinion_other_examples": len(other),
+              "excluded_gold_items": len(exclude),
+              "selection": "human gold DEV split, docs/results/event_head_experiment_human.json"}
+    out = settings.data_dir.parent / "docs" / "results" / "event_head_training.json"
+    out.write_text(json.dumps(report, indent=2), encoding="utf-8")
+    print(json.dumps(report, indent=2))
+    return 0
+
+
 def cmd_eval_sentiment(args: argparse.Namespace) -> int:
     from tripwire.eval.sentiment_eval import evaluate, load_sentfin
     from tripwire.nlp.sentiment import FinbertSentiment
@@ -718,6 +760,10 @@ def main(argv: list[str] | None = None) -> int:
     train.add_argument("--valid-to", default="2025-06-30")
     train.add_argument("--per-class", type=int, default=64)
     train.set_defaults(func=cmd_train_events)
+
+    head_cmd = sub.add_parser("train-head", help="train the shipped event head (recipe v3, gold items excluded)")
+    head_cmd.add_argument("--encoder", default="BAAI/bge-base-en-v1.5")
+    head_cmd.set_defaults(func=cmd_train_head)
 
     eval_ev = sub.add_parser("eval-events", help="selective-classification report for the event classifier")
     eval_ev.add_argument("--valid-from", default="2025-01-01")

@@ -1,0 +1,130 @@
+{
+  "n_dev": 84,
+  "n_ml_items": 57,
+  "A_current": {
+    "accuracy": 0.6905,
+    "macro_f1": 0.601,
+    "weak": {
+      "Credit Event": "TP1 FP2 FN1",
+      "Geopolitical": "TP2 FP1 FN0",
+      "Regulatory/Legal": "TP5 FP2 FN1",
+      "Merger/Acquisition": "TP0 FP1 FN3"
+    }
+  },
+  "B_large_11way": {
+    "accuracy": 0.631,
+    "macro_f1": 0.5489,
+    "weak": {
+      "Credit Event": "TP1 FP2 FN1",
+      "Geopolitical": "TP2 FP5 FN0",
+      "Regulatory/Legal": "TP5 FP3 FN1",
+      "Merger/Acquisition": "TP0 FP0 FN3"
+    }
+  },
+  "C_tau_0.5": {
+    "accuracy": 0.6667,
+    "macro_f1": 0.5695,
+    "weak": {
+      "Credit Event": "TP1 FP1 FN1",
+      "Geopolitical": "TP2 FP1 FN0",
+      "Regulatory/Legal": "TP4 FP2 FN2",
+      "Merger/Acquisition": "TP0 FP0 FN3"
+    }
+  },
+  "D_tau_0.5": {
+    "accuracy": 0.6667,
+    "macro_f1": 0.5695,
+    "weak": {
+      "Credit Event": "TP1 FP1 FN1",
+      "Geopolitical": "TP2 FP1 FN0",
+      "Regulatory/Legal": "TP4 FP2 FN2",
+      "Merger/Acquisition": "TP0 FP0 FN3"
+    }
+  },
+  "C_tau_0.5_accepted_examples": [
+    {
+      "title": "JOHNSON & JOHNSON files 8-K: Item 7.01 Regulation FD Disclosure",
+      "class": "Regulatory/Legal",
+      "pos": 0.9438672661781311,
+      "neg": 0.0006487308419309556,
+      "neg_hyp": "This is opinion or commentary about a stock.",
+      "evidence": "On July 27, 2026, the Company announced that it has reached an agreement for a comprehensive resolution of the ovarian talc litigation with the plaintiff firms leading the federal Multi-District Litig"
+    },
+    {
+      "title": "Trump DOJ Arrests California Tech Owner In Alleged $300 Million China Smuggling Scheme",
+      "class": "Regulatory/Legal",
+      "pos": 0.622459352016449,
+      "neg": 0.00019716941460501403,
+      "neg_hyp": "This is opinion or commentary about a stock.",
+      "evidence": "Trump DOJ Arrests California Tech Owner In Alleged $300 Million China Smuggling Scheme"
+    },
+    {
+      "title": "Iran's Revolutionary Guards kill six \"terrorists\" in restive region, IRNA news agency repo",
+      "class": "Geopolitical",
+      "pos": 0.5470141768455505,
+      "neg": 0.1245320737361908,
+      "neg_hyp": "This is about a crime or a security incident involving individuals.",
+      "evidence": "Iran's Revolutionary Guards kill six \"terrorists\" in restive region, IRNA news agency reports - Reuters."
+    }
+  ],
+  "C_tau_0.7": {
+    "accuracy": 0.6429,
+    "macro_f1": 0.5297,
+    "weak": {
+      "Credit Event": "TP1 FP1 FN1",
+      "Geopolitical": "TP1 FP1 FN1",
+      "Regulatory/Legal": "TP3 FP2 FN3",
+      "Merger/Acquisition": "TP0 FP0 FN3"
+    }
+  },
+  "D_tau_0.7": {
+    "accuracy": 0.6429,
+    "macro_f1": 0.5297,
+    "weak": {
+      "Credit Event": "TP1 FP1 FN1",
+      "Geopolitical": "TP1 FP1 FN1",
+      "Regulatory/Legal": "TP3 FP2 FN3",
+      "Merger/Acquisition": "TP0 FP0 FN3"
+    }
+  },
+  "C_tau_0.7_accepted_examples": [
+    {
+      "title": "JOHNSON & JOHNSON files 8-K: Item 7.01 Regulation FD Disclosure",
+      "class": "Regulatory/Legal",
+      "pos": 0.9438672661781311,
+      "neg": 0.0006487308419309556,
+      "neg_hyp": "This is opinion or commentary about a stock.",
+      "evidence": "On July 27, 2026, the Company announced that it has reached an agreement for a comprehensive resolution of the ovarian talc litigation with the plaintiff firms leading the federal Multi-District Litig"
+    }
+  ],
+  "C_tau_0.9": {
+    "accuracy": 0.6429,
+    "macro_f1": 0.5297,
+    "weak": {
+      "Credit Event": "TP1 FP1 FN1",
+      "Geopolitical": "TP1 FP1 FN1",
+      "Regulatory/Legal": "TP3 FP2 FN3",
+      "Merger/Acquisition": "TP0 FP0 FN3"
+    }
+  },
+  "D_tau_0.9": {
+    "accuracy": 0.6429,
+    "macro_f1": 0.5297,
+    "weak": {
+      "Credit Event": "TP1 FP1 FN1",
+      "Geopolitical": "TP1 FP1 FN1",
+      "Regulatory/Legal": "TP3 FP2 FN3",
+      "Merger/Acquisition": "TP0 FP0 FN3"
+    }
+  },
+  "C_tau_0.9_accepted_examples": [
+    {
+      "title": "JOHNSON & JOHNSON files 8-K: Item 7.01 Regulation FD Disclosure",
+      "class": "Regulatory/Legal",
+      "pos": 0.9438672661781311,
+      "neg": 0.0006487308419309556,
+      "neg_hyp": "This is opinion or commentary about a stock.",
+      "evidence": "On July 27, 2026, the Company announced that it has reached an agreement for a comprehensive resolution of the ovarian talc litigation with the plaintiff firms leading the federal Multi-District Litig"
+    }
+  ]
+}

@@ -113,6 +113,7 @@ def build_signals(store, model: ImpactModel, since: datetime | None = None) -> l
             else "neutral",
             "factuality": (rep.get("frame") or {}).get("factuality", "confirmed"),
             "frame": rep.get("frame", {}),
+            "event_evidence": rep.get("event_evidence", {}),
             "novelty_score": r["factors"]["N_novelty"],
             "corroboration": {"n_articles": r["n_docs"], "n_publishers": r["n_publishers"],
                               "sources": r["sources"], "score": r["corroboration"]},

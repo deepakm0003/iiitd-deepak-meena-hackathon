@@ -28,3 +28,6 @@ event_classifier:
               Natural Disaster/Supply Chain, Merger/Acquisition]
     # 0.10 -> 0.20 on the gold dev split (LLM silver labels): false-positive rate 0.57 -> 0.30, recall unchanged.
     min_p: 0.20
+    # Stricter for the two classes that trigger capital stress tests. Human gold dev split: Credit Event false
+    # positives 5 -> 2, Geopolitical 3 -> 1, no true positive lost (docs/results/weak_class_experiment.json).
+    min_p_by_class: {Credit Event: 0.40, Geopolitical: 0.40}

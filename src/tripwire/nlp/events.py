@@ -22,6 +22,8 @@ class EventEvidence:
     subtype: str
     source: str  # "8k_item:2.02" | "rule:bankruptcy"
     confidence: float
+    phrase: str = ""   # the exact text that fired (rule match, or the 8-K item)
+    context: str = ""  # the phrase with up to 80 characters of surrounding source text
 
 
 class EventRules:
@@ -57,11 +59,14 @@ class EventRules:
                     override = self.item_overrides.get(item)
                     if override and override[0].search(f"{doc.title}. {doc.lead}"):
                         cls, subtype = override[1], override[2]
-                    found.append(EventEvidence(cls, subtype, f"8k_item:{item}", ITEM_CONFIDENCE))
+                    found.append(EventEvidence(cls, subtype, f"8k_item:{item}", ITEM_CONFIDENCE,
+                                               f"8-K Item {item}", doc.title))
         haystack = text if text is not None else f"{doc.title}. {doc.lead}"
         for rule_id, cls, subtype, pattern in self.rules:
-            if pattern.search(haystack):
-                found.append(EventEvidence(cls, subtype, f"rule:{rule_id}", RULE_CONFIDENCE))
+            if match := pattern.search(haystack):
+                lo, hi = max(0, match.start() - 80), min(len(haystack), match.end() + 80)
+                found.append(EventEvidence(cls, subtype, f"rule:{rule_id}", RULE_CONFIDENCE, match.group(),
+                                           haystack[lo:hi].strip()))
         return found
 
     def decide(self, evidence: list[EventEvidence]) -> EventEvidence | None:

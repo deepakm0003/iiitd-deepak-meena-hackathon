@@ -54,6 +54,10 @@ rules:
      pattern: "\\b(to acquire|acquires|acquisition of|agrees? to buy|to buy .{0,40} for \\$|merger|merge with|takeover|buyout|tender offer|spin[- ]?off)\\b"}
   - {id: legal, class: Regulatory/Legal, subtype: litigation_or_enforcement,
      pattern: "\\b(sued|sues|lawsuit|class action|settle[sd]? .{0,30}(charges|claims|lawsuit|probe)|fined|civil penalty|penalty (of|up to)|antitrust|indicted|subpoena(ed|s)?)\\b|\\b(sec|doj|ftc|fbi|cfpb|regulators?|federal|criminal|antitrust|congressional) (probe|investigation)s?\\b|\\b(probe|investigation) (into|of)\\b|\\bunder investigation\\b"}
+  # A regulator's own action (rules, guidance, approvals, enforcement). Human gold dev split: recovers missed
+  # Regulatory/Legal items ("Agencies reduce regulatory burden for community banks") with no new false positive.
+  - {id: regulator_action, class: Regulatory/Legal, subtype: regulatory_decision,
+     pattern: "\\b(agencies|regulators?|federal reserve board|fdic|occ|cfpb|sec|ftc|fda|rbi|ecb)\\b[^.]{0,80}\\b(seek comment|proposed? (rule|guidance)|final rule|issues? (guidance|rules?|statement)|regulatory burden|announces? approval|approves?|enforcement action|terminat(es|ion of) enforcement)"}
   - {id: approval, class: Regulatory/Legal, subtype: regulatory_decision,
      pattern: "\\b(fda|ftc|doj|sec|cfpb|occ|eu commission) (approves|clears|rejects|blocks|sues|charges)\\b"}
   - {id: cyber, class: Cyber/Operational, subtype: cyber_or_outage,

@@ -1,0 +1,30 @@
+{
+  "trained_at": "2026-10-03T02:19:21.514886+00:00",
+  "recipe": "v3",
+  "encoder": "BAAI/bge-base-en-v1.5",
+  "train": {
+    "n": 1273,
+    "by_label": {
+      "Other": 150,
+      "Macroeconomic": 150,
+      "Regulatory/Legal": 150,
+      "Earnings": 150,
+      "Management Change": 150,
+      "Geopolitical": 150,
+      "Merger/Acquisition": 150,
+      "Product Launch": 142,
+      "Cyber/Operational": 55,
+      "Credit Event": 15,
+      "Natural Disaster/Supply Chain": 11
+    },
+    "by_origin": {
+      "seed": 1056,
+      "twitter": 127,
+      "8k": 90
+    }
+  },
+  "in_domain_rule_examples": 1428,
+  "opinion_other_examples": 400,
+  "excluded_gold_items": 296,
+  "selection": "human gold DEV split, docs/results/event_head_experiment_human.json"
+}

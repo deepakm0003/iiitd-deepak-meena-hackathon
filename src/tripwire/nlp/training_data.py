@@ -11,6 +11,7 @@ Sources, each recorded per example so the model card can report the mix:
 import csv
 import io
 import random
+import re
 from collections import Counter
 from dataclasses import dataclass
 from datetime import datetime
@@ -123,3 +124,77 @@ def describe(examples: list[Example]) -> dict:
         "by_label": dict(Counter(e.label for e in examples).most_common()),
         "by_origin": dict(Counter(e.origin.split(":")[0] for e in examples).most_common()),
     }
+
+
+# ---- recipe v3 (2026-10-03): repaired Twitter mappings + in-domain examples first ------------------------
+# Chosen on the human gold DEV split (docs/results/event_head_experiment_human.json): with the bge-base encoder,
+# dev accuracy 0.690 -> 0.714 and macro-F1 0.601 -> 0.629 against the previous head.
+MNA_CUES = re.compile(r"\b(acqui|merger|merge|takeover|buyout|tender offer|to buy|bid for|deal for|stake in)",
+                      re.IGNORECASE)
+GEO_CUES = re.compile(r"\b(tariff|sanction|war\b|china|russia|ukraine|iran|israel|trade (war|deal|talks)|export|"
+                      r"embargo|nato|military|geopolit)", re.IGNORECASE)
+NEAR_DUPLICATE_COSINE = 0.85
+OPINION_OTHER_CAP = 400
+
+
+def twitter_examples_repaired(path: Path) -> list[Example]:
+    """'M&A | Investments' keeps only texts with deal cues; 'Politics' only texts with geopolitical cues
+    (the definitions card excludes domestic politics from Geopolitical)."""
+    out = []
+    for ex in twitter_examples(path):
+        topic = int(ex.origin.split(":")[1])
+        if topic == 13 and not MNA_CUES.search(ex.text):
+            continue
+        if topic == 16 and not GEO_CUES.search(ex.text):
+            continue
+        out.append(ex)
+    return out
+
+
+def in_domain_examples(store, docs, exclude_keys: set[str]) -> tuple[list[Example], list[Example]]:
+    """Rule-labelled items from our own feeds, and listicle / opinion headlines as Other.
+
+    Evaluation items and their near-duplicates (same normalised title, or MiniLM cosine >= 0.85 to any of them)
+    are excluded, so no test or dev item leaks into training. `docs` must be in store order with filing leads."""
+    import numpy as np
+
+    from tripwire.ids import normalize_title
+    from tripwire.nlp.engine import classifier_text
+    from tripwire.nlp.frame import OPINION
+
+    ann = {a["dedup_key"]: a for a in store.get_annotations()}
+    by_key = {d.dedup_key: d for d in docs}
+    emb = np.array([ann[k]["embedding"] for k in exclude_keys if k in ann and ann[k].get("embedding")],
+                   dtype=np.float32)
+    emb /= np.linalg.norm(emb, axis=1, keepdims=True)
+    titles = {normalize_title(by_key[k].title) for k in exclude_keys if k in by_key}
+
+    def excluded(d) -> bool:
+        if d.dedup_key in exclude_keys or normalize_title(d.title) in titles:
+            return True
+        e = ann.get(d.dedup_key, {}).get("embedding")
+        if not e:
+            return False
+        v = np.asarray(e, dtype=np.float32)
+        return float((emb @ (v / np.linalg.norm(v))).max()) >= NEAR_DUPLICATE_COSINE
+
+    rules, other = [], []
+    for d in docs:
+        if d.source == "edgar" or excluded(d):
+            continue
+        a = ann.get(d.dedup_key)
+        if not a:
+            continue
+        text = classifier_text(d)
+        if a["event_method"].startswith("rule:"):
+            rules.append(Example(text[:MAX_CHARS], a["event_type"], f"rule:{a['event_method'][5:]}"))
+        elif OPINION.search(d.title):
+            other.append(Example(text[:MAX_CHARS], "Other", "opinion_headline"))
+    random.Random(3).shuffle(other)
+    return rules, other[:OPINION_OTHER_CAP]
+
+
+def recipe_v3(edgar: list[Example], twitter_path: Path, rules: list[Example], other: list[Example]) -> list[Example]:
+    """In-domain examples get the priority balance() gives seeds; Twitter fills the remaining slots."""
+    promoted = [Example(e.text, e.label, "seed") for e in rules + other]
+    return balance(edgar + twitter_examples_repaired(twitter_path) + seed_examples() + promoted, per_class=150)

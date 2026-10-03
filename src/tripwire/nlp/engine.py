@@ -85,7 +85,7 @@ def _select(result: ClassResult, verifier: ClassResult | None, policy: dict) -> 
         return ClassResult("Other", result.probabilities, result.confidence, f"{result.method}:abstain")
     if result.event_type in policy["verify_classes"] and verifier is not None:
         support = verifier.probabilities.get(result.event_type, 0.0)
-        if support < policy["verifier_min_p"]:
+        if support < policy.get("verifier_min_p_by_class", {}).get(result.event_type, policy["verifier_min_p"]):
             return ClassResult("Other", result.probabilities, result.confidence, f"{result.method}:unverified")
         return ClassResult(result.event_type, result.probabilities, result.confidence, f"{result.method}+zs")
     return result
@@ -132,6 +132,9 @@ class Annotation(BaseModel):
     embedding: list[float] = Field(default_factory=list)
     model_versions: dict[str, str | None] = Field(default_factory=dict)
     macro_evidence: float = 0.0          # 0-1, how market-wide the item is (relevance for MACRO events)
+    # Why the event label was chosen: the exact source text that fired a rule or 8-K item, or for an ML label the
+    # source sentence the head scores highest for that class. Never generated text.
+    event_evidence: dict[str, Any] = Field(default_factory=dict)
     annotated_at: datetime
 
 
@@ -154,7 +157,8 @@ class NlpEngine:
         cfg = load_yaml("models.yaml")["event_classifier"]
         self.selection = {"min_confidence": cfg.get("min_confidence", 0.0),
                           "verify_classes": set(cfg.get("verify", {}).get("classes", [])),
-                          "verifier_min_p": cfg.get("verify", {}).get("min_p", 0.0)}
+                          "verifier_min_p": cfg.get("verify", {}).get("min_p", 0.0),
+                          "verifier_min_p_by_class": cfg.get("verify", {}).get("min_p_by_class", {})}
 
     def _classify(self, texts: list[str], undecided: list[int]) -> dict[int, ClassResult]:
         """ML layer for items the 8-K map and rules left undecided, with the selective-classification policy."""
@@ -171,6 +175,29 @@ class NlpEngine:
         out.update({i: ClassResult("Other", {}, 0.0, "8k:no_text") for i in empty})
         return out
 
+    def _ml_evidence(self, texts: list[str], ml: dict[int, ClassResult]) -> dict[int, dict[str, Any]]:
+        """For each ML label, the source sentence the head scores highest for that class (one batched pass)."""
+        from tripwire.nlp.text import split_sentences
+
+        out: dict[int, dict[str, Any]] = {}
+        jobs: list[tuple[int, str]] = []
+        for i, r in ml.items():
+            if r.event_type == "Other":
+                out[i] = {"source": r.method, "phrase": "", "context": "",
+                          "note": "no class supported strongly enough; labelled Other"}
+                continue
+            sentences = [s for s in split_sentences(texts[i]) if len(s) > 15] or [texts[i]]
+            jobs += [(i, s) for s in sentences[:8]]
+        if not jobs:
+            return out
+        scored = self.classifier.predict([s for _, s in jobs])
+        for (i, sentence), res in zip(jobs, scored, strict=True):
+            p = res.probabilities.get(ml[i].event_type, 0.0)
+            if i not in out or p > out[i]["score"]:
+                out[i] = {"source": ml[i].method, "phrase": sentence[:200], "context": sentence[:300],
+                          "score": round(p, 4)}
+        return out
+
     def annotate(self, docs: list[Document]) -> list[Annotation]:
         if not docs:
             return []
@@ -178,7 +205,9 @@ class NlpEngine:
         linked = [self.linker.link(d) for d in docs]
         decisions = [self.rules.decide(self.rules.evidence(d)) for d in docs]
         undecided = [i for i, dec in enumerate(decisions) if dec is None]
-        ml = self._classify([classifier_text(d) for d in docs], undecided)
+        cls_texts = [classifier_text(d) for d in docs]
+        ml = self._classify(cls_texts, undecided)
+        ml_evidence = self._ml_evidence(cls_texts, ml)
         embeddings = self.embedder.encode(texts)
         spans = self.ner.extract(texts) if self.ner else [[] for _ in docs]
         now = datetime.now(UTC)
@@ -224,6 +253,9 @@ class NlpEngine:
                     sentiment_method=main.method,
                     sentiment_evidence=main.evidence,
                     frame=self._frame(doc, primary, spans[i]),
+                    event_evidence=(
+                        {"source": decisions[i].source, "phrase": decisions[i].phrase,
+                         "context": decisions[i].context} if decisions[i] else ml_evidence.get(i, {})),
                     embedding=embeddings[i],
                     model_versions={
                         "sentiment": self.sentiment.entity_model or self.sentiment.name,

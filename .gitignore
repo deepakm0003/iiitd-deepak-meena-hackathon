@@ -42,3 +42,5 @@ models/sentiment_entity/
 
 # Other tools' local worktrees
 .kilo/
+
+models/event_head_previous.pkl

@@ -67,7 +67,7 @@ class StressService:
                 "event_method": signal.get("event_method"), "factuality": signal.get("factuality"),
                 "sentiment_score": signal["sentiment_score"], "direction": signal.get("direction"),
                 "corroboration": signal.get("corroboration"), "documents": signal.get("documents", [])[:5],
-                "evidence": signal.get("evidence", []),
+                "evidence": signal.get("evidence", []), "event_evidence": signal.get("event_evidence", {}),
             },
             "how_important": {
                 "impact_score": signal["impact_score"], "p_large_move": signal.get("p_large_move"),
