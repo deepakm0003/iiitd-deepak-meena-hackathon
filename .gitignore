@@ -44,3 +44,6 @@ models/sentiment_entity/
 .kilo/
 
 models/event_head_previous.pkl
+
+# Private handoff notes for a new Claude session (never commit)
+context.md
