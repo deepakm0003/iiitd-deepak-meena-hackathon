@@ -36,6 +36,7 @@ export interface Signal {
   evidence: { text: string; score: number; location: string }[];
   documents: { source: string; title: string; url: string | null; published_at: string }[];
   provenance?: { factors?: Record<string, string> };
+  config_hash?: string;
 }
 
 export interface SignalStats {
@@ -160,6 +161,7 @@ export interface StressRunSummary {
   pnl_total: number;
   cet1_ratio_after: number;
   scenario_name: string;
+  signal_available?: boolean;
 }
 
 export interface Portfolio {

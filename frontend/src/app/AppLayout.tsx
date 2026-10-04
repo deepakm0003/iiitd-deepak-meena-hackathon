@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, NavLink, Outlet, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
-import { Activity, BarChart3, ChevronRight, Eye, Menu, Search, Server, ShieldCheck, X } from "lucide-react";
+import { Activity, BarChart3, ChevronRight, Eye, Menu, ScanSearch, Search, Server, ShieldCheck, X } from "lucide-react";
 import { useApi, type OpsStatus, type SignalStats } from "./api";
 import { timeAgo } from "./format";
 
@@ -9,6 +9,7 @@ const NAV = [
   { to: "/app", label: "Live signals", icon: Activity, end: true },
   { to: "/app/portfolio", label: "Portfolio & stress", icon: BarChart3 },
   { to: "/app/watchlist", label: "Watchlist", icon: Eye },
+  { to: "/app/analyze", label: "Analyse your text", icon: ScanSearch },
   { to: "/app/model-trust", label: "Model trust", icon: ShieldCheck },
   { to: "/app/status", label: "Data sources", icon: Server },
 ];

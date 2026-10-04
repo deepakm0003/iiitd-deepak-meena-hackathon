@@ -102,6 +102,7 @@ export const SOURCE_LABEL: Record<string, string> = {
   rbi: "RBI",
   bluesky: "Bluesky",
   rss: "RSS",
+  upload: "Your upload",
 };
 
 /** "MEASURED analog: ..." / "assumption A-15 (...)" -> a short provenance tag. */

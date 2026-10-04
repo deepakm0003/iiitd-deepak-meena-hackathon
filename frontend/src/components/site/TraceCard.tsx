@@ -1,22 +1,43 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Building2, Check, FileText, Gauge, Landmark, Tag } from "lucide-react";
-import { WAL, fmtMoney, fmtPct } from "../../lib/caseStudy";
+import { fmtMoney, fmtPct, useCase, type CaseData } from "../../lib/live";
 
 // Horizontal pipeline: the stage nodes run left to right and the detail panel underneath has a fixed height,
 // so nothing on the page moves while the animation plays.
-const STAGES = [
-  { icon: FileText, label: "Source", title: "Source detected", main: WAL.filing, sub: `${WAL.date} · 14:58 UTC · sec.gov` },
-  { icon: Tag, label: "Event", title: "Event classified", main: `${WAL.eventType} · ${WAL.subtype}`, sub: `${WAL.method} · ${WAL.factuality}` },
-  { icon: Building2, label: "Entity", title: "Entity resolved", main: `${WAL.ticker} · Western Alliance`, sub: "Financials · CIK 1212545" },
-  { icon: Gauge, label: "Impact", title: "Impact scored", main: `${WAL.impact.toFixed(1)} / 10`, sub: `${Math.round(WAL.percentile)}th percentile of all signals` },
-  { icon: Landmark, label: "Stress", title: "Stress tested", main: `${WAL.positions} positions repriced`, sub: "P&L → ECL → RWA → CET1" },
-];
+function stagesFor(WAL: CaseData) {
+  return [
+    { icon: FileText, label: "Source", title: "Source detected", main: WAL.filing, sub: `${WAL.date} · ${WAL.time}` },
+    { icon: Tag, label: "Event", title: "Event classified", main: `${WAL.eventType}${WAL.subtype ? ` · ${WAL.subtype}` : ""}`, sub: `${WAL.method} · ${WAL.factuality}` },
+    { icon: Building2, label: "Entity", title: "Entity resolved", main: WAL.ticker === "MACRO" ? "Market-wide" : `${WAL.ticker} · ${WAL.company}`, sub: WAL.cik ? `${WAL.sector} · CIK ${WAL.cik}` : WAL.sector },
+    { icon: Gauge, label: "Impact", title: "Impact scored", main: `${WAL.impact.toFixed(1)} / 10`, sub: `${Math.round(WAL.percentile)}th percentile of all signals` },
+    { icon: Landmark, label: "Stress", title: "Stress tested", main: `${WAL.positions} positions repriced`, sub: "P&L → ECL → RWA → CET1" },
+  ];
+}
 
 const STEP_MS = 3200;
 const HOLD_MS = 6500;
 
 export function TraceCard() {
+  const { data, error } = useCase();
+  if (!data) return <TraceSkeleton error={error} />;
+  return <LiveTrace WAL={data} />;
+}
+
+/** Same footprint as the loaded card, so the hero does not jump when the API answers. */
+function TraceSkeleton({ error }: { error?: string }) {
+  return (
+    <div className="flex h-[371px] w-full max-w-[520px] flex-col items-center justify-center gap-3 rounded-2xl border border-line bg-ink-2/95 text-center">
+      <span className="eyebrow text-mute">Risk trace</span>
+      <p className="max-w-[300px] text-sm text-mute">
+        {error ? "The live engine is not reachable right now." : "Loading the latest stress-tested signal from the engine…"}
+      </p>
+    </div>
+  );
+}
+
+function LiveTrace({ WAL }: { WAL: CaseData }) {
+  const STAGES = stagesFor(WAL);
   const reduce = useReducedMotion();
   const [step, setStep] = useState(reduce ? STAGES.length : 0);
 
@@ -52,7 +73,7 @@ export function TraceCard() {
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-ember-bright opacity-70" />
             <span className="relative inline-flex h-2 w-2 rounded-full bg-ember-bright" />
           </span>
-          <span className="eyebrow text-bone">Risk trace · replay</span>
+          <span className="eyebrow text-bone">Risk trace · {WAL.live ? "live" : "replay"}</span>
         </div>
         <span className="font-mono text-[11px] text-mute">{WAL.eventId}</span>
       </div>
@@ -131,8 +152,8 @@ export function TraceCard() {
                   <span className="font-mono text-[10px] uppercase tracking-wider text-sage">5 / 5 ok</span>
                 </div>
                 <p className="text-[12px] leading-relaxed text-mute">
-                  One 8-K sentence, <span className="text-bone">“{WAL.evidence}”</span>, reached the capital line with
-                  every step sourced.
+                  From <span className="text-bone">“{WAL.evidence}”</span> to the capital line, every step
+                  sourced.
                 </p>
               </div>
             ) : (
@@ -145,8 +166,8 @@ export function TraceCard() {
                 </div>
                 <div className="mt-1.5 truncate text-[15px] font-medium text-gold">{stage.main}</div>
                 <div className="truncate text-[11px] text-mute">{stage.sub}</div>
-                {shown === 3 && <FactorBars />}
-                {shown === 4 && <AssetStrip />}
+                {shown === 3 && <FactorBars WAL={WAL} />}
+                {shown === 4 && <AssetStrip WAL={WAL} />}
               </>
             )}
           </motion.div>
@@ -154,7 +175,7 @@ export function TraceCard() {
       </div>
 
       <div className="grid grid-cols-3 border-t border-line">
-        <ImpactRing show={step > 3} />
+        <ImpactRing show={step > 3} impact={WAL.impact} />
         <Metric label="Stress P&L" value={fmtMoney(WAL.pnl)} show={done} tone="ember" />
         <Metric label="CET1 ratio" value={`${fmtPct(WAL.cet1Before)} → ${fmtPct(WAL.cet1After)}`} show={done} />
       </div>
@@ -162,7 +183,7 @@ export function TraceCard() {
   );
 }
 
-function FactorBars() {
+function FactorBars({ WAL }: { WAL: CaseData }) {
   return (
     <div className="mt-3 grid grid-cols-2 gap-x-4 gap-y-1.5">
       {WAL.factors.map((f, i) => (
@@ -186,10 +207,10 @@ function FactorBars() {
 }
 
 /** Stress P&L by asset class as one horizontal strip: losses fill from the left, hedges show as gains. */
-function AssetStrip() {
+function AssetStrip({ WAL }: { WAL: CaseData }) {
   const max = Math.max(...WAL.pnlByAsset.map((p) => Math.abs(p.value)));
   return (
-    <div className="mt-3 grid grid-cols-5 gap-2">
+    <div className="mt-3 grid gap-2" style={{ gridTemplateColumns: `repeat(${Math.max(1, WAL.pnlByAsset.length)}, minmax(0, 1fr))` }}>
       {WAL.pnlByAsset.map((p, i) => (
         <div key={p.label}>
           <div className="h-1 overflow-hidden rounded-full bg-line">
@@ -207,7 +228,7 @@ function AssetStrip() {
   );
 }
 
-function ImpactRing({ show }: { show: boolean }) {
+function ImpactRing({ show, impact }: { show: boolean; impact: number }) {
   const r = 17;
   const c = 2 * Math.PI * r;
   return (
@@ -223,13 +244,13 @@ function ImpactRing({ show }: { show: boolean }) {
           strokeWidth="4"
           strokeLinecap="round"
           strokeDasharray={c}
-          animate={{ strokeDashoffset: show ? c * (1 - WAL.impact / 10) : c }}
+          animate={{ strokeDashoffset: show ? c * (1 - impact / 10) : c }}
           transition={{ duration: 1.6, ease: "easeOut" }}
         />
       </svg>
       <div>
         <div className="text-[10px] uppercase tracking-wider text-mute">Impact</div>
-        <div className="font-mono text-sm text-bone">{show ? WAL.impact.toFixed(1) : "—"}</div>
+        <div className="font-mono text-sm text-bone">{show ? impact.toFixed(1) : "—"}</div>
       </div>
     </div>
   );

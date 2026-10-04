@@ -2,6 +2,7 @@ import { ArrowRight, BookOpen, FileText, Layers, ScrollText, Tags, Workflow, typ
 import { PageHero } from "../components/site/PageHero";
 import { Reveal } from "../components/site/Reveal";
 import { REPO } from "../components/site/Sections";
+import { useMetrics } from "../lib/live";
 
 // Each card opens a real document in the repository.
 const ITEMS: { tag: string; title: string; body: string; href: string; icon: LucideIcon; tone: string }[] = [
@@ -24,7 +25,7 @@ const ITEMS: { tag: string; title: string; body: string; href: string; icon: Luc
   {
     tag: "Governance",
     title: "The assumptions register",
-    body: "28 documented assumptions for shocks, PD multipliers, tax and scenario calibration, each with its rationale.",
+    body: "{assumptions} documented assumptions for shocks, PD multipliers, tax and scenario calibration, each with its rationale.",
     href: `${REPO}/blob/main/config/assumptions_register.yaml`,
     icon: ScrollText,
     tone: "from-[#3b2219]",
@@ -40,7 +41,7 @@ const ITEMS: { tag: string; title: string; body: string; href: string; icon: Luc
   {
     tag: "Data note",
     title: "Building a human-labelled event set",
-    body: "The labelling guide behind 296 human-labelled financial events: classes, tie-breakers and exceptions.",
+    body: "The labelling guide behind {labels} human-labelled financial events: classes, tie-breakers and exceptions.",
     href: `${REPO}/blob/main/docs/labeling_guide.md`,
     icon: Tags,
     tone: "from-[#2f2a20]",
@@ -56,6 +57,10 @@ const ITEMS: { tag: string; title: string; body: string; href: string; icon: Luc
 ];
 
 export default function Resources() {
+  const { data: m } = useMetrics();
+  // counts are filled from the engine (GET /model/metrics), never typed in
+  const fill = (t: string) =>
+    t.replace("{assumptions}", m ? String(m.assumptions) : "All").replace("{labels}", m ? m.human_labels.toLocaleString() : "the");
   return (
     <>
       <PageHero
@@ -93,7 +98,7 @@ export default function Resources() {
                   <h3 className="mt-3 text-[22px] leading-snug font-light text-bone transition-colors group-hover:text-gold">
                     {it.title}
                   </h3>
-                  <p className="mt-3 text-sm leading-relaxed text-mute">{it.body}</p>
+                  <p className="mt-3 text-sm leading-relaxed text-mute">{fill(it.body)}</p>
                   <span className="mt-5 inline-flex items-center gap-1.5 border-b border-gold/40 pb-0.5 text-sm text-bone">
                     Read resource <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                   </span>

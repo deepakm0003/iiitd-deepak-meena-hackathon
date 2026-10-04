@@ -5,19 +5,35 @@ import { ArrowRight, BarChart3, Building2, FileText, Gauge, Landmark, Layers, Sh
 import { ClosingCta, PageHero } from "../components/site/PageHero";
 import { Reveal } from "../components/site/Reveal";
 import { ContributionBars, DecisionLayers, PnlBars } from "../components/site/Charts";
-import { WAL, fmtMoney, fmtPct } from "../lib/caseStudy";
+import { fmtMoney, fmtPct, useCase, type CaseData } from "../lib/live";
 
-const STEPS: { icon: LucideIcon; title: string; body: string; wal: string }[] = [
-  { icon: FileText, title: "Source", body: "Ingest filings, news and market data.", wal: `${WAL.filing}, filed ${WAL.date} 14:58 UTC` },
-  { icon: Building2, title: "Entity", body: "Resolve the company, borrower or issuer.", wal: "WAL · Western Alliance Bancorporation · CIK 1212545" },
-  { icon: Zap, title: "Event", body: "Classify the event and extract evidence.", wal: `${WAL.eventType} / ${WAL.subtype}: “${WAL.evidence}”` },
-  { icon: Gauge, title: "Impact", body: "Estimate likely market and credit severity.", wal: `Impact ${WAL.impact.toFixed(2)}, ${Math.round(WAL.percentile)}th percentile` },
-  { icon: Layers, title: "Exposure", body: "Map direct, sector and factor exposures.", wal: `${WAL.positions} positions in the book linked` },
-  { icon: BarChart3, title: "Stress", body: "Apply transparent, sourced shocks.", wal: "Spread, equity and rating shocks, severity k = 0.50" },
-  { icon: Landmark, title: "Capital", body: "Calculate P&L, ECL, RWA and CET1.", wal: `${fmtMoney(WAL.pnl)} · CET1 ${fmtPct(WAL.cet1Before)} → ${fmtPct(WAL.cet1After)}` },
+const STEP_DEFS: { icon: LucideIcon; title: string; body: string }[] = [
+  { icon: FileText, title: "Source", body: "Ingest filings, news and market data." },
+  { icon: Building2, title: "Entity", body: "Resolve the company, borrower or issuer." },
+  { icon: Zap, title: "Event", body: "Classify the event and extract evidence." },
+  { icon: Gauge, title: "Impact", body: "Estimate likely market and credit severity." },
+  { icon: Layers, title: "Exposure", body: "Map direct, sector and factor exposures." },
+  { icon: BarChart3, title: "Stress", body: "Apply transparent, sourced shocks." },
+  { icon: Landmark, title: "Capital", body: "Calculate P&L, ECL, RWA and CET1." },
 ];
 
+/** What each stage produced for the featured live signal (from the engine's API). */
+function traceLines(c: CaseData): string[] {
+  return [
+    `${c.filing}, ${c.date} ${c.time}`,
+    c.ticker === "MACRO" ? "Market-wide event: no single company" : `${c.ticker} · ${c.company}${c.cik ? ` · CIK ${c.cik}` : ""}`,
+    `${c.eventType}${c.subtype ? ` / ${c.subtype}` : ""}: “${c.evidence}”`,
+    `Impact ${c.impact.toFixed(2)}, ${Math.round(c.percentile)}th percentile`,
+    `${c.positions} positions in the book linked`,
+    `Spread, equity and rating shocks, severity k = ${c.k.toFixed(2)}`,
+    `${fmtMoney(c.pnl)} · CET1 ${fmtPct(c.cet1Before)} → ${fmtPct(c.cet1After)}`,
+  ];
+}
+
 export default function HowItWorks() {
+  const { data: WAL } = useCase();
+  const lines = WAL ? traceLines(WAL) : [];
+  const STEPS = STEP_DEFS.map((d, i) => ({ ...d, wal: lines[i] ?? "Loading live trace…" }));
   const reduce = useReducedMotion();
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
@@ -25,7 +41,7 @@ export default function HowItWorks() {
   // walk through the stages on a loop, like a trace being replayed; hovering a card takes over
   useEffect(() => {
     if (reduce || paused) return;
-    const t = setInterval(() => setActive((a) => (a + 1) % STEPS.length), 3600);
+    const t = setInterval(() => setActive((a) => (a + 1) % STEP_DEFS.length), 3600);
     return () => clearInterval(t);
   }, [reduce, paused]);
 
@@ -39,7 +55,7 @@ export default function HowItWorks() {
 
       <section className="container-x py-20 md:py-24">
         <Reveal className="mb-8 flex items-center justify-between">
-          <p className="eyebrow text-mute">Seven stages · replaying Western Alliance, {WAL.date}</p>
+          <p className="eyebrow text-mute">Seven stages · {WAL ? `${WAL.live ? "live" : "replay"}: ${WAL.ticker === "MACRO" ? "market-wide" : WAL.company}, ${WAL.date}` : "loading the live trace"}</p>
           <span className="hidden font-mono text-xs text-gold sm:block">
             {String(active + 1).padStart(2, "0")} / {String(STEPS.length).padStart(2, "0")}
           </span>
@@ -91,13 +107,13 @@ export default function HowItWorks() {
           })}
           <Reveal delay={0.45} className="hidden border-r border-b border-line lg:block">
             <Link
-              to={`/app/signals/${WAL.eventId}`}
+              to={WAL ? `/app/signals/${WAL.eventId}` : "/app"}
               className="group flex h-full min-h-[230px] flex-col justify-end bg-ember p-7 text-cream transition-colors hover:bg-ember-bright"
             >
               <ShieldCheck className="mb-auto h-6 w-6" strokeWidth={1.5} />
               <span className="text-xl font-light">Open the full trace</span>
               <span className="mt-2 inline-flex items-center gap-1.5 text-sm text-cream/80">
-                {WAL.eventId} <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                {WAL?.eventId ?? "latest signal"} <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </span>
             </Link>
           </Reveal>
@@ -154,7 +170,7 @@ export default function HowItWorks() {
 
       <ClosingCta lines={["No black box.", "Every step stays visible."]}>
         <Link
-          to={`/app/signals/${WAL.eventId}`}
+          to={WAL ? `/app/signals/${WAL.eventId}` : "/app"}
           className="group inline-flex items-center gap-2 rounded-md bg-ember px-5 py-3 text-sm text-cream transition-colors hover:bg-ember-bright"
         >
           View the reasoning trace <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />

@@ -72,6 +72,72 @@ def alert_tier(event_method: str, event_type: str, confirmed: set[str]) -> str:
     return "confirmed" if source in confirmed else "standard"
 
 
+def signal_payload(r: dict, members: list[dict], docs: dict, model: ImpactModel, universe: dict, cfg: dict,
+                   confirmed: set[str]) -> dict:
+    """The signal contract for one event record: Impact, confidence, risk level, evidence and provenance.
+
+    Used for every stored event, and for a single uploaded document analysed in memory (tripwire.analyze)."""
+    default_h = model.h_table.get("__default__", 0.5)
+    r["factors"]["H_historical_reaction"] = model.h_table.get(r["event_type"], default_h)
+    scored = model.score(r["factors"], r["relevance"])
+    conf = confidence(r["event_confidence"], r["sentiment"], r["link_confidence"], r["corroboration"])
+    direction = "adverse" if r["sentiment"] < -0.15 else "favourable" if r["sentiment"] > 0.15 else "neutral"
+    level, tier = risk_level(scored["impact"], cfg["risk_levels"], direction)
+    rep = rec.representative(members) if members else {}
+    evidence = [
+        {**e, "doc_id": a["raw_id"]} for a in members[:5] for e in a.get("sentiment_evidence", [])[:1]
+    ]
+    sources = [
+        {"source": docs[i].source, "title": docs[i].title, "url": docs[i].url,
+         "published_at": docs[i].published_at.isoformat()}
+        for i in r["doc_ids"][:10] if i in docs
+    ]
+    company = universe.get(r["key"])
+    return {
+        "schema_version": SCHEMA_VERSION,
+        "event_id": r["event_id"],
+        "first_seen_at": r["first_seen"].isoformat(),
+        "headline": docs[rep["raw_id"]].title if rep and rep["raw_id"] in docs else (sources[0]["title"]
+                                                                                      if sources else ""),
+        "primary_entity": r["key"],
+        "company": {"ticker": company.ticker, "name": company.sec_name, "cik": company.cik,
+                    "sector": company.sector} if company else None,
+        "affected_sectors": [company.sector] if company else ["Market-wide"],
+        "event_type": r["event_type"],
+        "event_subtype": r["event_subtype"],
+        "event_method": r["event_method"],
+        "alert_tier": alert_tier(r["event_method"], r["event_type"], confirmed),
+        "event_type_probs": rep.get("event_probabilities", {}),
+        "sentiment_score": r["sentiment"],
+        "sentiment_label": "negative" if r["sentiment"] < -0.15 else "positive" if r["sentiment"] > 0.15
+        else "neutral",
+        "factuality": (rep.get("frame") or {}).get("factuality", "confirmed"),
+        "frame": rep.get("frame", {}),
+        "event_evidence": rep.get("event_evidence", {}),
+        "novelty_score": r["factors"]["N_novelty"],
+        "corroboration": {"n_articles": r["n_docs"], "n_publishers": r["n_publishers"],
+                          "sources": r["sources"], "score": r["corroboration"]},
+        "impact_score": scored["impact"],
+        "impact_breakdown": scored,
+        "p_large_move": scored["p_large_move"],
+        "confidence": conf,
+        "direction": direction,
+        "risk_level": level,
+        "severity_tier": tier,
+        "explanation": explanation(r, scored, conf),
+        "evidence": evidence[:3],
+        "documents": sources,
+        "model_versions": rep.get("model_versions", {}),
+        "config_hash": model.config_hash,
+        "provenance": {
+            "sentiment_score": "MODEL", "event_type": "MODEL" if not r["event_method"].startswith("8k")
+            else "OBSERVED", "impact_score": "MODEL (formula, MEASURED calibration)",
+            "factors": FACTOR_PROVENANCE, "p_large_move": "MEASURED (isotonic, calibration period)",
+        },
+        "scored_at": datetime.now(UTC).isoformat(),
+    }
+
+
 def build_signals(store, model: ImpactModel, since: datetime | None = None) -> list[dict]:
     cfg = load_yaml("impact_weights.yaml")
     confirmed = set(load_yaml("event_rules.yaml").get("confirmed_sources", []))
@@ -87,65 +153,6 @@ def build_signals(store, model: ImpactModel, since: datetime | None = None) -> l
     for r in records:
         if since and r["first_seen"] < since:
             continue
-        default_h = model.h_table.get("__default__", 0.5)
-        r["factors"]["H_historical_reaction"] = model.h_table.get(r["event_type"], default_h)
-        scored = model.score(r["factors"], r["relevance"])
-        conf = confidence(r["event_confidence"], r["sentiment"], r["link_confidence"], r["corroboration"])
-        direction = "adverse" if r["sentiment"] < -0.15 else "favourable" if r["sentiment"] > 0.15 else "neutral"
-        level, tier = risk_level(scored["impact"], cfg["risk_levels"], direction)
         members = [annotations[i] for i in r["doc_ids"] if i in annotations]
-        rep = rec.representative(members) if members else {}
-        evidence = [
-            {**e, "doc_id": a["raw_id"]} for a in members[:5] for e in a.get("sentiment_evidence", [])[:1]
-        ]
-        sources = [
-            {"source": docs[i].source, "title": docs[i].title, "url": docs[i].url,
-             "published_at": docs[i].published_at.isoformat()}
-            for i in r["doc_ids"][:10] if i in docs
-        ]
-        company = universe.get(r["key"])
-        out.append({
-            "schema_version": SCHEMA_VERSION,
-            "event_id": r["event_id"],
-            "first_seen_at": r["first_seen"].isoformat(),
-            "headline": docs[rep["raw_id"]].title if rep and rep["raw_id"] in docs else (sources[0]["title"]
-                                                                                          if sources else ""),
-            "primary_entity": r["key"],
-            "company": {"ticker": company.ticker, "name": company.sec_name, "cik": company.cik,
-                        "sector": company.sector} if company else None,
-            "affected_sectors": [company.sector] if company else ["Market-wide"],
-            "event_type": r["event_type"],
-            "event_subtype": r["event_subtype"],
-            "event_method": r["event_method"],
-            "alert_tier": alert_tier(r["event_method"], r["event_type"], confirmed),
-            "event_type_probs": rep.get("event_probabilities", {}),
-            "sentiment_score": r["sentiment"],
-            "sentiment_label": "negative" if r["sentiment"] < -0.15 else "positive" if r["sentiment"] > 0.15
-            else "neutral",
-            "factuality": (rep.get("frame") or {}).get("factuality", "confirmed"),
-            "frame": rep.get("frame", {}),
-            "event_evidence": rep.get("event_evidence", {}),
-            "novelty_score": r["factors"]["N_novelty"],
-            "corroboration": {"n_articles": r["n_docs"], "n_publishers": r["n_publishers"],
-                              "sources": r["sources"], "score": r["corroboration"]},
-            "impact_score": scored["impact"],
-            "impact_breakdown": scored,
-            "p_large_move": scored["p_large_move"],
-            "confidence": conf,
-            "direction": direction,
-            "risk_level": level,
-            "severity_tier": tier,
-            "explanation": explanation(r, scored, conf),
-            "evidence": evidence[:3],
-            "documents": sources,
-            "model_versions": rep.get("model_versions", {}),
-            "config_hash": model.config_hash,
-            "provenance": {
-                "sentiment_score": "MODEL", "event_type": "MODEL" if not r["event_method"].startswith("8k")
-                else "OBSERVED", "impact_score": "MODEL (formula, MEASURED calibration)",
-                "factors": FACTOR_PROVENANCE, "p_large_move": "MEASURED (isotonic, calibration period)",
-            },
-            "scored_at": datetime.now(UTC).isoformat(),
-        })
+        out.append(signal_payload(r, members, docs, model, universe, cfg, confirmed))
     return out
-

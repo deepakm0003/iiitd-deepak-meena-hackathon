@@ -18,9 +18,10 @@ RERUN_IMPACT_DELTA = 0.5  # an automatic run is repeated only if the event's Imp
 
 
 class StressService:
-    def __init__(self, store, data_dir: Path) -> None:
+    def __init__(self, store, data_dir: Path, book: dict | None = None) -> None:
         self.store = store
-        self.book = json.loads((data_dir / "book.json").read_text(encoding="utf-8"))
+        # `book` overrides the stored demonstration book (an uploaded portfolio, analysed in memory)
+        self.book = book or json.loads((data_dir / "book.json").read_text(encoding="utf-8"))
         self.market = json.loads((data_dir / "market_inputs.json").read_text(encoding="utf-8"))
         self.analogs = self.market.get("analogs", {})
         self.shocks = load_yaml("shocks.yaml")
@@ -28,7 +29,7 @@ class StressService:
         self.engine = StressEngine(self.book, self.market)
 
     # ---- runs -----------------------------------------------------------------------------------
-    def _run(self, scenario: Scenario, trigger: str, decision: dict | None = None) -> dict:
+    def _run(self, scenario: Scenario, trigger: str, decision: dict | None = None, persist: bool = True) -> dict:
         result = self.engine.run(scenario)
         floors = self.book["capital"]["floors"]
         result["reverse_stress"] = {name: self.engine.reverse_stress(scenario, floor) for name, floor in floors.items()}
@@ -36,7 +37,8 @@ class StressService:
         run = {"run_id": uuid.uuid4().hex[:16], "trigger": trigger, "event_id": scenario.event_id,
                "created_at": datetime.now(UTC).isoformat(), "book_as_of": self.book.get("as_of"),
                "decision": decision, **result}
-        self.store.add_stress_run(run)
+        if persist:
+            self.store.add_stress_run(run)
         return run
 
     def sensitivity(self, scenario: Scenario) -> dict:
@@ -100,6 +102,14 @@ class StressService:
         if signal["event_type"] not in self.shocks["classes"]:
             raise ValueError(f"{signal['event_type']} events have no stress mapping")
         return self._run(scenario_from_signal(signal, self.analogs, self.shocks), "manual", self.decision(signal))
+
+    def run_signal(self, signal: dict) -> dict:
+        """Stress-test a signal that is not in the store (an uploaded document analysed in memory). Same scenario
+        and engine as stored signals; the run is returned and NOT saved, so uploads never reach the run history."""
+        if signal["event_type"] not in self.shocks["classes"]:
+            raise ValueError(f"{signal['event_type']} events have no stress mapping")
+        scenario = scenario_from_signal(signal, self.analogs, self.shocks)
+        return self._run(scenario, "upload", self.decision(signal), persist=False)
 
     def run_custom(self, event_type: str, impact: float, entity: str | None = None, sector: str | None = None,
                    states: list[str] | None = None, hard_flags: list[str] | None = None) -> dict:

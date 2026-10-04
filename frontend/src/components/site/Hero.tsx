@@ -2,11 +2,12 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { TraceCard } from "./TraceCard";
-import { WAL } from "../../lib/caseStudy";
+import { useCase } from "../../lib/live";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
 export function Hero() {
+  const { data } = useCase();
   return (
     <section className="relative overflow-hidden pt-28 pb-20 sm:pt-36 lg:pb-28">
       {/* faint grid */}
@@ -67,7 +68,7 @@ export function Hero() {
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
             </Link>
             <Link
-              to={`/app/signals/${WAL.eventId}`}
+              to={data ? `/app/signals/${data.eventId}` : "/app"}
               className="inline-flex items-center gap-1.5 px-2 py-3 text-sm text-bone/80 transition-colors hover:text-gold"
             >
               See a real trace <ArrowUpRight className="h-4 w-4" />

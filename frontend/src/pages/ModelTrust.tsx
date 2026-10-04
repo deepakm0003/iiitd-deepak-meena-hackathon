@@ -3,47 +3,90 @@ import { ArrowUpRight } from "lucide-react";
 import { ClosingCta, PageHero } from "../components/site/PageHero";
 import { Reveal } from "../components/site/Reveal";
 import { CountUp, REPO } from "../components/site/Sections";
+import { useMetrics, type Metrics } from "../lib/live";
 
-// Every number on this page comes from docs/results/*.json and docs/IMPROVEMENT_LOG.md in the repository.
-export const STATS = [
-  { value: 296, decimals: 0, label: "Human-labelled events" },
-  { value: 0.73, decimals: 2, label: "Out-of-time Impact AUC" },
-  { value: 0.138, decimals: 3, label: "Brier score vs 0.155 base rate" },
-  { value: 11, decimals: 0, label: "Event classes" },
-];
+// Every number on this page is read from the engine's API (GET /model/metrics), which serves the evaluation
+// outputs in docs/results/*.json as last written. Nothing is typed in by hand.
+const pct = (v: number) => `${(v * 100).toFixed(1)}%`;
 
-export const CARDS = [
-  {
-    tag: "Validation 01",
-    title: "Two locked human tests",
-    body: "212-item test, evaluated once: event accuracy 61.8% to 66.0%, macro-F1 0.59 to 0.64. A fresh 182-item set collected after the model freeze: 63.2% accuracy, macro-F1 0.61, company resolution 66.5%.",
-  },
-  {
-    tag: "Validation 02",
-    title: "Out-of-time Impact",
-    body: "1,003 SEC 8-K filings published after the training window: AUC 0.73 for large price moves, Spearman 0.33, Brier 0.138 against a 0.155 no-skill baseline.",
-  },
-  {
-    tag: "Validation 03",
-    title: "Label agreement",
-    body: "LLM silver labels were checked against human labels: Cohen's kappa 0.67 for event class and 0.71 for the company. Only human labels are used to report accuracy.",
-  },
-  {
-    tag: "Limitation 01",
-    title: "Credit recall is the weak spot",
-    body: "On the locked test, Credit Event recall fell from 0.75 to 0.38 (8 test items). Only credit events from 8-K items, such as 1.03 bankruptcy, are marked confirmed; rule and model credit alerts stay standard.",
-  },
-  {
+export function statsFrom(m: Metrics) {
+  return [
+    { value: m.human_labels, decimals: 0, label: "Human-labelled events" },
+    ...(m.impact
+      ? [
+          { value: m.impact.auc, decimals: 2, label: "Out-of-time Impact AUC" },
+          { value: m.impact.brier, decimals: 3, label: `Brier score vs ${m.impact.brier_base_rate.toFixed(3)} base rate` },
+        ]
+      : []),
+    { value: m.event_classes, decimals: 0, label: "Event classes" },
+  ];
+}
+
+export function cardsFrom(m: Metrics) {
+  const before = m.locked_test.before;
+  const after = m.locked_test.after;
+  const fresh = m.fresh_test;
+  const conf = fresh?.tiers?.confirmed;
+  const credit = [before?.per_class["Credit Event"], after?.per_class["Credit Event"]];
+  const cards = [];
+  if (after) {
+    cards.push({
+      tag: "Validation 01",
+      title: fresh ? "Two locked human tests" : "Locked human test",
+      body:
+        `${after.n}-item test, evaluated once: event accuracy ${before ? `${pct(before.accuracy)} to ` : ""}${pct(after.accuracy)}, ` +
+        `macro-F1 ${before ? `${before.macro_f1.toFixed(2)} to ` : ""}${after.macro_f1.toFixed(2)}.` +
+        (fresh
+          ? ` A fresh ${fresh.n}-item set collected after the model freeze: ${pct(fresh.accuracy)} accuracy, macro-F1 ` +
+            `${fresh.macro_f1.toFixed(2)}, company resolution ${pct(fresh.entity_accuracy ?? 0)}.`
+          : ""),
+    });
+  }
+  if (m.impact) {
+    cards.push({
+      tag: "Validation 02",
+      title: "Out-of-time Impact",
+      body:
+        `${m.impact.n.toLocaleString()} SEC 8-K filings published after the training window: AUC ${m.impact.auc.toFixed(2)} for ` +
+        `large price moves, Spearman ${m.impact.spearman.toFixed(2)}, Brier ${m.impact.brier.toFixed(3)} against a ` +
+        `${m.impact.brier_base_rate.toFixed(3)} no-skill baseline.`,
+    });
+  }
+  if (m.agreement) {
+    cards.push({
+      tag: "Validation 03",
+      title: "Label agreement",
+      body:
+        `LLM silver labels were checked against ${m.agreement.n} human labels: Cohen's kappa ${m.agreement.event_kappa.toFixed(2)} ` +
+        `for event class and ${m.agreement.entity_kappa.toFixed(2)} for the company. Only human labels are used to report accuracy.`,
+    });
+  }
+  if (credit[1]) {
+    cards.push({
+      tag: "Limitation 01",
+      title: "Credit recall is the weak spot",
+      body:
+        `On the locked test, Credit Event recall was ${credit[0] ? `${credit[0].recall.toFixed(2)} before and ` : ""}` +
+        `${credit[1].recall.toFixed(2)} after the last change (${credit[1].support} test items). Only credit events from 8-K items, ` +
+        "such as 1.03 bankruptcy, are marked confirmed; rule and model credit alerts stay standard.",
+    });
+  }
+  cards.push({
     tag: "Limitation 02",
     title: "Impact is validated on filings",
     body: "The Impact model was validated only on firm-specific 8-K events with exact timestamps. Macro, geopolitical and social-only events have no single stock to test against.",
-  },
-  {
-    tag: "Limitation 03",
-    title: "The confirmed tier was optimistic",
-    body: "Confirmed alerts were 96.7% precise on development data but 6 of 11 on the fresh set: a disaster rule fired on climate court cases and a macro rule on round-ups. Fixing it needs a new fresh set to prove.",
-  },
-];
+  });
+  if (conf) {
+    cards.push({
+      tag: "Limitation 03",
+      title: "The confirmed tier on new data",
+      body:
+        `On the fresh set, confirmed alerts were ${conf.correct} of ${conf.alerts} correct (${pct(conf.precision)}), well below ` +
+        "the development estimate: a disaster rule fired on climate court cases and a macro rule on round-ups. The disaster rule now skips court stories; that change waits for the next fresh set to prove it.",
+    });
+  }
+  return cards;
+}
 
 export const REJECTED = [
   ["DeBERTa-v3-large verifier", "Development accuracy fell from 69% to 63% and macro-F1 from 0.60 to 0.55."],
@@ -53,6 +96,9 @@ export const REJECTED = [
 ];
 
 export default function ModelTrust() {
+  const { data: m, error } = useMetrics();
+  const STATS = m ? statsFrom(m) : [];
+  const CARDS = m ? cardsFrom(m) : [];
   return (
     <>
       <PageHero
@@ -63,6 +109,7 @@ export default function ModelTrust() {
       />
 
       <section className="container-x">
+        {!m && <p className="py-10 text-sm text-mute">{error ? "The live engine is not reachable right now." : "Loading the latest evaluation results…"}</p>}
         <div className="grid border-b border-line sm:grid-cols-2 lg:grid-cols-4">
           {STATS.map((s, i) => (
             <Reveal key={s.label} delay={i * 0.08} className="border-line px-2 py-10 sm:px-8 lg:border-l lg:first:border-l-0">

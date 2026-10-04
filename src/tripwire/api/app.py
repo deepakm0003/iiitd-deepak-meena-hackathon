@@ -6,6 +6,12 @@
   GET  /signals/{event_id}           one signal with breakdown, evidence and documents
   GET  /companies/{ticker}/risk      rolling 7-day view for one company
   GET  /ops/status                   collector status (per-source last run, failures, pauses)
+  GET  /model/metrics                validation numbers as last measured (docs/results), for the website
+Analyse (uploads are processed in memory with the production models and never stored):
+  GET  /analyze/status               whether the models are loaded
+  POST /analyze/text                 one article or press release: full trace, Impact, trigger, stress run
+  POST /analyze/batch                up to 300 headlines/texts: one row of scores each
+  POST /analyze/portfolio            your own positions (CSV rows) against this week's live signals
   WS   /stream/signals               pushes new or changed signals (checks every 5 s), heartbeat every 15 s
 Module B (stress testing the synthetic wholesale book):
   GET  /portfolio                    book summary: exposures by type, sector, grade, state; capital
@@ -19,7 +25,9 @@ Module B (stress testing the synthetic wholesale book):
 
 import asyncio
 import json
+import threading
 from datetime import UTC, datetime, timedelta
+from typing import Literal
 
 from fastapi import FastAPI, HTTPException, Query, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel, Field
@@ -29,6 +37,28 @@ from tripwire.factory import build_store
 from tripwire.settings import get_settings
 
 EVENT_TYPES = [c["name"] for c in load_yaml("taxonomy.yaml")["classes"]]
+
+
+class AnalyzeRequest(BaseModel):
+    title: str = Field("", max_length=1000)
+    text: str = Field("", max_length=100_000, description="article body; the classifier reads the opening")
+    source_type: Literal["news", "filing", "regulator", "social"] = "news"
+    url: str | None = Field(None, max_length=2000, description="recorded with the result, never fetched")
+
+
+class BatchItem(BaseModel):
+    title: str = Field("", max_length=1000)
+    text: str = Field("", max_length=5000)
+
+
+class BatchRequest(BaseModel):
+    items: list[BatchItem] = Field(..., min_length=1, max_length=300)
+    source_type: Literal["news", "filing", "regulator", "social"] = "news"
+
+
+class PortfolioRequest(BaseModel):
+    rows: list[dict[str, str | float | int | None]] = Field(..., min_length=1, max_length=500,
+                                                            description="one position per row; see portfolio/upload.py")
 
 
 class StressRequest(BaseModel):
@@ -43,8 +73,9 @@ class StressRequest(BaseModel):
     hard_flags: list[str] = Field(default_factory=list, description="e.g. 1.03 (bankruptcy)")
 
 
-def create_app(store=None, stress=None) -> FastAPI:
+def create_app(store=None, stress=None, analyzer_preload: bool | None = None) -> FastAPI:
     settings = get_settings()
+    preload = analyzer_preload if analyzer_preload is not None else store is None  # the server, not tests
     store = store or build_store(settings)
     if stress is None:
         from tripwire.stress.service import load_service
@@ -55,6 +86,11 @@ def create_app(store=None, stress=None) -> FastAPI:
         if stress is None:
             raise HTTPException(503, "the book is not built: run `python -m tripwire book` and `market-inputs`")
         return stress
+    from tripwire.analyze import Analyzer
+
+    analyzer = Analyzer(store, stress, settings.data_dir.parent)
+    if preload:  # load the models in the background so the first upload does not wait for them
+        threading.Thread(target=analyzer.warm, daemon=True).start()
     tickers = {c["ticker"] for c in load_yaml("universe.yaml").get("companies", [])}
     app = FastAPI(title="Tripwire Risk Engine API", version="1.0",
                   description="Structured, explainable financial risk signals from news, filings and social posts.")
@@ -99,6 +135,40 @@ def create_app(store=None, stress=None) -> FastAPI:
         if signal is None:
             raise HTTPException(404, "unknown event_id")
         return signal
+
+    @app.get("/model/metrics")
+    def model_metrics():
+        """Validation numbers as last measured (docs/results/*.json), for the website and dashboard."""
+        from tripwire.eval.published import published_metrics
+
+        return published_metrics(settings.data_dir.parent)
+
+    @app.get("/analyze/status")
+    def analyze_status():
+        return {"ready": analyzer.ready(), "stored": False, "max_batch": 300,
+                "reads": "headline + opening (two sentences, 600 characters), as for live news"}
+
+    @app.post("/analyze/text")
+    def analyze_text(req: AnalyzeRequest):
+        try:
+            return analyzer.analyse(req.title, req.text, req.source_type, req.url)
+        except ValueError as exc:
+            raise HTTPException(422, str(exc)) from None
+
+    @app.post("/analyze/batch")
+    def analyze_batch(req: BatchRequest):
+        try:
+            rows = analyzer.analyse_batch([(i.title, i.text) for i in req.items], req.source_type)
+        except ValueError as exc:
+            raise HTTPException(422, str(exc)) from None
+        return {"stored": False, "n": len(rows), "rows": rows}
+
+    @app.post("/analyze/portfolio")
+    def analyze_portfolio(req: PortfolioRequest):
+        try:
+            return analyzer.analyse_portfolio(req.rows)
+        except ValueError as exc:
+            raise HTTPException(422, str(exc)) from None
 
     @app.get("/companies/{ticker}/risk")
     def company_risk(ticker: str, days: int = Query(7, ge=1, le=90)):
@@ -173,7 +243,12 @@ def create_app(store=None, stress=None) -> FastAPI:
 
     @app.get("/stress-runs")
     def stress_runs(limit: int = Query(50, ge=1, le=500), event_id: str | None = None):
-        return store.list_stress_runs(limit=limit, event_id=event_id)
+        runs = store.list_stress_runs(limit=limit, event_id=event_id)
+        # Re-scoring re-clusters events, so a run can outlive the signal it was made for: say so, so the
+        # dashboard links only to signals that still exist.
+        for run in runs:
+            run["signal_available"] = bool(run.get("event_id")) and store.get_signal(run["event_id"]) is not None
+        return runs
 
     @app.websocket("/stream/signals")
     async def stream(ws: WebSocket, min_impact: float = 0):

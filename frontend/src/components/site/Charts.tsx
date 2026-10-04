@@ -1,16 +1,28 @@
 import { motion } from "framer-motion";
-import { WAL, fmtMoney, fmtPct } from "../../lib/caseStudy";
+import { fmtMoney, fmtPct, useCase, type CaseData } from "../../lib/live";
+
+/** Placeholder with the chart's footprint while the engine's API answers. */
+function Pending({ h = 300 }: { h?: number }) {
+  const { error } = useCase();
+  return (
+    <div className="flex items-center justify-center rounded-xl border border-line bg-ink-2 p-6 text-sm text-mute" style={{ height: h }}>
+      {error ? "The live engine is not reachable right now." : "Loading live data…"}
+    </div>
+  );
+}
 
 const inView = { once: true, margin: "-60px" } as const;
 
-/** Impact = sum of weighted factor contributions (raw 0.695 -> 7.48 on the 1-10 scale). */
+/** Impact = sum of weighted factor contributions, then a calibrated 1-10 scale (live signal from the API). */
 export function ContributionBars() {
+  const { data: WAL } = useCase();
+  if (!WAL) return <Pending h={340} />;
   const max = Math.max(...WAL.contributions.map((c) => c.value));
   const raw = WAL.contributions.reduce((a, c) => a + c.value, 0);
   return (
     <div className="rounded-xl border border-line bg-ink-2 p-6">
       <div className="flex items-baseline justify-between">
-        <p className="eyebrow text-mute">Impact contributions · WAL</p>
+        <p className="eyebrow text-mute">Impact contributions · {WAL.ticker}</p>
         <p className="font-mono text-xs text-mute">raw {raw.toFixed(3)}</p>
       </div>
       <ul className="mt-5 space-y-3">
@@ -45,6 +57,8 @@ export function ContributionBars() {
 
 /** Stress P&L by asset class, losses left (ember), gains right (sage), then the CET1 move against the floors. */
 export function PnlBars() {
+  const { data: WAL } = useCase();
+  if (!WAL) return <Pending h={360} />;
   const max = Math.max(...WAL.pnlByAsset.map((p) => Math.abs(p.value)));
   return (
     <div className="rounded-xl border border-line bg-ink-2 p-6">
@@ -74,12 +88,12 @@ export function PnlBars() {
           );
         })}
       </ul>
-      <CapitalScale />
+      <CapitalScale WAL={WAL} />
     </div>
   );
 }
 
-function CapitalScale() {
+function CapitalScale({ WAL }: { WAL: CaseData }) {
   const lo = 0.06;
   const hi = 0.13;
   const pos = (v: number) => `${((v - lo) / (hi - lo)) * 100}%`;
@@ -94,8 +108,8 @@ function CapitalScale() {
       </div>
       <div className="relative mt-6 h-1.5 rounded-full bg-line">
         {[
-          [0.07, "Basel 7%"],
-          [0.08, "RBI 8%"],
+          [WAL.floors.basel, `Basel ${Math.round(WAL.floors.basel * 100)}%`],
+          [WAL.floors.rbi, `RBI ${Math.round(WAL.floors.rbi * 100)}%`],
         ].map(([v, l]) => (
           <div key={l} className="absolute -top-4 flex -translate-x-1/2 flex-col items-center" style={{ left: pos(v as number) }}>
             <span className="text-[10px] text-mute">{l}</span>

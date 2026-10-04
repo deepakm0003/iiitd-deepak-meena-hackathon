@@ -440,8 +440,11 @@ class SqlStore:
             for r in rows
         ]
 
-    def get_annotations(self, since: datetime | None = None, until: datetime | None = None) -> list[dict]:
+    def get_annotations(self, since: datetime | None = None, until: datetime | None = None,
+                        primary: str | None = None) -> list[dict]:
         query = select(doc_annotations.c.annotation).order_by(doc_annotations.c.published_at)
+        if primary:
+            query = query.where(doc_annotations.c.primary_entity == primary)
         if since:
             query = query.where(doc_annotations.c.published_at >= since)
         if until:

@@ -54,17 +54,36 @@ export default function SignalDetail() {
   if (trace.error) return <ErrorNote error={trace.error} onRetry={trace.reload} />;
   if (!trace.data) return <Loading label="Loading the reasoning trace" />;
 
-  const w = trace.data.what_happened;
-  const h = trace.data.how_important;
-  const d = trace.data.why_it_matters_to_this_book;
-  const s = signal.data;
-
   return (
     <>
       <Link to="/app" className="inline-flex items-center gap-1.5 text-sm text-mute hover:text-gold">
         <ArrowLeft className="h-4 w-4" /> Back to live signals
       </Link>
 
+      <TraceView trace={trace.data} signal={signal.data} run={run} onRun={runNow} running={running}
+                 runError={runError} runsLoading={runs.loading} />
+    </>
+  );
+}
+
+/** The full reasoning trace for one signal: used for stored signals and for uploaded documents (Analyse). */
+export function TraceView({ trace, signal, run, onRun, running = false, runError, runsLoading = false, aside }: {
+  trace: Trace;
+  signal?: Signal;
+  run?: StressRun;
+  onRun?: () => void;
+  running?: boolean;
+  runError?: string;
+  runsLoading?: boolean;
+  aside?: ReactNode;
+}) {
+  const w = trace.what_happened;
+  const h = trace.how_important;
+  const d = trace.why_it_matters_to_this_book;
+  const s = signal;
+
+  return (
+    <>
       <header className="mt-5 grid gap-6 rounded-xl border border-line bg-ink-2 p-6 lg:grid-cols-[1fr_auto]">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2 text-xs text-mute">
@@ -223,7 +242,7 @@ export default function SignalDetail() {
             {run ? (
               <RunSteps run={run} />
             ) : (
-              trace.data.stress_available && (
+              trace.stress_available && onRun && (
                 <Step n={8} tag="Stress test">
                   <p className="text-sm text-mute">
                     {d?.trigger
@@ -231,8 +250,8 @@ export default function SignalDetail() {
                       : "This signal did not trigger an automatic stress test. You can still run one manually."}
                   </p>
                   <button
-                    onClick={runNow}
-                    disabled={running || runs.loading}
+                    onClick={onRun}
+                    disabled={running || runsLoading}
                     className="mt-4 inline-flex items-center gap-2 rounded-md bg-ember px-4 py-2 text-sm text-cream transition-colors hover:bg-ember-bright disabled:opacity-60"
                   >
                     {running ? <Loader2 className="h-4 w-4 animate-spin" /> : <Play className="h-4 w-4" />}
@@ -246,10 +265,11 @@ export default function SignalDetail() {
         </div>
 
         <aside className="space-y-4 xl:sticky xl:top-24 xl:self-start">
+          {aside}
           <div className="rounded-xl border border-line bg-ink-2 p-5">
             <h3 className="text-[15px] font-medium text-bone">Signal summary</h3>
             <dl className="mt-4 space-y-3 text-sm">
-              <Row k="Event ID" v={<span className="font-mono text-xs">{trace.data.event_id}</span>} />
+              <Row k="Event ID" v={<span className="font-mono text-xs">{trace.event_id}</span>} />
               <Row k="First seen" v={timeAgo(w.first_seen_at)} />
               <Row k="Sources" v={`${w.corroboration.n_articles} article${w.corroboration.n_articles === 1 ? "" : "s"} · ${w.corroboration.n_publishers} publisher${w.corroboration.n_publishers === 1 ? "" : "s"}`} />
               <Row k="Alert tier" v={s?.alert_tier ?? "…"} />

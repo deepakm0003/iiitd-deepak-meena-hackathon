@@ -1,5 +1,6 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { MotionConfig } from "framer-motion";
+import { CaseProvider } from "./lib/live";
 import SiteLayout from "./components/site/SiteLayout";
 import Landing from "./pages/Landing";
 import Product from "./pages/Product";
@@ -13,10 +14,12 @@ import Portfolio from "./app/pages/Portfolio";
 import Watchlist from "./app/pages/Watchlist";
 import Trust from "./app/pages/Trust";
 import Status from "./app/pages/Status";
+import Analyze from "./app/pages/Analyze";
 
 export default function App() {
   return (
     <MotionConfig reducedMotion="user">
+      <CaseProvider>
       <BrowserRouter>
         <Routes>
           <Route element={<SiteLayout />}>
@@ -34,9 +37,11 @@ export default function App() {
             <Route path="watchlist" element={<Watchlist />} />
             <Route path="model-trust" element={<Trust />} />
             <Route path="status" element={<Status />} />
+            <Route path="analyze" element={<Analyze />} />
           </Route>
         </Routes>
       </BrowserRouter>
+      </CaseProvider>
     </MotionConfig>
   );
 }

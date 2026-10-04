@@ -59,7 +59,10 @@ export function Nav() {
             </li>
           ))}
         </ul>
-        <div className="hidden md:block">
+        <div className="hidden items-center gap-3 md:flex">
+          <Link to="/app/analyze" className="rounded-md border border-gold/40 px-4 py-2 text-sm text-gold transition-colors hover:bg-gold/10">
+            Analyse your text
+          </Link>
           <Link
             to="/app"
             className="group inline-flex items-center gap-2 rounded-md bg-gold px-4 py-2 text-sm font-medium text-ink transition-colors hover:bg-bone"
@@ -86,6 +89,9 @@ export function Nav() {
                   {l.label}
                 </NavLink>
               ))}
+              <Link to="/app/analyze" className="text-gold">
+                Analyse your text →
+              </Link>
               <Link to="/app" className="text-gold">
                 View live demo →
               </Link>

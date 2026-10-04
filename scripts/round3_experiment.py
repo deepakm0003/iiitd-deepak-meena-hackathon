@@ -15,6 +15,7 @@ import copy
 import hashlib
 import itertools
 import json
+import os
 import sys
 from collections import defaultdict
 from datetime import UTC, datetime
@@ -39,7 +40,7 @@ ROOT = Path(__file__).resolve().parents[1]
 GOLD = ROOT / "data" / "gold"
 LABEL_FILES = ("human_check.jsonl", "fresh_labels.jsonl")
 CANDIDATE_FILES = ("candidates.jsonl", "fresh_candidates.jsonl")
-ENCODER = "BAAI/bge-base-en-v1.5"
+ENCODER = os.environ.get("ENCODER", "BAAI/bge-base-en-v1.5")  # e.g. ENCODER=BAAI/bge-large-en-v1.5
 FOLDS = 5
 LEGAL = (r"\b(supreme court|court|lawsuits?|sues|sued|suing|litigation|trial|verdict|judge|ruling|plaintiffs?|"
          r"class action|case)\b")
@@ -214,7 +215,9 @@ def main() -> int:
            "note": "development data (all 478 human labels, incl. the spent fresh set); 5-fold CV for heads trained "
                    "with human labels. Not a final result: the chosen variant is validated on a new fresh set.",
            "per_rule_precision": rule_report, "train_v3": td.describe(data), "results": results}
-    path = ROOT / "docs" / "results" / "round3_experiment.json"
+    tag = "" if ENCODER == "BAAI/bge-base-en-v1.5" else "_" + ENCODER.split("/")[-1]
+    out["encoder"] = ENCODER
+    path = ROOT / "docs" / "results" / f"round3_experiment{tag}.json"
     path.write_text(json.dumps(out, indent=2), encoding="utf-8")
     print("wrote", path)
     return 0

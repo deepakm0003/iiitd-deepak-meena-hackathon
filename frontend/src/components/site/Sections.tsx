@@ -14,11 +14,13 @@ import {
 import { Reveal } from "./Reveal";
 import { Logo } from "./Logo";
 import { DecisionArt, EvolveArt, SignalsArt } from "../art/Wireframes";
-import { WAL, fmtMoney, fmtPct } from "../../lib/caseStudy";
+import { fmtMoney, fmtPct, useCase, useMetrics } from "../../lib/live";
 
 export const REPO = "https://github.com/deepakm0003/iiitd-deepak-meena-hackathon";
 
 export function CaseBand() {
+  const { data: WAL } = useCase();
+  if (!WAL) return <section className="container-x -mt-4 pb-24"><div className="h-[260px] rounded-2xl bg-ember/40" /></section>;
   return (
     <section className="container-x -mt-4 pb-24">
       <Reveal>
@@ -33,13 +35,14 @@ export function CaseBand() {
             transition={{ duration: 6, repeat: Infinity }}
           />
           <div className="relative">
-            <p className="eyebrow text-cream/80">Replay · Western Alliance · {WAL.date}</p>
+            <p className="eyebrow text-cream/80">{WAL.live ? "Live" : "Replay"} · {WAL.ticker === "MACRO" ? "Market-wide" : WAL.company} · {WAL.date}</p>
             <h2 className="mt-4 max-w-xl text-3xl font-light leading-tight text-cream sm:text-[42px]">
               From evidence to capital impact.
             </h2>
             <p className="mt-4 max-w-lg text-cream/80">
-              One 8-K line, "{WAL.evidence}", becomes a Credit Event (liquidity stress), an Impact of {WAL.impact.toFixed(1)}, a{" "}
-              {fmtMoney(WAL.pnl)} stress loss and CET1 moving from {fmtPct(WAL.cet1Before)} to {fmtPct(WAL.cet1After)}.
+              “{WAL.evidence}” is classified {WAL.eventType}{WAL.subtype ? ` (${WAL.subtype})` : ""}, scores an Impact of{" "}
+              {WAL.impact.toFixed(1)} and gives a {fmtMoney(WAL.pnl)} stress result across {WAL.positions} positions, with
+              CET1 moving from {fmtPct(WAL.cet1Before)} to {fmtPct(WAL.cet1After)}.
             </p>
           </div>
           <span className="relative mt-8 inline-flex items-center gap-2 text-sm font-medium text-cream md:mt-0">
@@ -184,6 +187,7 @@ export function HowItWorks() {
 }
 
 export function Proof() {
+  const { data: m } = useMetrics();
   return (
     <section className="bg-paper text-ink">
       <div className="container-x grid gap-12 py-24 md:grid-cols-[1fr_1.3fr] md:py-32">
@@ -202,13 +206,21 @@ export function Proof() {
           </Link>
         </Reveal>
         <div className="grid gap-5 sm:grid-cols-2">
-          <StatCard value={296} label="Human-labelled events used to validate the event classifier." tone="ember" />
-          <StatCard
-            value={0.73}
-            decimals={2}
-            label="Impact model AUC for large price moves, on an out-of-time sample."
-            tone="gold"
-          />
+          {m ? (
+            <StatCard value={m.human_labels} label="Human-labelled events used to validate the event classifier." tone="ember" />
+          ) : (
+            <div className="min-h-[240px] animate-pulse rounded-2xl bg-ember/30" />
+          )}
+          {m?.impact ? (
+            <StatCard
+              value={m.impact.auc}
+              decimals={2}
+              label={`Impact model AUC for large price moves, on ${m.impact.n.toLocaleString()} out-of-time filings.`}
+              tone="gold"
+            />
+          ) : (
+            <div className="min-h-[240px] animate-pulse rounded-2xl bg-gold/30" />
+          )}
         </div>
       </div>
     </section>
@@ -286,13 +298,14 @@ export function Sources() {
 const TRUST: [LucideIcon, string, string][] = [
   [Quote, "Evidence on every alert", "The exact sentence that triggered a classification is stored and shown."],
   [ShieldCheck, "Confirmed alert tier", "Alerts from 8-K items and the most precise rules are marked separately from model guesses."],
-  [BookOpenCheck, "Assumptions register", "28 documented assumptions, each with its rationale and where it is used."],
+  [BookOpenCheck, "Assumptions register", "Every documented assumption has its rationale and where it is used."],
   [Lock, "Locked test sets", "Final accuracy measured once on held-out data. Never used for tuning."],
   [Landmark, "Basel III capital maths", "CET1 net of tax, RWA from rating migration, 7% Basel and 8% RBI floors."],
   [Code2, "Open source, MIT", "Code, configs, evaluations and failed experiments are all in the repository."],
 ];
 
 export function Trust() {
+  const { data: m } = useMetrics();
   return (
     <section className="py-24 md:py-32">
       <div className="container-x">
@@ -306,7 +319,9 @@ export function Trust() {
           </p>
         </Reveal>
         <div className="mt-16 grid border-t border-l border-line sm:grid-cols-2 lg:grid-cols-3">
-          {TRUST.map(([Icon, title, body], i) => (
+          {TRUST.map(([Icon, title, raw], i) => {
+            const body = title === "Assumptions register" && m ? `${m.assumptions} documented assumptions, each with its rationale and where it is used.` : raw;
+            return (
             <Reveal key={title} delay={i * 0.06} className="border-r border-b border-line">
               <div className="group flex h-full flex-col items-center px-8 py-12 text-center">
                 <span className="flex h-14 w-14 items-center justify-center rounded-full border border-line bg-ink-2 text-gold transition-colors group-hover:border-gold">
@@ -316,7 +331,8 @@ export function Trust() {
                 <p className="mt-2 max-w-[260px] text-sm leading-relaxed text-mute">{body}</p>
               </div>
             </Reveal>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>

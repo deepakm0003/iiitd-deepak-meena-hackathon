@@ -103,7 +103,7 @@ export default function Portfolio() {
                   <tr key={r.run_id} className="align-top">
                     <td className="py-2.5 pr-3 whitespace-nowrap text-xs text-mute">{timeAgo(r.created_at)}</td>
                     <td className="py-2.5 pr-3">
-                      {r.event_id ? (
+                      {r.event_id && r.signal_available ? (
                         <Link to={`/app/signals/${r.event_id}`} className="line-clamp-2 text-bone hover:text-gold">
                           {r.scenario_name}
                         </Link>

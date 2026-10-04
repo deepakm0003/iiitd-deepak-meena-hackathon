@@ -1,12 +1,18 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
-import { CARDS, REJECTED, STATS } from "../../pages/ModelTrust";
+import { REJECTED, cardsFrom, statsFrom } from "../../pages/ModelTrust";
+import { useMetrics } from "../../lib/live";
 import { REPO } from "../../components/site/Sections";
-import { PageHeader, Panel } from "../ui";
+import { ErrorNote, Loading, PageHeader, Panel } from "../ui";
 
-// Same published numbers as the public Model trust page (docs/results/*.json, docs/IMPROVEMENT_LOG.md).
+// Validation numbers from GET /model/metrics (the evaluation outputs in docs/results), as on the public page.
 export default function Trust() {
+  const { data: m, error, reload } = useMetrics();
+  if (error) return <ErrorNote error={error} onRetry={reload} />;
+  if (!m) return <Loading label="Loading the latest evaluation results" />;
+  const STATS = statsFrom(m);
+  const CARDS = cardsFrom(m);
   return (
     <>
       <PageHeader

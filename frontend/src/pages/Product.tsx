@@ -19,7 +19,7 @@ import {
 import { ClosingCta, PageHero } from "../components/site/PageHero";
 import { Reveal } from "../components/site/Reveal";
 import { PnlBars } from "../components/site/Charts";
-import { WAL } from "../lib/caseStudy";
+import { useCase, type CaseData } from "../lib/live";
 
 const MODULE_A: [LucideIcon, string, string][] = [
   [Tag, "Event classification", "11 classes. 8-K items, context rules, then a classifier checked by a verifier."],
@@ -39,12 +39,13 @@ const MODULE_B: [LucideIcon, string, string][] = [
 
 const SCREENS = [
   ["Live signals", "Ranked feed with filters by class, Impact and company.", "/app"],
-  ["Reasoning trace", "Source to capital for one signal, every step sourced.", `/app/signals/${WAL.eventId}`],
+  ["Reasoning trace", "Source to capital for one signal, every step sourced.", "trace"],
   ["Portfolio", "Exposure by type, sector, grade and state.", "/app/portfolio"],
   ["Stress tests", "Automatic, manual and what-if runs.", "/app/stress"],
 ];
 
 export default function Product() {
+  const { data: featured } = useCase();
   return (
     <>
       <PageHero
@@ -83,7 +84,7 @@ export default function Product() {
           <div className="mt-14 grid gap-px overflow-hidden rounded-xl border border-ink/10 bg-ink/10 sm:grid-cols-2 lg:grid-cols-4">
             {SCREENS.map(([t, d, to], i) => (
               <Reveal key={t} delay={i * 0.08} className="bg-cream">
-                <Link to={to} className="group flex h-full min-h-[200px] flex-col p-7 transition-colors hover:bg-paper">
+                <Link to={to === "trace" ? (featured ? `/app/signals/${featured.eventId}` : "/app") : to} className="group flex h-full min-h-[200px] flex-col p-7 transition-colors hover:bg-paper">
                   <span className="font-mono text-xs text-ember">{String(i + 1).padStart(2, "0")}</span>
                   <h3 className="mt-auto text-xl font-medium">{t}</h3>
                   <p className="mt-2 text-sm text-ink/60">{d}</p>
@@ -155,40 +156,53 @@ function ModuleRow({
   );
 }
 
-/** The WAL signal as the risk engine emitted it. */
+/** The featured signal exactly as the risk engine's API returns it. */
 function SignalCard() {
+  const { data: WAL } = useCase();
+  if (!WAL) return <LivePending h={330} />;
+  const at = WAL.evidencePhrase ? WAL.evidence.toLowerCase().indexOf(WAL.evidencePhrase.toLowerCase()) : -1;
   return (
     <div className="overflow-hidden rounded-xl border border-line bg-ink-2">
       <div className="flex items-center justify-between border-b border-line px-6 py-4">
         <span className="flex items-center gap-2 font-mono text-xs text-mute">
           <Radar className="h-4 w-4 text-gold" /> {WAL.eventId}
         </span>
-        <span className="rounded-full border border-gold/40 px-2.5 py-0.5 text-[11px] text-gold">standard tier · {WAL.method}</span>
+        <span className={`rounded-full border px-2.5 py-0.5 text-[11px] ${WAL.tier === "confirmed" ? "border-sage/40 text-sage" : "border-gold/40 text-gold"}`}>
+          {WAL.tier} tier · {WAL.method}
+        </span>
       </div>
       <div className="p-6">
         <p className="text-xs text-mute">
           {WAL.filing} · {WAL.date}
         </p>
-        <h3 className="mt-2 text-lg leading-snug text-bone">Western Alliance Bancorporation files 8-K: Regulation FD Disclosure</h3>
+        <h3 className="mt-2 line-clamp-2 text-lg leading-snug text-bone">{WAL.headline}</h3>
         <div className="mt-4 flex flex-wrap gap-2 text-[11px]">
-          {[WAL.eventType, WAL.subtype, WAL.factuality, "sentiment +0.86"].map((c) => (
-            <span key={c} className="rounded-full bg-ink-3 px-2.5 py-1 text-bone/80">
-              {c}
-            </span>
-          ))}
+          {[WAL.eventType, WAL.subtype, WAL.factuality, `sentiment ${WAL.sentiment > 0 ? "+" : ""}${WAL.sentiment.toFixed(2)}`]
+            .filter(Boolean)
+            .map((c) => (
+              <span key={c} className="rounded-full bg-ink-3 px-2.5 py-1 text-bone/80">
+                {c}
+              </span>
+            ))}
         </div>
         <blockquote className="mt-5 border-l-2 border-gold pl-4 text-sm leading-relaxed text-mute">
-          “…cash reserves exceed $25 billion and are growing, while{" "}
-          <motion.mark
-            className="rounded-sm bg-transparent px-0.5 text-bone"
-            initial={{ backgroundColor: "rgba(217,180,108,0)" }}
-            whileInView={{ backgroundColor: "rgba(217,180,108,0.28)" }}
-            viewport={{ once: true }}
-            transition={{ duration: 1, delay: 0.6 }}
-          >
-            {WAL.evidence}
-          </motion.mark>
-          .”
+          {at < 0 ? (
+            <>“{WAL.evidence}”</>
+          ) : (
+            <>
+              “{WAL.evidence.slice(0, at)}
+              <motion.mark
+                className="rounded-sm bg-transparent px-0.5 text-bone"
+                initial={{ backgroundColor: "rgba(217,180,108,0)" }}
+                whileInView={{ backgroundColor: "rgba(217,180,108,0.28)" }}
+                viewport={{ once: true }}
+                transition={{ duration: 1, delay: 0.6 }}
+              >
+                {WAL.evidence.slice(at, at + WAL.evidencePhrase.length)}
+              </motion.mark>
+              {WAL.evidence.slice(at + WAL.evidencePhrase.length)}”
+            </>
+          )}
         </blockquote>
         <p className="mt-2 font-mono text-[11px] text-mute">evidence · {WAL.method}</p>
       </div>
@@ -208,33 +222,40 @@ function SignalCard() {
   );
 }
 
-/** Module B's trigger checks for WAL. Note check 3: the bank's own reassuring tone (+0.86) does not hide a run. */
+const CHECK_LABEL: Record<string, string> = {
+  stress_mappable: "Class has a shock definition",
+  factual: "A fact, not talk",
+  adverse: "Adverse",
+  severe_enough: "Impact clears the exposure bar",
+};
+
+/** Module B's trigger decision for the featured signal: every check, pass or fail, as the API reports it. */
 function TriggerChecks() {
-  const checks = [
-    ["Class has a shock definition", "Credit Event"],
-    ["A fact, not talk", "factuality: confirmed"],
-    ["Adverse by nature", "liquidity_stress, despite sentiment +0.86"],
-    ["Impact clears the exposure bar", "7.48 ≥ 6.0 (direct exposure 0.88% of the book)"],
-  ];
+  const { data: WAL } = useCase();
+  if (!WAL) return <LivePending h={300} />;
+  return <TriggerList WAL={WAL} />;
+}
+
+function TriggerList({ WAL }: { WAL: CaseData }) {
   return (
     <div className="rounded-xl border border-line bg-ink-2 p-6">
-      <p className="eyebrow text-mute">Stress trigger · WAL</p>
+      <p className="eyebrow text-mute">Stress trigger · {WAL.ticker}</p>
       <ul className="mt-4 space-y-3">
-        {checks.map(([t, d], i) => (
+        {WAL.checks.map((c, i) => (
           <motion.li
-            key={t}
+            key={c.key}
             className="flex items-start gap-3"
             initial={{ opacity: 0, x: -10 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.2 + i * 0.25 }}
           >
-            <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-sage/20 text-sage">
+            <span className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${c.ok ? "bg-sage/20 text-sage" : "bg-ember/20 text-ember-bright"}`}>
               <Check className="h-3 w-3" strokeWidth={3} />
             </span>
             <span className="text-sm">
-              <span className="text-bone">{t}</span>
-              <span className="block font-mono text-[11px] text-mute">{d}</span>
+              <span className="text-bone">{CHECK_LABEL[c.key] ?? c.key}</span>
+              <span className="block font-mono text-[11px] text-mute">{c.detail}</span>
             </span>
           </motion.li>
         ))}
@@ -246,8 +267,17 @@ function TriggerChecks() {
         viewport={{ once: true }}
         transition={{ delay: 1.3 }}
       >
-        Stress test launched · {WAL.positions} positions repriced
+        {WAL.trigger ? "Stress test launched" : "Stress test run manually"} · {WAL.positions} positions repriced
       </motion.p>
+    </div>
+  );
+}
+
+function LivePending({ h }: { h: number }) {
+  const { error } = useCase();
+  return (
+    <div className="flex items-center justify-center rounded-xl border border-line bg-ink-2 text-sm text-mute" style={{ height: h }}>
+      {error ? "The live engine is not reachable right now." : "Loading live data…"}
     </div>
   );
 }

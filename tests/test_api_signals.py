@@ -110,3 +110,15 @@ def test_alert_tier_follows_the_measured_sources():
     assert alert_tier("head+zs", "Credit Event", confirmed) == "standard"
     assert alert_tier("rule:legal", "Regulatory/Legal", confirmed) == "standard"
     assert alert_tier("head:abstain", "Other", confirmed) == "none"
+
+
+def test_published_metrics_come_from_the_result_files():
+    from pathlib import Path
+
+    from tripwire.eval.published import published_metrics
+
+    root = Path(__file__).resolve().parents[1]
+    m = published_metrics(root)
+    assert m["event_classes"] == 11 and m["assumptions"] >= 28 and m["human_labels"] >= 296
+    assert 0 < m["locked_test"]["after"]["accuracy"] < 1 and 0.5 < m["impact"]["auc"] < 1
+    assert m["fresh_test"]["n"] == 182 and "confirmed" in m["fresh_test"]["tiers"]
