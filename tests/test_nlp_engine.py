@@ -199,3 +199,25 @@ def test_ml_label_evidence_is_a_sentence_from_the_source(engine):
     [a] = engine.annotate([d(1, "Busy week at the firm. It will unveil a new phone today. Shares were flat.")])
     assert a.event_type == "Product Launch"
     assert a.event_evidence["phrase"] == "It will unveil a new phone today."
+
+
+def test_broker_in_a_rating_headline_is_not_the_subject(engine):
+    # Round 3 (478 human labels): "X Downgrades Y" was linked to the broker X.
+    [a] = engine.annotate([d(1, "Wells Fargo Downgrades Liquidia (NASDAQ:LQDA) to Hold")])
+    assert a.primary != "WFC"
+
+
+def test_company_late_in_the_headline_is_still_the_subject(engine):
+    # Round 3: in-title subjects past the first third of the headline scored 0.55-0.60, under the old 0.60 bar.
+    [a] = engine.annotate([d(1, "State sues Pfizer over COVID vaccine marketing claims")])
+    assert a.primary == "PFE"
+
+
+def test_verified_macro_label_is_market_wide_at_minimum_strength():
+    from tripwire.nlp.engine import MIN_MACRO_EVIDENCE, macro_evidence
+
+    doc = d(1, "Naira slips to N1,330 per dollar as forex trading resumes", source="gdelt")
+    assert macro_evidence(doc, "head+zs", "Macroeconomic") == MIN_MACRO_EVIDENCE
+    assert macro_evidence(doc, "head+zs", "Geopolitical") == MIN_MACRO_EVIDENCE
+    assert macro_evidence(doc, "head", "Natural Disaster/Supply Chain") == 0.0
+    assert macro_evidence(doc, "rule:macro_markets", "Macroeconomic") == 0.8

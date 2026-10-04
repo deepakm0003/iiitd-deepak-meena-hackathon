@@ -24,9 +24,13 @@ from tripwire.nlp.sentiment import FinbertSentiment
 # Below this an entity is a passing mention, not the subject (A-17). 0.35 -> 0.60 on the gold dev split (silver
 # labels): entity accuracy 0.702 -> 0.750; passing mentions ("pasta sold at Walmart", "a lease at Google's center")
 # sat at relevance 0.49-0.57. 0.65 and above lose real subjects (0.679).
-PRIMARY_MIN_RELEVANCE = 0.60
+PRIMARY_MIN_RELEVANCE = 0.55  # 0.60 -> 0.55 on 478 human labels (round 3): late in-title subjects
 MACRO_SOURCES = {"rbi", "fed"}
-MACRO_RULES = {"central_bank", "macro_data", "sanctions", "tariffs", "conflict", "disaster", "supply"}
+MACRO_RULES = {"central_bank", "macro_data", "macro_markets", "sanctions", "tariffs", "conflict", "disaster", "supply"}
+MARKET_WIDE_CLASSES = {"Macroeconomic", "Geopolitical"}
+# "Wells Fargo Downgrades Liquidia": the broker named before the rating verb is the actor, not the subject.
+ANALYST_ACTION = re.compile(r"^\s*[\w&.,' ]{2,40}?\s+(downgrades|upgrades|initiates|reiterates|raises|cuts|lowers|"
+                            r"boosts|maintains|resumes)\b", re.IGNORECASE)
 STRONG_FINANCE_THEMES = {"ECON_BANKRUPTCY", "ECON_CENTRALBANK", "WB_1235_CENTRAL_BANKS", "ECON_INTEREST_RATES",
                          "ECON_SOVEREIGN_DEBT", "ECON_INFLATION", "ECON_STOCKMARKET"}
 MIN_MACRO_EVIDENCE = 0.6
@@ -34,7 +38,7 @@ MAX_ENTITIES_SCORED = 3
 MIN_FILING_TEXT = 80  # same minimum as the 8-K training examples
 
 
-def macro_evidence(doc: Document, event_method: str) -> float:
+def macro_evidence(doc: Document, event_method: str, event_type: str | None = None) -> float:
     """How strongly the item is about the economy or markets as a whole (0-1).
 
     Found on live data: local GDELT stories (restaurant closures, a rural fire district) were labelled
@@ -47,6 +51,11 @@ def macro_evidence(doc: Document, event_method: str) -> float:
         return 0.9
     if event_method.startswith("rule:") and event_method.split(":", 1)[1] in MACRO_RULES:
         return 0.8
+    if event_type in MARKET_WIDE_CLASSES:
+        # A Macroeconomic / Geopolitical label that reached this point came from a rule or passed the independent
+        # zero-shot verifier: enough to be market-wide, at the minimum strength (round 3, 478 human labels:
+        # 46 macro items had no subject at all).
+        return MIN_MACRO_EVIDENCE
     if len(set(doc.hints.get("themes", [])) & STRONG_FINANCE_THEMES) >= 1:
         # GDELT theme tags alone are noisy (page footers, tickers): they get a page collected, but are not
         # enough to make it market-wide. Found on live data: lighthouse and lawn-care pages tagged ECON_*.
@@ -81,7 +90,8 @@ def _select(result: ClassResult, verifier: ClassResult | None, policy: dict) -> 
     and for stress-mappable classes when the independent zero-shot verifier does not support the label."""
     if result.event_type == "Other":
         return result
-    if result.confidence < policy["min_confidence"]:
+    floor = max(policy["min_confidence"], policy.get("min_confidence_by_class", {}).get(result.event_type, 0.0))
+    if result.confidence < floor:
         return ClassResult("Other", result.probabilities, result.confidence, f"{result.method}:abstain")
     if result.event_type in policy["verify_classes"] and verifier is not None:
         support = verifier.probabilities.get(result.event_type, 0.0)
@@ -156,6 +166,7 @@ class NlpEngine:
         self.ner = ner  # optional GlinerNer: enriches frame slots (targets, authorities, places, amounts)
         cfg = load_yaml("models.yaml")["event_classifier"]
         self.selection = {"min_confidence": cfg.get("min_confidence", 0.0),
+                          "min_confidence_by_class": cfg.get("min_confidence_by_class", {}),
                           "verify_classes": set(cfg.get("verify", {}).get("classes", [])),
                           "verifier_min_p": cfg.get("verify", {}).get("min_p", 0.0),
                           "verifier_min_p_by_class": cfg.get("verify", {}).get("min_p_by_class", {})}
@@ -220,7 +231,7 @@ class NlpEngine:
                 result = ml[i]
                 event_type, subtype, method = result.event_type, None, result.method
                 confidence, probs = result.confidence, result.probabilities
-            macro = macro_evidence(doc, method)
+            macro = macro_evidence(doc, method, event_type)
             primary = self._primary(doc, entities, macro)
             scored = entities[:MAX_ENTITIES_SCORED]
             sentiments = self.sentiment.for_entities(doc, scored)
@@ -279,6 +290,8 @@ class NlpEngine:
     def _primary(self, doc: Document, entities: list[LinkedEntity], macro: float) -> LinkedEntity | str:
         """The subject: a company that is central to the text, else MACRO if there is market-wide evidence,
         else NONE (passing mentions and unsupported macro guesses produce no signal)."""
+        if entities and (m := ANALYST_ACTION.search(doc.title)):
+            entities = [e for e in entities if not any(x.location == "title" and x.start < m.end() for x in e.mentions)]
         if entities and entities[0].relevance >= PRIMARY_MIN_RELEVANCE:
             return entities[0]
         if macro >= MIN_MACRO_EVIDENCE:

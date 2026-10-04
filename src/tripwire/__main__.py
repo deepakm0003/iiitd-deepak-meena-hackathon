@@ -445,12 +445,15 @@ def cmd_eval_gold(args: argparse.Namespace) -> int:
 
 
 def cmd_train_head(args: argparse.Namespace) -> int:
-    """Train the shipped event head with recipe v3 (repaired Twitter mappings + in-domain examples first),
-    excluding every gold-set item and near-duplicate. Chosen on the human gold dev split."""
+    """Train the shipped event head: recipe v3 (repaired Twitter mappings + in-domain examples first) plus every
+    human-labelled item (sample weight 3), excluding all labelled candidates and their near-duplicates from the
+    weak-label part. Chosen by 5-fold CV on 478 human labels (docs/results/round3_experiment.json); a NEW fresh
+    test set is the only fair measure of the result."""
     import pickle
     import shutil
     from datetime import UTC, datetime
 
+    import numpy as np
     from sentence_transformers import SentenceTransformer
     from sklearn.linear_model import LogisticRegression
 
@@ -459,27 +462,42 @@ def cmd_train_head(args: argparse.Namespace) -> int:
     from tripwire.nlp import training_data as td
     from tripwire.nlp.classifier import HEAD_PATH
     from tripwire.nlp.device import device
+    from tripwire.nlp.engine import classifier_text
     from tripwire.nlp.filing_lead import with_filing_leads
 
     settings = get_settings()
     store, http = build_store(settings), build_http(settings)
+    gold_dir = settings.data_dir / "gold"
     utc = lambda s: datetime.fromisoformat(s).replace(tzinfo=UTC)  # noqa: E731
-    exclude = {c["key"] for c in gold.read_jsonl(settings.data_dir / "gold" / "candidates.jsonl")}
+    exclude = set()
+    for name in ("candidates.jsonl", "fresh_candidates.jsonl"):
+        exclude |= {c["key"] for c in gold.read_jsonl(gold_dir / name)}
     docs = with_filing_leads(store, store.iter_documents())
     rules, other = td.in_domain_examples(store, docs, exclude)
     edgar = td.edgar_examples(store, utc("2023-01-01"), utc("2024-12-31"))
     data = td.recipe_v3(edgar, td.download_twitter_topic(http, "train"), rules, other)
+    by_key = {d.dedup_key: d for d in docs}
+    human = {}
+    for name in args.human_labels.split(","):
+        for row in gold.read_jsonl(gold_dir / name):
+            human[row["key"]] = row["event_type"]
+    human_items = [(classifier_text(by_key[k]), label) for k, label in human.items() if k in by_key]
+    human_items = [(t, label) for t, label in human_items if t]
+    texts = [e.text for e in data] + [t for t, _ in human_items]
+    labels = [e.label for e in data] + [label for _, label in human_items]
+    weights = np.array([1.0] * len(data) + [args.human_weight] * len(human_items))
     encoder = SentenceTransformer(args.encoder, device=device())
-    x = encoder.encode([e.text for e in data], batch_size=64, normalize_embeddings=True, show_progress_bar=False)
-    head = LogisticRegression(max_iter=3000, class_weight="balanced", C=2.0).fit(x, [e.label for e in data])
+    x = encoder.encode(texts, batch_size=64, normalize_embeddings=True, show_progress_bar=False)
+    head = LogisticRegression(max_iter=3000, class_weight="balanced", C=2.0).fit(x, labels, sample_weight=weights)
     if HEAD_PATH.exists():
         shutil.copy(HEAD_PATH, HEAD_PATH.with_name("event_head_previous.pkl"))
     with open(HEAD_PATH, "wb") as fh:
         pickle.dump({"classifier": head, "base_model": args.encoder, "labels": list(head.classes_)}, fh)
-    report = {"trained_at": datetime.now(UTC).isoformat(), "recipe": "v3", "encoder": args.encoder,
+    report = {"trained_at": datetime.now(UTC).isoformat(), "recipe": "v3 + human labels", "encoder": args.encoder,
               "train": td.describe(data), "in_domain_rule_examples": len(rules), "opinion_other_examples": len(other),
-              "excluded_gold_items": len(exclude),
-              "selection": "human gold DEV split, docs/results/event_head_experiment_human.json"}
+              "human_labelled_examples": len(human_items), "human_weight": args.human_weight,
+              "human_label_files": args.human_labels, "excluded_candidates": len(exclude),
+              "selection": "5-fold CV on 478 human labels, docs/results/round3_experiment.json"}
     out = settings.data_dir.parent / "docs" / "results" / "event_head_training.json"
     out.write_text(json.dumps(report, indent=2), encoding="utf-8")
     print(json.dumps(report, indent=2))
@@ -762,8 +780,11 @@ def main(argv: list[str] | None = None) -> int:
     train.add_argument("--per-class", type=int, default=64)
     train.set_defaults(func=cmd_train_events)
 
-    head_cmd = sub.add_parser("train-head", help="train the shipped event head (recipe v3, gold items excluded)")
+    head_cmd = sub.add_parser("train-head", help="train the shipped event head (recipe v3 + human labels)")
     head_cmd.add_argument("--encoder", default="BAAI/bge-base-en-v1.5")
+    head_cmd.add_argument("--human-labels", default="human_check.jsonl,fresh_labels.jsonl",
+                          help="comma-separated label files in data/gold used as training examples")
+    head_cmd.add_argument("--human-weight", type=float, default=3.0)
     head_cmd.set_defaults(func=cmd_train_head)
 
     eval_ev = sub.add_parser("eval-events", help="selective-classification report for the event classifier")

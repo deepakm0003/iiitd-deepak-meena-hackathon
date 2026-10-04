@@ -45,8 +45,12 @@ class EventRules:
             item: (re.compile(o["pattern"], re.IGNORECASE), o["class"], o["subtype"])
             for item, o in rules_cfg.get("item_text_overrides", {}).items()
         }
+        # Optional per rule: `exclude` (the rule does not fire when this also matches the text) and
+        # `scope: title` (match the headline only, not the lead).
         self.rules = [
-            (r["id"], r["class"], r["subtype"], re.compile(r["pattern"], re.IGNORECASE)) for r in rules_cfg["rules"]
+            (r["id"], r["class"], r["subtype"], re.compile(r["pattern"], re.IGNORECASE),
+             re.compile(r["exclude"], re.IGNORECASE) if r.get("exclude") else None, r.get("scope", "text"))
+            for r in rules_cfg["rules"]
         ]
         self.severity: dict[tuple[str, str | None], float] = {}
         for cls in taxonomy["classes"]:
@@ -72,11 +76,14 @@ class EventRules:
                     found.append(EventEvidence(cls, subtype, f"8k_item:{item}", ITEM_CONFIDENCE,
                                                f"8-K Item {item}", doc.title))
         haystack = text if text is not None else f"{doc.title}. {doc.lead}"
-        for rule_id, cls, subtype, pattern in self.rules:
-            if match := pattern.search(haystack):
-                lo, hi = max(0, match.start() - 80), min(len(haystack), match.end() + 80)
+        for rule_id, cls, subtype, pattern, exclude, scope in self.rules:
+            target = doc.title if scope == "title" else haystack
+            if exclude is not None and exclude.search(target):
+                continue
+            if match := pattern.search(target):
+                lo, hi = max(0, match.start() - 80), min(len(target), match.end() + 80)
                 found.append(EventEvidence(cls, subtype, f"rule:{rule_id}", RULE_CONFIDENCE, match.group(),
-                                           haystack[lo:hi].strip()))
+                                           target[lo:hi].strip()))
         if match := OPINION_HEADLINE.search(doc.title):
             found.append(EventEvidence("Other", "opinion_headline", "rule:opinion_headline", RULE_CONFIDENCE,
                                        match.group().strip() or doc.title[-40:], doc.title))

@@ -20,6 +20,10 @@ event_classifier:
   # an ML label needs head probability >= min_confidence, else the item is Other ("abstain").
   # Kept at 0.30 on the in-domain gold dev split: 0.35 gained 0.04 precision on 44 items (noise).
   min_confidence: 0.30
+  # Round 3 (5-fold CV on 478 human labels, docs/results/round3_experiment.json): the head over-predicted
+  # Product Launch (70 predicted vs 46 true) and M&A (22 vs 13); a 0.5 bar for those two classes raised
+  # accuracy 0.684 -> 0.726 and macro-F1 0.685 -> 0.710 with the shipped head, on both label subsets.
+  min_confidence_by_class: {Product Launch: 0.5, Merger/Acquisition: 0.5}
   verify:                           # classes that also need the zero-shot NLI verifier to agree
     # The 6 stress-mappable classes (they drive Module B), plus Merger/Acquisition: its weak training labels
     # came from the Twitter topic "M&A | Investments", and on the gold dev split the head's M&A labels were

@@ -5,6 +5,7 @@ labelled, exactly as `gold check --quick` would present them. Once those 50 are 
 follow in file order (already shuffled), so the whole evaluation set becomes human-labelled. Usage:
     python scripts/record_human_batch.py --show 50          print the next 50 items to label
     python scripts/record_human_batch.py "1 T 6" "2 QCOM 8" ... [--primed 1,2]
+    add --set fresh2 (or --fresh for the first fresh set) to work on a fresh out-of-time test set instead
 --primed marks items whose answer had been shown to the labeller beforehand (reported separately);
 --revised marks items the labeller changed after being shown which answers contradicted a guide rule.
 """
@@ -31,13 +32,19 @@ def main(argv: list[str]) -> int:
             flags[flag] = {int(x) for x in argv[i + 1].split(",")}
             argv = argv[:i] + argv[i + 2:]
     primed, revised = flags.get("--primed", set()), flags.get("--revised", set())
-    fresh = "--fresh" in argv          # the fresh out-of-time test set: its own candidates and labels files
-    argv = [x for x in argv if x != "--fresh"]
-    check = ROOT / "data" / "gold" / ("fresh_labels.jsonl" if fresh else "human_check.jsonl")
+    # A fresh out-of-time test set has its own candidates and labels files: --set fresh2 reads
+    # fresh2_candidates.jsonl and writes fresh2_labels.jsonl (--fresh is the first set, "fresh").
+    test_set = None
+    if "--fresh" in argv:
+        test_set, argv = "fresh", [x for x in argv if x != "--fresh"]
+    if "--set" in argv:
+        i = argv.index("--set")
+        test_set, argv = argv[i + 1], argv[:i] + argv[i + 2:]
+    check = ROOT / "data" / "gold" / (f"{test_set}_labels.jsonl" if test_set else "human_check.jsonl")
     classes = [c["name"] for c in load_yaml("taxonomy.yaml")["classes"]]
     tickers = {c.ticker for c in load_universe()}
-    if fresh:
-        order = gold.read_jsonl(ROOT / "data" / "gold" / "fresh_candidates.jsonl")
+    if test_set:
+        order = gold.read_jsonl(ROOT / "data" / "gold" / f"{test_set}_candidates.jsonl")
     else:
         candidates = gold.read_jsonl(ROOT / "data" / "gold" / "candidates.jsonl")
         sample = gold.human_check_sample(candidates)

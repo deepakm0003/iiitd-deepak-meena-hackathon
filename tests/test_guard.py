@@ -94,6 +94,7 @@ def test_repository_files_pass_the_guard():
 
 def _ignored(path: Path) -> bool:
     parts = path.relative_to(ROOT).parts
-    return bool(set(parts) & {".venv", ".git", "var", "__pycache__", ".pytest_cache", ".ruff_cache"}) or (
-        parts[:2] == ("data", "raw")
+    skip = {".venv", ".git", "var", "__pycache__", ".pytest_cache", ".ruff_cache", "node_modules"}
+    return bool(set(parts) & skip) or (
+        parts[:2] in {("data", "raw"), ("frontend", "dist")}
     ) or path.name == ".env" or path.suffix == ".egg-info" or any(p.endswith(".egg-info") for p in parts)

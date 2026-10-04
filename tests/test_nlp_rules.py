@@ -309,3 +309,19 @@ def test_an_8k_item_beats_an_opinion_style_title(rules):
 ])
 def test_bank_run_needs_an_actual_run(rules, text, fires):
     assert any(e.source == "rule:bank_run" for e in rules.evidence(d(text))) is fires
+
+
+def test_rule_exclude_and_title_scope():
+    from tripwire.config import load_yaml
+
+    cfg = {"item_map": {}, "rules": [
+        {"id": "disaster", "class": "Natural Disaster/Supply Chain", "subtype": "disaster", "pattern": "wildfire",
+         "exclude": "supreme court|lawsuit"},
+        {"id": "macro_data", "class": "Macroeconomic", "subtype": "macro_data_surprise", "pattern": "inflation",
+         "scope": "title"},
+    ]}
+    r = EventRules(cfg, load_yaml("taxonomy.yaml"))
+    assert r.decide(r.evidence(d("Wildfire forces evacuations in Maui"))).event_type == "Natural Disaster/Supply Chain"
+    assert r.decide(r.evidence(d("Supreme Court hears wildfire survivor's climate case"))) is None
+    assert r.decide(r.evidence(d("Inflation cools to 2.4% in September"))).event_type == "Macroeconomic"
+    assert r.decide(r.evidence(d("Weekly round-up", "Airlines, inflation, tourism and startups"))) is None

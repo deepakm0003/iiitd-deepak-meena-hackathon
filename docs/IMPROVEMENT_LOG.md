@@ -312,6 +312,40 @@ window), so the 8-K part of the tier, 0.95 on dev, is untested here. Weakest cla
 precision 0.25 (20 predicted, 5 true), M&A 0.27, Credit Event 0.33 (6 predicted, 2 true), and Other recall 0.49
 (noise is pushed into risk classes). This fresh set is now spent; further changes need another fresh set.
 
+## 2026-10-04 (round 3: fixes for the fresh-test errors)
+
+Protocol: the fresh set is spent, so all 478 human labels (296 earlier + 182 fresh) are development data. Heads
+trained with human labels are compared by 5-fold cross-validation (a fold's items are never in its training
+data); everything else is deterministic and scored on all 478 (`docs/results/round3_experiment.json`). These
+numbers are development estimates, not results: the shipped version is validated on a NEW fresh test set.
+
+Event classifier (whole pipeline, 478 items):
+
+| Variant | Accuracy | Macro-F1 | Alert precision | 296 subset | 182 subset | Confirmed tier |
+|---|---|---|---|---|---|---|
+| Shipped before round 3 | 0.684 | 0.685 | 0.674 | 0.716 | 0.632 | 65/72 (90.3%) |
+| + head bar 0.5 for Product Launch and M&A | 0.726 | 0.710 | 0.759 | 0.733 | 0.714 | 65/69 |
+| **+ v3 refit with human labels (weight 3) + `disaster` excludes court stories** | **0.741** | **0.739** | **0.779** | 0.757 | 0.714 | **65/69 (94.2%, CI 86-98%)** |
+
+- The head over-predicted Product Launch (70 predicted / 46 true) and M&A (22 / 13). A per-class bar of 0.5
+  (`min_confidence_by_class` in `config/models.yaml`) fixed most of it. It was designed after seeing the fresh
+  errors, so its gain on the 182 subset is optimistic; it also helps on the 296 items it was not designed on.
+- Human labels as training examples (weight 1 or 3 equal within noise; 3 kept) add about 1.5 points on both
+  subsets. Credit Event: 12 of 14 found (shipped: 9), 3 false alarms.
+- `disaster` now has an `exclude` pattern for legal stories (4/7 -> 4/4). `macro_data` on the headline only made no
+  difference and was dropped. Rule options `exclude` and `scope: title` added to the rule engine, with tests.
+- Rejected: Product Launch through the zero-shot verifier. Alone it helps less than the bar (shipped head: accuracy
+  0.703 vs 0.726); added to the bar it lowers accuracy slightly (0.736 vs 0.741).
+
+Entity resolution (deterministic, all 478): 0.726 -> **0.766** (296 subset 0.764 -> 0.767, 182 subset 0.665 ->
+0.764). Three changes: primary-entity bar 0.60 -> 0.55 (in-title companies past the first third of the headline
+fell just under it); a broker in a rating headline ("Wells Fargo Downgrades Liquidia") is not the subject; a
+Macroeconomic or Geopolitical label with no company is market-wide at the minimum strength (0.6), so 46 macro
+items no longer end with no subject. Also fixed: the `macro_markets` rule was missing from the market-wide rules.
+
+Weak rules found, not changed (counts too small to act on without overfitting): `supply` 0/3, `tariffs` 1/4,
+`legal` 8/14.
+
 ### Still open
 - Consistency review of the first 50 human labels (made before the definitions card; 15 conflict with an explicit
   card rule), to be decided by the labeller.
