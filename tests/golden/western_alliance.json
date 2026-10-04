@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-03T06:04:47.431235+00:00",
+ "generated_at": "2026-10-04T04:15:39.914344+00:00",
  "provenance": "OBSERVED source document (SEC 8-K, public); outputs recorded from the pipeline as deployed",
  "document": {
   "raw_id": 5818,
@@ -78,13 +78,13 @@
     }
    ]
   },
-  "impact_score": 7.48,
+  "impact_score": 7.43,
   "impact_breakdown": {
-   "impact": 7.48,
+   "impact": 7.43,
    "raw": 0.6951,
    "relevance_gate": 1.0,
    "adjusted": 0.6951,
-   "percentile": 95.8,
+   "percentile": 95.7,
    "factors": {
     "S_severity": 0.85,
     "M_sentiment_magnitude": 0.8641,
@@ -103,10 +103,10 @@
     "Q_source_credibility": 0.1,
     "H_historical_reaction": 0.1295
    },
-   "p_large_move": 0.4239,
-   "config_hash": "sha256:9cc7874522c26cde"
+   "p_large_move": 0.442,
+   "config_hash": "sha256:9a79acab66a0f75a"
   },
-  "p_large_move": 0.4239,
+  "p_large_move": 0.442,
   "corroboration": {
    "n_articles": 1,
    "n_publishers": 1,
@@ -117,33 +117,33 @@
   }
  },
  "stress": {
-  "k": 0.496,
-  "pnl_total": -2190132.45,
+  "k": 0.486,
+  "pnl_total": -2145772.69,
   "pnl_by_asset_class": {
    "sme_loan": 0.0,
-   "bond": -1594467.02,
-   "corporate_loan": -25891.2,
-   "equity": -903545.27,
-   "swap": 39424.39,
-   "index_put": 294346.65
+   "bond": -1563176.25,
+   "corporate_loan": -25369.2,
+   "equity": -885328.62,
+   "swap": 38629.54,
+   "index_put": 289471.84
   },
-  "ecl_change": 25891.2,
+  "ecl_change": 25369.2,
   "capital": {
    "cet1_before": 43587370.97,
-   "cet1_after": 41944771.63,
+   "cet1_after": 41978041.45,
    "rwa_before": 363228091.42,
-   "rwa_after": 362217511.63,
+   "rwa_after": 362278726.76,
    "cet1_ratio_before": 0.12,
-   "cet1_ratio_after": 0.1158,
+   "cet1_ratio_after": 0.11587,
    "delta": {
-    "cet1": -1642599.34,
-    "rwa": -1010579.79,
-    "cet1_ratio": -0.0042
+    "cet1": -1609329.52,
+    "rwa": -949364.66,
+    "cet1_ratio": -0.00413
    },
    "reconciliation": {
     "cet1": "CET1 after = CET1 before + P&L x (1 - tax 25%); A-12: losses reduce capital net of tax",
     "rwa_change_from_rating_migration": 2000000.0,
-    "rwa_change_from_market_values": -3010579.8,
+    "rwa_change_from_market_values": -2949364.66,
     "book_rwa_recorded": 363228091.42
    },
    "floors": {

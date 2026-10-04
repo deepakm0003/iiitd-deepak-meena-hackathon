@@ -92,7 +92,7 @@ export const REJECTED = [
   ["DeBERTa-v3-large verifier", "Development accuracy fell from 69% to 63% and macro-F1 from 0.60 to 0.55."],
   ["Zero-shot rescue of abstentions", "Lower accuracy at every threshold tried; false alarms rose up to fivefold."],
   ["Fitted Impact weights", "Severity is not identifiable from the few severe events, so expert weights were kept."],
-  ["MiniLM event head", "Macro-F1 0.58 against 0.63 for bge-base on the same human labels."],
+  ["Smaller or other encoders", "bge-base, bge-large and mpnet all scored about 74% in cross-validation against 77% for e5-large, which is shipped."],
 ];
 
 export default function ModelTrust() {

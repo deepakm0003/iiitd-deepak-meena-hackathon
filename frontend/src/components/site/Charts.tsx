@@ -134,7 +134,7 @@ export function DecisionLayers() {
   const layers = [
     ["8-K item map", "The filer declares the item (e.g. 1.03 bankruptcy).", "0.95"],
     ["Context rules", "High-precision phrases that need context, e.g. an actual deposit run.", "0.90"],
-    ["ML head + verifier", "bge-base classifier, checked by a DeBERTa zero-shot verifier.", "p ≥ 0.30"],
+    ["ML head + verifier", "e5-large classifier, checked by a DeBERTa zero-shot verifier.", "p ≥ 0.30"],
   ];
   return (
     <div className="space-y-3">

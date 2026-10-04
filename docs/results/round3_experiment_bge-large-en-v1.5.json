@@ -1,0 +1,7156 @@
+{
+  "run_at": "2026-10-04T01:49:58.144666+00:00",
+  "n_items": 478,
+  "folds": 5,
+  "note": "development data (all 478 human labels, incl. the spent fresh set); 5-fold CV for heads trained with human labels. Not a final result: the chosen variant is validated on a new fresh set.",
+  "per_rule_precision": {
+    "R0": {
+      "8k_item": "19/20",
+      "rule:bank_run": "1/1",
+      "rule:bankruptcy": "4/4",
+      "rule:central_bank": "3/3",
+      "rule:cyber": "3/3",
+      "rule:disaster": "4/4",
+      "rule:distress": "1/1",
+      "rule:earnings": "3/3",
+      "rule:launch": "24/25",
+      "rule:legal": "8/14",
+      "rule:macro_data": "12/14",
+      "rule:macro_markets": "2/2",
+      "rule:management": "1/1",
+      "rule:mna": "7/9",
+      "rule:operations": "6/6",
+      "rule:regulator_action": "3/3",
+      "rule:sanctions": "7/8",
+      "rule:supply": "0/3",
+      "rule:tariffs": "1/4"
+    },
+    "R1": {
+      "8k_item": "19/20",
+      "rule:bank_run": "1/1",
+      "rule:bankruptcy": "4/4",
+      "rule:central_bank": "3/3",
+      "rule:cyber": "3/3",
+      "rule:disaster": "4/4",
+      "rule:distress": "1/1",
+      "rule:earnings": "3/3",
+      "rule:launch": "24/25",
+      "rule:legal": "8/14",
+      "rule:macro_data": "12/14",
+      "rule:macro_markets": "2/2",
+      "rule:management": "1/1",
+      "rule:mna": "7/9",
+      "rule:operations": "6/6",
+      "rule:regulator_action": "3/3",
+      "rule:sanctions": "7/8",
+      "rule:supply": "0/3",
+      "rule:tariffs": "1/4"
+    },
+    "R2": {
+      "8k_item": "19/20",
+      "rule:bank_run": "1/1",
+      "rule:bankruptcy": "4/4",
+      "rule:central_bank": "3/3",
+      "rule:cyber": "3/3",
+      "rule:disaster": "4/4",
+      "rule:distress": "1/1",
+      "rule:earnings": "3/3",
+      "rule:launch": "24/25",
+      "rule:legal": "8/14",
+      "rule:macro_data": "12/14",
+      "rule:macro_markets": "2/2",
+      "rule:management": "1/1",
+      "rule:mna": "7/9",
+      "rule:operations": "6/6",
+      "rule:regulator_action": "3/3",
+      "rule:sanctions": "7/8",
+      "rule:supply": "0/3",
+      "rule:tariffs": "1/4"
+    },
+    "R3": {
+      "8k_item": "19/20",
+      "rule:bank_run": "1/1",
+      "rule:bankruptcy": "4/4",
+      "rule:central_bank": "3/3",
+      "rule:cyber": "3/3",
+      "rule:disaster": "4/4",
+      "rule:distress": "1/1",
+      "rule:earnings": "3/3",
+      "rule:launch": "24/25",
+      "rule:legal": "8/14",
+      "rule:macro_data": "12/14",
+      "rule:macro_markets": "2/2",
+      "rule:management": "1/1",
+      "rule:mna": "7/9",
+      "rule:operations": "6/6",
+      "rule:regulator_action": "3/3",
+      "rule:sanctions": "7/8",
+      "rule:supply": "0/3",
+      "rule:tariffs": "1/4"
+    }
+  },
+  "train_v3": {
+    "n": 1300,
+    "by_label": {
+      "Management Change": 150,
+      "Regulatory/Legal": 150,
+      "Product Launch": 150,
+      "Macroeconomic": 150,
+      "Geopolitical": 150,
+      "Earnings": 150,
+      "Merger/Acquisition": 150,
+      "Other": 150,
+      "Cyber/Operational": 73,
+      "Credit Event": 16,
+      "Natural Disaster/Supply Chain": 11
+    },
+    "by_origin": {
+      "seed": 1078,
+      "twitter": 123,
+      "8k": 99
+    }
+  },
+  "results": [
+    {
+      "rules": "R0",
+      "head": "shipped",
+      "policy": "P2 PL/MA>=0.5",
+      "all": {
+        "n": 478,
+        "accuracy": 0.8243,
+        "macro_f1": 0.8294,
+        "alert_precision": 0.8545,
+        "alerts": 275,
+        "Product Launch": {
+          "pred": 44,
+          "true": 46,
+          "tp": 40
+        },
+        "Merger/Acquisition": {
+          "pred": 15,
+          "true": 13,
+          "tp": 11
+        },
+        "Credit Event": {
+          "pred": 14,
+          "true": 14,
+          "tp": 13
+        },
+        "Macroeconomic": {
+          "pred": 53,
+          "true": 58,
+          "tp": 47
+        },
+        "Other": {
+          "pred": 203,
+          "true": 191,
+          "tp": 159
+        }
+      },
+      "human": {
+        "n": 296,
+        "accuracy": 0.848,
+        "macro_f1": 0.8472,
+        "alert_precision": 0.8889,
+        "alerts": 171,
+        "Product Launch": {
+          "pred": 37,
+          "true": 41,
+          "tp": 35
+        },
+        "Merger/Acquisition": {
+          "pred": 7,
+          "true": 9,
+          "tp": 7
+        },
+        "Credit Event": {
+          "pred": 11,
+          "true": 12,
+          "tp": 11
+        },
+        "Macroeconomic": {
+          "pred": 29,
+          "true": 32,
+          "tp": 27
+        },
+        "Other": {
+          "pred": 125,
+          "true": 113,
+          "tp": 99
+        }
+      },
+      "fresh": {
+        "n": 182,
+        "accuracy": 0.7857,
+        "macro_f1": 0.7789,
+        "alert_precision": 0.7981,
+        "alerts": 104,
+        "Product Launch": {
+          "pred": 7,
+          "true": 5,
+          "tp": 5
+        },
+        "Merger/Acquisition": {
+          "pred": 8,
+          "true": 4,
+          "tp": 4
+        },
+        "Credit Event": {
+          "pred": 3,
+          "true": 2,
+          "tp": 2
+        },
+        "Macroeconomic": {
+          "pred": 24,
+          "true": 26,
+          "tp": 20
+        },
+        "Other": {
+          "pred": 78,
+          "true": 78,
+          "tp": 60
+        }
+      },
+      "confirmed_tier": {
+        "alerts": 69,
+        "correct": 65,
+        "precision": 0.942,
+        "ci95": [
+          0.8602,
+          0.9772
+        ]
+      }
+    },
+    {
+      "rules": "R1",
+      "head": "shipped",
+      "policy": "P2 PL/MA>=0.5",
+      "all": {
+        "n": 478,
+        "accuracy": 0.8243,
+        "macro_f1": 0.8294,
+        "alert_precision": 0.8545,
+        "alerts": 275,
+        "Product Launch": {
+          "pred": 44,
+          "true": 46,
+          "tp": 40
+        },
+        "Merger/Acquisition": {
+          "pred": 15,
+          "true": 13,
+          "tp": 11
+        },
+        "Credit Event": {
+          "pred": 14,
+          "true": 14,
+          "tp": 13
+        },
+        "Macroeconomic": {
+          "pred": 53,
+          "true": 58,
+          "tp": 47
+        },
+        "Other": {
+          "pred": 203,
+          "true": 191,
+          "tp": 159
+        }
+      },
+      "human": {
+        "n": 296,
+        "accuracy": 0.848,
+        "macro_f1": 0.8472,
+        "alert_precision": 0.8889,
+        "alerts": 171,
+        "Product Launch": {
+          "pred": 37,
+          "true": 41,
+          "tp": 35
+        },
+        "Merger/Acquisition": {
+          "pred": 7,
+          "true": 9,
+          "tp": 7
+        },
+        "Credit Event": {
+          "pred": 11,
+          "true": 12,
+          "tp": 11
+        },
+        "Macroeconomic": {
+          "pred": 29,
+          "true": 32,
+          "tp": 27
+        },
+        "Other": {
+          "pred": 125,
+          "true": 113,
+          "tp": 99
+        }
+      },
+      "fresh": {
+        "n": 182,
+        "accuracy": 0.7857,
+        "macro_f1": 0.7789,
+        "alert_precision": 0.7981,
+        "alerts": 104,
+        "Product Launch": {
+          "pred": 7,
+          "true": 5,
+          "tp": 5
+        },
+        "Merger/Acquisition": {
+          "pred": 8,
+          "true": 4,
+          "tp": 4
+        },
+        "Credit Event": {
+          "pred": 3,
+          "true": 2,
+          "tp": 2
+        },
+        "Macroeconomic": {
+          "pred": 24,
+          "true": 26,
+          "tp": 20
+        },
+        "Other": {
+          "pred": 78,
+          "true": 78,
+          "tp": 60
+        }
+      },
+      "confirmed_tier": {
+        "alerts": 69,
+        "correct": 65,
+        "precision": 0.942,
+        "ci95": [
+          0.8602,
+          0.9772
+        ]
+      }
+    },
+    {
+      "rules": "R2",
+      "head": "shipped",
+      "policy": "P2 PL/MA>=0.5",
+      "all": {
+        "n": 478,
+        "accuracy": 0.8243,
+        "macro_f1": 0.8294,
+        "alert_precision": 0.8545,
+        "alerts": 275,
+        "Product Launch": {
+          "pred": 44,
+          "true": 46,
+          "tp": 40
+        },
+        "Merger/Acquisition": {
+          "pred": 15,
+          "true": 13,
+          "tp": 11
+        },
+        "Credit Event": {
+          "pred": 14,
+          "true": 14,
+          "tp": 13
+        },
+        "Macroeconomic": {
+          "pred": 53,
+          "true": 58,
+          "tp": 47
+        },
+        "Other": {
+          "pred": 203,
+          "true": 191,
+          "tp": 159
+        }
+      },
+      "human": {
+        "n": 296,
+        "accuracy": 0.848,
+        "macro_f1": 0.8472,
+        "alert_precision": 0.8889,
+        "alerts": 171,
+        "Product Launch": {
+          "pred": 37,
+          "true": 41,
+          "tp": 35
+        },
+        "Merger/Acquisition": {
+          "pred": 7,
+          "true": 9,
+          "tp": 7
+        },
+        "Credit Event": {
+          "pred": 11,
+          "true": 12,
+          "tp": 11
+        },
+        "Macroeconomic": {
+          "pred": 29,
+          "true": 32,
+          "tp": 27
+        },
+        "Other": {
+          "pred": 125,
+          "true": 113,
+          "tp": 99
+        }
+      },
+      "fresh": {
+        "n": 182,
+        "accuracy": 0.7857,
+        "macro_f1": 0.7789,
+        "alert_precision": 0.7981,
+        "alerts": 104,
+        "Product Launch": {
+          "pred": 7,
+          "true": 5,
+          "tp": 5
+        },
+        "Merger/Acquisition": {
+          "pred": 8,
+          "true": 4,
+          "tp": 4
+        },
+        "Credit Event": {
+          "pred": 3,
+          "true": 2,
+          "tp": 2
+        },
+        "Macroeconomic": {
+          "pred": 24,
+          "true": 26,
+          "tp": 20
+        },
+        "Other": {
+          "pred": 78,
+          "true": 78,
+          "tp": 60
+        }
+      },
+      "confirmed_tier": {
+        "alerts": 69,
+        "correct": 65,
+        "precision": 0.942,
+        "ci95": [
+          0.8602,
+          0.9772
+        ]
+      }
+    },
+    {
+      "rules": "R3",
+      "head": "shipped",
+      "policy": "P2 PL/MA>=0.5",
+      "all": {
+        "n": 478,
+        "accuracy": 0.8243,
+        "macro_f1": 0.8294,
+        "alert_precision": 0.8545,
+        "alerts": 275,
+        "Product Launch": {
+          "pred": 44,
+          "true": 46,
+          "tp": 40
+        },
+        "Merger/Acquisition": {
+          "pred": 15,
+          "true": 13,
+          "tp": 11
+        },
+        "Credit Event": {
+          "pred": 14,
+          "true": 14,
+          "tp": 13
+        },
+        "Macroeconomic": {
+          "pred": 53,
+          "true": 58,
+          "tp": 47
+        },
+        "Other": {
+          "pred": 203,
+          "true": 191,
+          "tp": 159
+        }
+      },
+      "human": {
+        "n": 296,
+        "accuracy": 0.848,
+        "macro_f1": 0.8472,
+        "alert_precision": 0.8889,
+        "alerts": 171,
+        "Product Launch": {
+          "pred": 37,
+          "true": 41,
+          "tp": 35
+        },
+        "Merger/Acquisition": {
+          "pred": 7,
+          "true": 9,
+          "tp": 7
+        },
+        "Credit Event": {
+          "pred": 11,
+          "true": 12,
+          "tp": 11
+        },
+        "Macroeconomic": {
+          "pred": 29,
+          "true": 32,
+          "tp": 27
+        },
+        "Other": {
+          "pred": 125,
+          "true": 113,
+          "tp": 99
+        }
+      },
+      "fresh": {
+        "n": 182,
+        "accuracy": 0.7857,
+        "macro_f1": 0.7789,
+        "alert_precision": 0.7981,
+        "alerts": 104,
+        "Product Launch": {
+          "pred": 7,
+          "true": 5,
+          "tp": 5
+        },
+        "Merger/Acquisition": {
+          "pred": 8,
+          "true": 4,
+          "tp": 4
+        },
+        "Credit Event": {
+          "pred": 3,
+          "true": 2,
+          "tp": 2
+        },
+        "Macroeconomic": {
+          "pred": 24,
+          "true": 26,
+          "tp": 20
+        },
+        "Other": {
+          "pred": 78,
+          "true": 78,
+          "tp": 60
+        }
+      },
+      "confirmed_tier": {
+        "alerts": 69,
+        "correct": 65,
+        "precision": 0.942,
+        "ci95": [
+          0.8602,
+          0.9772
+        ]
+      }
+    },
+    {
+      "rules": "R0",
+      "head": "shipped",
+      "policy": "P0",
+      "all": {
+        "n": 478,
+        "accuracy": 0.8096,
+        "macro_f1": 0.818,
+        "alert_precision": 0.8281,
+        "alerts": 285,
+        "Product Launch": {
+          "pred": 52,
+          "true": 46,
+          "tp": 41
+        },
+        "Merger/Acquisition": {
+          "pred": 17,
+          "true": 13,
+          "tp": 11
+        },
+        "Credit Event": {
+          "pred": 14,
+          "true": 14,
+          "tp": 13
+        },
+        "Macroeconomic": {
+          "pred": 53,
+          "true": 58,
+          "tp": 47
+        },
+        "Other": {
+          "pred": 193,
+          "true": 191,
+          "tp": 151
+        }
+      },
+      "human": {
+        "n": 296,
+        "accuracy": 0.8412,
+        "macro_f1": 0.8437,
+        "alert_precision": 0.8693,
+        "alerts": 176,
+        "Product Launch": {
+          "pred": 42,
+          "true": 41,
+          "tp": 36
+        },
+        "Merger/Acquisition": {
+          "pred": 7,
+          "true": 9,
+          "tp": 7
+        },
+        "Credit Event": {
+          "pred": 11,
+          "true": 12,
+          "tp": 11
+        },
+        "Macroeconomic": {
+          "pred": 29,
+          "true": 32,
+          "tp": 27
+        },
+        "Other": {
+          "pred": 120,
+          "true": 113,
+          "tp": 96
+        }
+      },
+      "fresh": {
+        "n": 182,
+        "accuracy": 0.7582,
+        "macro_f1": 0.7514,
+        "alert_precision": 0.7615,
+        "alerts": 109,
+        "Product Launch": {
+          "pred": 10,
+          "true": 5,
+          "tp": 5
+        },
+        "Merger/Acquisition": {
+          "pred": 10,
+          "true": 4,
+          "tp": 4
+        },
+        "Credit Event": {
+          "pred": 3,
+          "true": 2,
+          "tp": 2
+        },
+        "Macroeconomic": {
+          "pred": 24,
+          "true": 26,
+          "tp": 20
+        },
+        "Other": {
+          "pred": 73,
+          "true": 78,
+          "tp": 55
+        }
+      },
+      "confirmed_tier": {
+        "alerts": 69,
+        "correct": 65,
+        "precision": 0.942,
+        "ci95": [
+          0.8602,
+          0.9772
+        ]
+      }
+    },
+    {
+      "rules": "R0",
+      "head": "shipped",
+      "policy": "P3 P1+P2",
+      "all": {
+        "n": 478,
+        "accuracy": 0.8075,
+        "macro_f1": 0.818,
+        "alert_precision": 0.8502,
+        "alerts": 267,
+        "Product Launch": {
+          "pred": 36,
+          "true": 46,
+          "tp": 32
+        },
+        "Merger/Acquisition": {
+          "pred": 15,
+          "true": 13,
+          "tp": 11
+        },
+        "Credit Event": {
+          "pred": 14,
+          "true": 14,
+          "tp": 13
+        },
+        "Macroeconomic": {
+          "pred": 53,
+          "true": 58,
+          "tp": 47
+        },
+        "Other": {
+          "pred": 211,
+          "true": 191,
+          "tp": 159
+        }
+      },
+      "human": {
+        "n": 296,
+        "accuracy": 0.8311,
+        "macro_f1": 0.8388,
+        "alert_precision": 0.8855,
+        "alerts": 166,
+        "Product Launch": {
+          "pred": 32,
+          "true": 41,
+          "tp": 30
+        },
+        "Merger/Acquisition": {
+          "pred": 7,
+          "true": 9,
+          "tp": 7
+        },
+        "Credit Event": {
+          "pred": 11,
+          "true": 12,
+          "tp": 11
+        },
+        "Macroeconomic": {
+          "pred": 29,
+          "true": 32,
+          "tp": 27
+        },
+        "Other": {
+          "pred": 130,
+          "true": 113,
+          "tp": 99
+        }
+      },
+      "fresh": {
+        "n": 182,
+        "accuracy": 0.7692,
+        "macro_f1": 0.7422,
+        "alert_precision": 0.7921,
+        "alerts": 101,
+        "Product Launch": {
+          "pred": 4,
+          "true": 5,
+          "tp": 2
+        },
+        "Merger/Acquisition": {
+          "pred": 8,
+          "true": 4,
+          "tp": 4
+        },
+        "Credit Event": {
+          "pred": 3,
+          "true": 2,
+          "tp": 2
+        },
+        "Macroeconomic": {
+          "pred": 24,
+          "true": 26,
+          "tp": 20
+        },
+        "Other": {
+          "pred": 81,
+          "true": 78,
+          "tp": 60
+        }
+      },
+      "confirmed_tier": {
+        "alerts": 69,
+        "correct": 65,
+        "precision": 0.942,
+        "ci95": [
+          0.8602,
+          0.9772
+        ]
+      }
+    },
+    {
+      "rules": "R1",
+      "head": "shipped",
+      "policy": "P0",
+      "all": {
+        "n": 478,
+        "accuracy": 0.8096,
+        "macro_f1": 0.818,
+        "alert_precision": 0.8281,
+        "alerts": 285,
+        "Product Launch": {
+          "pred": 52,
+          "true": 46,
+          "tp": 41
+        },
+        "Merger/Acquisition": {
+          "pred": 17,
+          "true": 13,
+          "tp": 11
+        },
+        "Credit Event": {
+          "pred": 14,
+          "true": 14,
+          "tp": 13
+        },
+        "Macroeconomic": {
+          "pred": 53,
+          "true": 58,
+          "tp": 47
+        },
+        "Other": {
+          "pred": 193,
+          "true": 191,
+          "tp": 151
+        }
+      },
+      "human": {
+        "n": 296,
+        "accuracy": 0.8412,
+        "macro_f1": 0.8437,
+        "alert_precision": 0.8693,
+        "alerts": 176,
+        "Product Launch": {
+          "pred": 42,
+          "true": 41,
+          "tp": 36
+        },
+        "Merger/Acquisition": {
+          "pred": 7,
+          "true": 9,
+          "tp": 7
+        },
+        "Credit Event": {
+          "pred": 11,
+          "true": 12,
+          "tp": 11
+        },
+        "Macroeconomic": {
+          "pred": 29,
+          "true": 32,
+          "tp": 27
+        },
+        "Other": {
+          "pred": 120,
+          "true": 113,
+          "tp": 96
+        }
+      },
+      "fresh": {
+        "n": 182,
+        "accuracy": 0.7582,
+        "macro_f1": 0.7514,
+        "alert_precision": 0.7615,
+        "alerts": 109,
+        "Product Launch": {
+          "pred": 10,
+          "true": 5,
+          "tp": 5
+        },
+        "Merger/Acquisition": {
+          "pred": 10,
+          "true": 4,
+          "tp": 4
+        },
+        "Credit Event": {
+          "pred": 3,
+          "true": 2,
+          "tp": 2
+        },
+        "Macroeconomic": {
+          "pred": 24,
+          "true": 26,
+          "tp": 20
+        },
+        "Other": {
+          "pred": 73,
+          "true": 78,
+          "tp": 55
+        }
+      },
+      "confirmed_tier": {
+        "alerts": 69,
+        "correct": 65,
+        "precision": 0.942,
+        "ci95": [
+          0.8602,
+          0.9772
+        ]
+      }
+    },
+    {
+      "rules": "R1",
+      "head": "shipped",
+      "policy": "P3 P1+P2",
+      "all": {
+        "n": 478,
+        "accuracy": 0.8075,
+        "macro_f1": 0.818,
+        "alert_precision": 0.8502,
+        "alerts": 267,
+        "Product Launch": {
+          "pred": 36,
+          "true": 46,
+          "tp": 32
+        },
+        "Merger/Acquisition": {
+          "pred": 15,
+          "true": 13,
+          "tp": 11
+        },
+        "Credit Event": {
+          "pred": 14,
+          "true": 14,
+          "tp": 13
+        },
+        "Macroeconomic": {
+          "pred": 53,
+          "true": 58,
+          "tp": 47
+        },
+        "Other": {
+          "pred": 211,
+          "true": 191,
+          "tp": 159
+        }
+      },
+      "human": {
+        "n": 296,
+        "accuracy": 0.8311,
+        "macro_f1": 0.8388,
+        "alert_precision": 0.8855,
+        "alerts": 166,
+        "Product Launch": {
+          "pred": 32,
+          "true": 41,
+          "tp": 30
+        },
+        "Merger/Acquisition": {
+          "pred": 7,
+          "true": 9,
+          "tp": 7
+        },
+        "Credit Event": {
+          "pred": 11,
+          "true": 12,
+          "tp": 11
+        },
+        "Macroeconomic": {
+          "pred": 29,
+          "true": 32,
+          "tp": 27
+        },
+        "Other": {
+          "pred": 130,
+          "true": 113,
+          "tp": 99
+        }
+      },
+      "fresh": {
+        "n": 182,
+        "accuracy": 0.7692,
+        "macro_f1": 0.7422,
+        "alert_precision": 0.7921,
+        "alerts": 101,
+        "Product Launch": {
+          "pred": 4,
+          "true": 5,
+          "tp": 2
+        },
+        "Merger/Acquisition": {
+          "pred": 8,
+          "true": 4,
+          "tp": 4
+        },
+        "Credit Event": {
+          "pred": 3,
+          "true": 2,
+          "tp": 2
+        },
+        "Macroeconomic": {
+          "pred": 24,
+          "true": 26,
+          "tp": 20
+        },
+        "Other": {
+          "pred": 81,
+          "true": 78,
+          "tp": 60
+        }
+      },
+      "confirmed_tier": {
+        "alerts": 69,
+        "correct": 65,
+        "precision": 0.942,
+        "ci95": [
+          0.8602,
+          0.9772
+        ]
+      }
+    },
+    {
+      "rules": "R2",
+      "head": "shipped",
+      "policy": "P0",
+      "all": {
+        "n": 478,
+        "accuracy": 0.8096,
+        "macro_f1": 0.818,
+        "alert_precision": 0.8281,
+        "alerts": 285,
+        "Product Launch": {
+          "pred": 52,
+          "true": 46,
+          "tp": 41
+        },
+        "Merger/Acquisition": {
+          "pred": 17,
+          "true": 13,
+          "tp": 11
+        },
+        "Credit Event": {
+          "pred": 14,
+          "true": 14,
+          "tp": 13
+        },
+        "Macroeconomic": {
+          "pred": 53,
+          "true": 58,
+          "tp": 47
+        },
+        "Other": {
+          "pred": 193,
+          "true": 191,
+          "tp": 151
+        }
+      },
+      "human": {
+        "n": 296,
+        "accuracy": 0.8412,
+        "macro_f1": 0.8437,
+        "alert_precision": 0.8693,
+        "alerts": 176,
+        "Product Launch": {
+          "pred": 42,
+          "true": 41,
+          "tp": 36
+        },
+        "Merger/Acquisition": {
+          "pred": 7,
+          "true": 9,
+          "tp": 7
+        },
+        "Credit Event": {
+          "pred": 11,
+          "true": 12,
+          "tp": 11
+        },
+        "Macroeconomic": {
+          "pred": 29,
+          "true": 32,
+          "tp": 27
+        },
+        "Other": {
+          "pred": 120,
+          "true": 113,
+          "tp": 96
+        }
+      },
+      "fresh": {
+        "n": 182,
+        "accuracy": 0.7582,
+        "macro_f1": 0.7514,
+        "alert_precision": 0.7615,
+        "alerts": 109,
+        "Product Launch": {
+          "pred": 10,
+          "true": 5,
+          "tp": 5
+        },
+        "Merger/Acquisition": {
+          "pred": 10,
+          "true": 4,
+          "tp": 4
+        },
+        "Credit Event": {
+          "pred": 3,
+          "true": 2,
+          "tp": 2
+        },
+        "Macroeconomic": {
+          "pred": 24,
+          "true": 26,
+          "tp": 20
+        },
+        "Other": {
+          "pred": 73,
+          "true": 78,
+          "tp": 55
+        }
+      },
+      "confirmed_tier": {
+        "alerts": 69,
+        "correct": 65,
+        "precision": 0.942,
+        "ci95": [
+          0.8602,
+          0.9772
+        ]
+      }
+    },
+    {
+      "rules": "R2",
+      "head": "shipped",
+      "policy": "P3 P1+P2",
+      "all": {
+        "n": 478,
+        "accuracy": 0.8075,
+        "macro_f1": 0.818,
+        "alert_precision": 0.8502,
+        "alerts": 267,
+        "Product Launch": {
+          "pred": 36,
+          "true": 46,
+          "tp": 32
+        },
+        "Merger/Acquisition": {
+          "pred": 15,
+          "true": 13,
+          "tp": 11
+        },
+        "Credit Event": {
+          "pred": 14,
+          "true": 14,
+          "tp": 13
+        },
+        "Macroeconomic": {
+          "pred": 53,
+          "true": 58,
+          "tp": 47
+        },
+        "Other": {
+          "pred": 211,
+          "true": 191,
+          "tp": 159
+        }
+      },
+      "human": {
+        "n": 296,
+        "accuracy": 0.8311,
+        "macro_f1": 0.8388,
+        "alert_precision": 0.8855,
+        "alerts": 166,
+        "Product Launch": {
+          "pred": 32,
+          "true": 41,
+          "tp": 30
+        },
+        "Merger/Acquisition": {
+          "pred": 7,
+          "true": 9,
+          "tp": 7
+        },
+        "Credit Event": {
+          "pred": 11,
+          "true": 12,
+          "tp": 11
+        },
+        "Macroeconomic": {
+          "pred": 29,
+          "true": 32,
+          "tp": 27
+        },
+        "Other": {
+          "pred": 130,
+          "true": 113,
+          "tp": 99
+        }
+      },
+      "fresh": {
+        "n": 182,
+        "accuracy": 0.7692,
+        "macro_f1": 0.7422,
+        "alert_precision": 0.7921,
+        "alerts": 101,
+        "Product Launch": {
+          "pred": 4,
+          "true": 5,
+          "tp": 2
+        },
+        "Merger/Acquisition": {
+          "pred": 8,
+          "true": 4,
+          "tp": 4
+        },
+        "Credit Event": {
+          "pred": 3,
+          "true": 2,
+          "tp": 2
+        },
+        "Macroeconomic": {
+          "pred": 24,
+          "true": 26,
+          "tp": 20
+        },
+        "Other": {
+          "pred": 81,
+          "true": 78,
+          "tp": 60
+        }
+      },
+      "confirmed_tier": {
+        "alerts": 69,
+        "correct": 65,
+        "precision": 0.942,
+        "ci95": [
+          0.8602,
+          0.9772
+        ]
+      }
+    },
+    {
+      "rules": "R3",
+      "head": "shipped",
+      "policy": "P0",
+      "all": {
+        "n": 478,
+        "accuracy": 0.8096,
+        "macro_f1": 0.818,
+        "alert_precision": 0.8281,
+        "alerts": 285,
+        "Product Launch": {
+          "pred": 52,
+          "true": 46,
+          "tp": 41
+        },
+        "Merger/Acquisition": {
+          "pred": 17,
+          "true": 13,
+          "tp": 11
+        },
+        "Credit Event": {
+          "pred": 14,
+          "true": 14,
+          "tp": 13
+        },
+        "Macroeconomic": {
+          "pred": 53,
+          "true": 58,
+          "tp": 47
+        },
+        "Other": {
+          "pred": 193,
+          "true": 191,
+          "tp": 151
+        }
+      },
+      "human": {
+        "n": 296,
+        "accuracy": 0.8412,
+        "macro_f1": 0.8437,
+        "alert_precision": 0.8693,
+        "alerts": 176,
+        "Product Launch": {
+          "pred": 42,
+          "true": 41,
+          "tp": 36
+        },
+        "Merger/Acquisition": {
+          "pred": 7,
+          "true": 9,
+          "tp": 7
+        },
+        "Credit Event": {
+          "pred": 11,
+          "true": 12,
+          "tp": 11
+        },
+        "Macroeconomic": {
+          "pred": 29,
+          "true": 32,
+          "tp": 27
+        },
+        "Other": {
+          "pred": 120,
+          "true": 113,
+          "tp": 96
+        }
+      },
+      "fresh": {
+        "n": 182,
+        "accuracy": 0.7582,
+        "macro_f1": 0.7514,
+        "alert_precision": 0.7615,
+        "alerts": 109,
+        "Product Launch": {
+          "pred": 10,
+          "true": 5,
+          "tp": 5
+        },
+        "Merger/Acquisition": {
+          "pred": 10,
+          "true": 4,
+          "tp": 4
+        },
+        "Credit Event": {
+          "pred": 3,
+          "true": 2,
+          "tp": 2
+        },
+        "Macroeconomic": {
+          "pred": 24,
+          "true": 26,
+          "tp": 20
+        },
+        "Other": {
+          "pred": 73,
+          "true": 78,
+          "tp": 55
+        }
+      },
+      "confirmed_tier": {
+        "alerts": 69,
+        "correct": 65,
+        "precision": 0.942,
+        "ci95": [
+          0.8602,
+          0.9772
+        ]
+      }
+    },
+    {
+      "rules": "R3",
+      "head": "shipped",
+      "policy": "P3 P1+P2",
+      "all": {
+        "n": 478,
+        "accuracy": 0.8075,
+        "macro_f1": 0.818,
+        "alert_precision": 0.8502,
+        "alerts": 267,
+        "Product Launch": {
+          "pred": 36,
+          "true": 46,
+          "tp": 32
+        },
+        "Merger/Acquisition": {
+          "pred": 15,
+          "true": 13,
+          "tp": 11
+        },
+        "Credit Event": {
+          "pred": 14,
+          "true": 14,
+          "tp": 13
+        },
+        "Macroeconomic": {
+          "pred": 53,
+          "true": 58,
+          "tp": 47
+        },
+        "Other": {
+          "pred": 211,
+          "true": 191,
+          "tp": 159
+        }
+      },
+      "human": {
+        "n": 296,
+        "accuracy": 0.8311,
+        "macro_f1": 0.8388,
+        "alert_precision": 0.8855,
+        "alerts": 166,
+        "Product Launch": {
+          "pred": 32,
+          "true": 41,
+          "tp": 30
+        },
+        "Merger/Acquisition": {
+          "pred": 7,
+          "true": 9,
+          "tp": 7
+        },
+        "Credit Event": {
+          "pred": 11,
+          "true": 12,
+          "tp": 11
+        },
+        "Macroeconomic": {
+          "pred": 29,
+          "true": 32,
+          "tp": 27
+        },
+        "Other": {
+          "pred": 130,
+          "true": 113,
+          "tp": 99
+        }
+      },
+      "fresh": {
+        "n": 182,
+        "accuracy": 0.7692,
+        "macro_f1": 0.7422,
+        "alert_precision": 0.7921,
+        "alerts": 101,
+        "Product Launch": {
+          "pred": 4,
+          "true": 5,
+          "tp": 2
+        },
+        "Merger/Acquisition": {
+          "pred": 8,
+          "true": 4,
+          "tp": 4
+        },
+        "Credit Event": {
+          "pred": 3,
+          "true": 2,
+          "tp": 2
+        },
+        "Macroeconomic": {
+          "pred": 24,
+          "true": 26,
+          "tp": 20
+        },
+        "Other": {
+          "pred": 81,
+          "true": 78,
+          "tp": 60
+        }
+      },
+      "confirmed_tier": {
+        "alerts": 69,
+        "correct": 65,
+        "precision": 0.942,
+        "ci95": [
+          0.8602,
+          0.9772
+        ]
+      }
+    },
+    {
+      "rules": "R0",
+      "head": "shipped",
+      "policy": "P1 verify PL",
+      "all": {
+        "n": 478,
+        "accuracy": 0.7992,
+        "macro_f1": 0.8105,
+        "alert_precision": 0.8376,
+        "alerts": 271,
+        "Product Launch": {
+          "pred": 38,
+          "true": 46,
+          "tp": 32
+        },
+        "Merger/Acquisition": {
+          "pred": 17,
+          "true": 13,
+          "tp": 11
+        },
+        "Credit Event": {
+          "pred": 14,
+          "true": 14,
+          "tp": 13
+        },
+        "Macroeconomic": {
+          "pred": 53,
+          "true": 58,
+          "tp": 47
+        },
+        "Other": {
+          "pred": 207,
+          "true": 191,
+          "tp": 155
+        }
+      },
+      "human": {
+        "n": 296,
+        "accuracy": 0.8277,
+        "macro_f1": 0.8373,
+        "alert_precision": 0.8802,
+        "alerts": 167,
+        "Product Launch": {
+          "pred": 33,
+          "true": 41,
+          "tp": 30
+        },
+        "Merger/Acquisition": {
+          "pred": 7,
+          "true": 9,
+          "tp": 7
+        },
+        "Credit Event": {
+          "pred": 11,
+          "true": 12,
+          "tp": 11
+        },
+        "Macroeconomic": {
+          "pred": 29,
+          "true": 32,
+          "tp": 27
+        },
+        "Other": {
+          "pred": 129,
+          "true": 113,
+          "tp": 98
+        }
+      },
+      "fresh": {
+        "n": 182,
+        "accuracy": 0.7527,
+        "macro_f1": 0.7274,
+        "alert_precision": 0.7692,
+        "alerts": 104,
+        "Product Launch": {
+          "pred": 5,
+          "true": 5,
+          "tp": 2
+        },
+        "Merger/Acquisition": {
+          "pred": 10,
+          "true": 4,
+          "tp": 4
+        },
+        "Credit Event": {
+          "pred": 3,
+          "true": 2,
+          "tp": 2
+        },
+        "Macroeconomic": {
+          "pred": 24,
+          "true": 26,
+          "tp": 20
+        },
+        "Other": {
+          "pred": 78,
+          "true": 78,
+          "tp": 57
+        }
+      },
+      "confirmed_tier": {
+        "alerts": 69,
+        "correct": 65,
+        "precision": 0.942,
+        "ci95": [
+          0.8602,
+          0.9772
+        ]
+      }
+    },
+    {
+      "rules": "R1",
+      "head": "shipped",
+      "policy": "P1 verify PL",
+      "all": {
+        "n": 478,
+        "accuracy": 0.7992,
+        "macro_f1": 0.8105,
+        "alert_precision": 0.8376,
+        "alerts": 271,
+        "Product Launch": {
+          "pred": 38,
+          "true": 46,
+          "tp": 32
+        },
+        "Merger/Acquisition": {
+          "pred": 17,
+          "true": 13,
+          "tp": 11
+        },
+        "Credit Event": {
+          "pred": 14,
+          "true": 14,
+          "tp": 13
+        },
+        "Macroeconomic": {
+          "pred": 53,
+          "true": 58,
+          "tp": 47
+        },
+        "Other": {
+          "pred": 207,
+          "true": 191,
+          "tp": 155
+        }
+      },
+      "human": {
+        "n": 296,
+        "accuracy": 0.8277,
+        "macro_f1": 0.8373,
+        "alert_precision": 0.8802,
+        "alerts": 167,
+        "Product Launch": {
+          "pred": 33,
+          "true": 41,
+          "tp": 30
+        },
+        "Merger/Acquisition": {
+          "pred": 7,
+          "true": 9,
+          "tp": 7
+        },
+        "Credit Event": {
+          "pred": 11,
+          "true": 12,
+          "tp": 11
+        },
+        "Macroeconomic": {
+          "pred": 29,
+          "true": 32,
+          "tp": 27
+        },
+        "Other": {
+          "pred": 129,
+          "true": 113,
+          "tp": 98
+        }
+      },
+      "fresh": {
+        "n": 182,
+        "accuracy": 0.7527,
+        "macro_f1": 0.7274,
+        "alert_precision": 0.7692,
+        "alerts": 104,
+        "Product Launch": {
+          "pred": 5,
+          "true": 5,
+          "tp": 2
+        },
+        "Merger/Acquisition": {
+          "pred": 10,
+          "true": 4,
+          "tp": 4
+        },
+        "Credit Event": {
+          "pred": 3,
+          "true": 2,
+          "tp": 2
+        },
+        "Macroeconomic": {
+          "pred": 24,
+          "true": 26,
+          "tp": 20
+        },
+        "Other": {
+          "pred": 78,
+          "true": 78,
+          "tp": 57
+        }
+      },
+      "confirmed_tier": {
+        "alerts": 69,
+        "correct": 65,
+        "precision": 0.942,
+        "ci95": [
+          0.8602,
+          0.9772
+        ]
+      }
+    },
+    {
+      "rules": "R2",
+      "head": "shipped",
+      "policy": "P1 verify PL",
+      "all": {
+        "n": 478,
+        "accuracy": 0.7992,
+        "macro_f1": 0.8105,
+        "alert_precision": 0.8376,
+        "alerts": 271,
+        "Product Launch": {
+          "pred": 38,
+          "true": 46,
+          "tp": 32
+        },
+        "Merger/Acquisition": {
+          "pred": 17,
+          "true": 13,
+          "tp": 11
+        },
+        "Credit Event": {
+          "pred": 14,
+          "true": 14,
+          "tp": 13
+        },
+        "Macroeconomic": {
+          "pred": 53,
+          "true": 58,
+          "tp": 47
+        },
+        "Other": {
+          "pred": 207,
+          "true": 191,
+          "tp": 155
+        }
+      },
+      "human": {
+        "n": 296,
+        "accuracy": 0.8277,
+        "macro_f1": 0.8373,
+        "alert_precision": 0.8802,
+        "alerts": 167,
+        "Product Launch": {
+          "pred": 33,
+          "true": 41,
+          "tp": 30
+        },
+        "Merger/Acquisition": {
+          "pred": 7,
+          "true": 9,
+          "tp": 7
+        },
+        "Credit Event": {
+          "pred": 11,
+          "true": 12,
+          "tp": 11
+        },
+        "Macroeconomic": {
+          "pred": 29,
+          "true": 32,
+          "tp": 27
+        },
+        "Other": {
+          "pred": 129,
+          "true": 113,
+          "tp": 98
+        }
+      },
+      "fresh": {
+        "n": 182,
+        "accuracy": 0.7527,
+        "macro_f1": 0.7274,
+        "alert_precision": 0.7692,
+        "alerts": 104,
+        "Product Launch": {
+          "pred": 5,
+          "true": 5,
+          "tp": 2
+        },
+        "Merger/Acquisition": {
+          "pred": 10,
+          "true": 4,
+          "tp": 4
+        },
+        "Credit Event": {
+          "pred": 3,
+          "true": 2,
+          "tp": 2
+        },
+        "Macroeconomic": {
+          "pred": 24,
+          "true": 26,
+          "tp": 20
+        },
+        "Other": {
+          "pred": 78,
+          "true": 78,
+          "tp": 57
+        }
+      },
+      "confirmed_tier": {
+        "alerts": 69,
+        "correct": 65,
+        "precision": 0.942,
+        "ci95": [
+          0.8602,
+          0.9772
+        ]
+      }
+    },
+    {
+      "rules": "R3",
+      "head": "shipped",
+      "policy": "P1 verify PL",
+      "all": {
+        "n": 478,
+        "accuracy": 0.7992,
+        "macro_f1": 0.8105,
+        "alert_precision": 0.8376,
+        "alerts": 271,
+        "Product Launch": {
+          "pred": 38,
+          "true": 46,
+          "tp": 32
+        },
+        "Merger/Acquisition": {
+          "pred": 17,
+          "true": 13,
+          "tp": 11
+        },
+        "Credit Event": {
+          "pred": 14,
+          "true": 14,
+          "tp": 13
+        },
+        "Macroeconomic": {
+          "pred": 53,
+          "true": 58,
+          "tp": 47
+        },
+        "Other": {
+          "pred": 207,
+          "true": 191,
+          "tp": 155
+        }
+      },
+      "human": {
+        "n": 296,
+        "accuracy": 0.8277,
+        "macro_f1": 0.8373,
+        "alert_precision": 0.8802,
+        "alerts": 167,
+        "Product Launch": {
+          "pred": 33,
+          "true": 41,
+          "tp": 30
+        },
+        "Merger/Acquisition": {
+          "pred": 7,
+          "true": 9,
+          "tp": 7
+        },
+        "Credit Event": {
+          "pred": 11,
+          "true": 12,
+          "tp": 11
+        },
+        "Macroeconomic": {
+          "pred": 29,
+          "true": 32,
+          "tp": 27
+        },
+        "Other": {
+          "pred": 129,
+          "true": 113,
+          "tp": 98
+        }
+      },
+      "fresh": {
+        "n": 182,
+        "accuracy": 0.7527,
+        "macro_f1": 0.7274,
+        "alert_precision": 0.7692,
+        "alerts": 104,
+        "Product Launch": {
+          "pred": 5,
+          "true": 5,
+          "tp": 2
+        },
+        "Merger/Acquisition": {
+          "pred": 10,
+          "true": 4,
+          "tp": 4
+        },
+        "Credit Event": {
+          "pred": 3,
+          "true": 2,
+          "tp": 2
+        },
+        "Macroeconomic": {
+          "pred": 24,
+          "true": 26,
+          "tp": 20
+        },
+        "Other": {
+          "pred": 78,
+          "true": 78,
+          "tp": 57
+        }
+      },
+      "confirmed_tier": {
+        "alerts": 69,
+        "correct": 65,
+        "precision": 0.942,
+        "ci95": [
+          0.8602,
+          0.9772
+        ]
+      }
+    },
+    {
+      "rules": "R0",
+      "head": "v3+human x3",
+      "policy": "P2 PL/MA>=0.5",
+      "all": {
+        "n": 478,
+        "accuracy": 0.7406,
+        "macro_f1": 0.7397,
+        "alert_precision": 0.7707,
+        "alerts": 266,
+        "Product Launch": {
+          "pred": 44,
+          "true": 46,
+          "tp": 34
+        },
+        "Merger/Acquisition": {
+          "pred": 17,
+          "true": 13,
+          "tp": 9
+        },
+        "Credit Event": {
+          "pred": 14,
+          "true": 14,
+          "tp": 12
+        },
+        "Macroeconomic": {
+          "pred": 45,
+          "true": 58,
+          "tp": 36
+        },
+        "Other": {
+          "pred": 212,
+          "true": 191,
+          "tp": 149
+        }
+      },
+      "human": {
+        "n": 296,
+        "accuracy": 0.7736,
+        "macro_f1": 0.7731,
+        "alert_precision": 0.8199,
+        "alerts": 161,
+        "Product Launch": {
+          "pred": 34,
+          "true": 41,
+          "tp": 30
+        },
+        "Merger/Acquisition": {
+          "pred": 6,
+          "true": 9,
+          "tp": 6
+        },
+        "Credit Event": {
+          "pred": 10,
+          "true": 12,
+          "tp": 10
+        },
+        "Macroeconomic": {
+          "pred": 24,
+          "true": 32,
+          "tp": 19
+        },
+        "Other": {
+          "pred": 135,
+          "true": 113,
+          "tp": 97
+        }
+      },
+      "fresh": {
+        "n": 182,
+        "accuracy": 0.6868,
+        "macro_f1": 0.6575,
+        "alert_precision": 0.6952,
+        "alerts": 105,
+        "Product Launch": {
+          "pred": 10,
+          "true": 5,
+          "tp": 4
+        },
+        "Merger/Acquisition": {
+          "pred": 11,
+          "true": 4,
+          "tp": 3
+        },
+        "Credit Event": {
+          "pred": 4,
+          "true": 2,
+          "tp": 2
+        },
+        "Macroeconomic": {
+          "pred": 21,
+          "true": 26,
+          "tp": 17
+        },
+        "Other": {
+          "pred": 77,
+          "true": 78,
+          "tp": 52
+        }
+      },
+      "confirmed_tier": {
+        "alerts": 69,
+        "correct": 65,
+        "precision": 0.942,
+        "ci95": [
+          0.8602,
+          0.9772
+        ]
+      }
+    },
+    {
+      "rules": "R1",
+      "head": "v3+human x3",
+      "policy": "P2 PL/MA>=0.5",
+      "all": {
+        "n": 478,
+        "accuracy": 0.7406,
+        "macro_f1": 0.7397,
+        "alert_precision": 0.7707,
+        "alerts": 266,
+        "Product Launch": {
+          "pred": 44,
+          "true": 46,
+          "tp": 34
+        },
+        "Merger/Acquisition": {
+          "pred": 17,
+          "true": 13,
+          "tp": 9
+        },
+        "Credit Event": {
+          "pred": 14,
+          "true": 14,
+          "tp": 12
+        },
+        "Macroeconomic": {
+          "pred": 45,
+          "true": 58,
+          "tp": 36
+        },
+        "Other": {
+          "pred": 212,
+          "true": 191,
+          "tp": 149
+        }
+      },
+      "human": {
+        "n": 296,
+        "accuracy": 0.7736,
+        "macro_f1": 0.7731,
+        "alert_precision": 0.8199,
+        "alerts": 161,
+        "Product Launch": {
+          "pred": 34,
+          "true": 41,
+          "tp": 30
+        },
+        "Merger/Acquisition": {
+          "pred": 6,
+          "true": 9,
+          "tp": 6
+        },
+        "Credit Event": {
+          "pred": 10,
+          "true": 12,
+          "tp": 10
+        },
+        "Macroeconomic": {
+          "pred": 24,
+          "true": 32,
+          "tp": 19
+        },
+        "Other": {
+          "pred": 135,
+          "true": 113,
+          "tp": 97
+        }
+      },
+      "fresh": {
+        "n": 182,
+        "accuracy": 0.6868,
+        "macro_f1": 0.6575,
+        "alert_precision": 0.6952,
+        "alerts": 105,
+        "Product Launch": {
+          "pred": 10,
+          "true": 5,
+          "tp": 4
+        },
+        "Merger/Acquisition": {
+          "pred": 11,
+          "true": 4,
+          "tp": 3
+        },
+        "Credit Event": {
+          "pred": 4,
+          "true": 2,
+          "tp": 2
+        },
+        "Macroeconomic": {
+          "pred": 21,
+          "true": 26,
+          "tp": 17
+        },
+        "Other": {
+          "pred": 77,
+          "true": 78,
+          "tp": 52
+        }
+      },
+      "confirmed_tier": {
+        "alerts": 69,
+        "correct": 65,
+        "precision": 0.942,
+        "ci95": [
+          0.8602,
+          0.9772
+        ]
+      }
+    },
+    {
+      "rules": "R2",
+      "head": "v3+human x3",
+      "policy": "P2 PL/MA>=0.5",
+      "all": {
+        "n": 478,
+        "accuracy": 0.7406,
+        "macro_f1": 0.7397,
+        "alert_precision": 0.7707,
+        "alerts": 266,
+        "Product Launch": {
+          "pred": 44,
+          "true": 46,
+          "tp": 34
+        },
+        "Merger/Acquisition": {
+          "pred": 17,
+          "true": 13,
+          "tp": 9
+        },
+        "Credit Event": {
+          "pred": 14,
+          "true": 14,
+          "tp": 12
+        },
+        "Macroeconomic": {
+          "pred": 45,
+          "true": 58,
+          "tp": 36
+        },
+        "Other": {
+          "pred": 212,
+          "true": 191,
+          "tp": 149
+        }
+      },
+      "human": {
+        "n": 296,
+        "accuracy": 0.7736,
+        "macro_f1": 0.7731,
+        "alert_precision": 0.8199,
+        "alerts": 161,
+        "Product Launch": {
+          "pred": 34,
+          "true": 41,
+          "tp": 30
+        },
+        "Merger/Acquisition": {
+          "pred": 6,
+          "true": 9,
+          "tp": 6
+        },
+        "Credit Event": {
+          "pred": 10,
+          "true": 12,
+          "tp": 10
+        },
+        "Macroeconomic": {
+          "pred": 24,
+          "true": 32,
+          "tp": 19
+        },
+        "Other": {
+          "pred": 135,
+          "true": 113,
+          "tp": 97
+        }
+      },
+      "fresh": {
+        "n": 182,
+        "accuracy": 0.6868,
+        "macro_f1": 0.6575,
+        "alert_precision": 0.6952,
+        "alerts": 105,
+        "Product Launch": {
+          "pred": 10,
+          "true": 5,
+          "tp": 4
+        },
+        "Merger/Acquisition": {
+          "pred": 11,
+          "true": 4,
+          "tp": 3
+        },
+        "Credit Event": {
+          "pred": 4,
+          "true": 2,
+          "tp": 2
+        },
+        "Macroeconomic": {
+          "pred": 21,
+          "true": 26,
+          "tp": 17
+        },
+        "Other": {
+          "pred": 77,
+          "true": 78,
+          "tp": 52
+        }
+      },
+      "confirmed_tier": {
+        "alerts": 69,
+        "correct": 65,
+        "precision": 0.942,
+        "ci95": [
+          0.8602,
+          0.9772
+        ]
+      }
+    },
+    {
+      "rules": "R3",
+      "head": "v3+human x3",
+      "policy": "P2 PL/MA>=0.5",
+      "all": {
+        "n": 478,
+        "accuracy": 0.7406,
+        "macro_f1": 0.7397,
+        "alert_precision": 0.7707,
+        "alerts": 266,
+        "Product Launch": {
+          "pred": 44,
+          "true": 46,
+          "tp": 34
+        },
+        "Merger/Acquisition": {
+          "pred": 17,
+          "true": 13,
+          "tp": 9
+        },
+        "Credit Event": {
+          "pred": 14,
+          "true": 14,
+          "tp": 12
+        },
+        "Macroeconomic": {
+          "pred": 45,
+          "true": 58,
+          "tp": 36
+        },
+        "Other": {
+          "pred": 212,
+          "true": 191,
+          "tp": 149
+        }
+      },
+      "human": {
+        "n": 296,
+        "accuracy": 0.7736,
+        "macro_f1": 0.7731,
+        "alert_precision": 0.8199,
+        "alerts": 161,
+        "Product Launch": {
+          "pred": 34,
+          "true": 41,
+          "tp": 30
+        },
+        "Merger/Acquisition": {
+          "pred": 6,
+          "true": 9,
+          "tp": 6
+        },
+        "Credit Event": {
+          "pred": 10,
+          "true": 12,
+          "tp": 10
+        },
+        "Macroeconomic": {
+          "pred": 24,
+          "true": 32,
+          "tp": 19
+        },
+        "Other": {
+          "pred": 135,
+          "true": 113,
+          "tp": 97
+        }
+      },
+      "fresh": {
+        "n": 182,
+        "accuracy": 0.6868,
+        "macro_f1": 0.6575,
+        "alert_precision": 0.6952,
+        "alerts": 105,
+        "Product Launch": {
+          "pred": 10,
+          "true": 5,
+          "tp": 4
+        },
+        "Merger/Acquisition": {
+          "pred": 11,
+          "true": 4,
+          "tp": 3
+        },
+        "Credit Event": {
+          "pred": 4,
+          "true": 2,
+          "tp": 2
+        },
+        "Macroeconomic": {
+          "pred": 21,
+          "true": 26,
+          "tp": 17
+        },
+        "Other": {
+          "pred": 77,
+          "true": 78,
+          "tp": 52
+        }
+      },
+      "confirmed_tier": {
+        "alerts": 69,
+        "correct": 65,
+        "precision": 0.942,
+        "ci95": [
+          0.8602,
+          0.9772
+        ]
+      }
+    },
+    {
+      "rules": "R0",
+      "head": "v3+human x3",
+      "policy": "P3 P1+P2",
+      "all": {
+        "n": 478,
+        "accuracy": 0.7364,
+        "macro_f1": 0.7376,
+        "alert_precision": 0.7769,
+        "alerts": 260,
+        "Product Launch": {
+          "pred": 38,
+          "true": 46,
+          "tp": 31
+        },
+        "Merger/Acquisition": {
+          "pred": 17,
+          "true": 13,
+          "tp": 9
+        },
+        "Credit Event": {
+          "pred": 14,
+          "true": 14,
+          "tp": 12
+        },
+        "Macroeconomic": {
+          "pred": 45,
+          "true": 58,
+          "tp": 36
+        },
+        "Other": {
+          "pred": 218,
+          "true": 191,
+          "tp": 150
+        }
+      },
+      "human": {
+        "n": 296,
+        "accuracy": 0.7703,
+        "macro_f1": 0.7728,
+        "alert_precision": 0.8291,
+        "alerts": 158,
+        "Product Launch": {
+          "pred": 31,
+          "true": 41,
+          "tp": 29
+        },
+        "Merger/Acquisition": {
+          "pred": 6,
+          "true": 9,
+          "tp": 6
+        },
+        "Credit Event": {
+          "pred": 10,
+          "true": 12,
+          "tp": 10
+        },
+        "Macroeconomic": {
+          "pred": 24,
+          "true": 32,
+          "tp": 19
+        },
+        "Other": {
+          "pred": 138,
+          "true": 113,
+          "tp": 97
+        }
+      },
+      "fresh": {
+        "n": 182,
+        "accuracy": 0.6813,
+        "macro_f1": 0.6393,
+        "alert_precision": 0.6961,
+        "alerts": 102,
+        "Product Launch": {
+          "pred": 7,
+          "true": 5,
+          "tp": 2
+        },
+        "Merger/Acquisition": {
+          "pred": 11,
+          "true": 4,
+          "tp": 3
+        },
+        "Credit Event": {
+          "pred": 4,
+          "true": 2,
+          "tp": 2
+        },
+        "Macroeconomic": {
+          "pred": 21,
+          "true": 26,
+          "tp": 17
+        },
+        "Other": {
+          "pred": 80,
+          "true": 78,
+          "tp": 53
+        }
+      },
+      "confirmed_tier": {
+        "alerts": 69,
+        "correct": 65,
+        "precision": 0.942,
+        "ci95": [
+          0.8602,
+          0.9772
+        ]
+      }
+    },
+    {
+      "rules": "R1",
+      "head": "v3+human x3",
+      "policy": "P3 P1+P2",
+      "all": {
+        "n": 478,
+        "accuracy": 0.7364,
+        "macro_f1": 0.7376,
+        "alert_precision": 0.7769,
+        "alerts": 260,
+        "Product Launch": {
+          "pred": 38,
+          "true": 46,
+          "tp": 31
+        },
+        "Merger/Acquisition": {
+          "pred": 17,
+          "true": 13,
+          "tp": 9
+        },
+        "Credit Event": {
+          "pred": 14,
+          "true": 14,
+          "tp": 12
+        },
+        "Macroeconomic": {
+          "pred": 45,
+          "true": 58,
+          "tp": 36
+        },
+        "Other": {
+          "pred": 218,
+          "true": 191,
+          "tp": 150
+        }
+      },
+      "human": {
+        "n": 296,
+        "accuracy": 0.7703,
+        "macro_f1": 0.7728,
+        "alert_precision": 0.8291,
+        "alerts": 158,
+        "Product Launch": {
+          "pred": 31,
+          "true": 41,
+          "tp": 29
+        },
+        "Merger/Acquisition": {
+          "pred": 6,
+          "true": 9,
+          "tp": 6
+        },
+        "Credit Event": {
+          "pred": 10,
+          "true": 12,
+          "tp": 10
+        },
+        "Macroeconomic": {
+          "pred": 24,
+          "true": 32,
+          "tp": 19
+        },
+        "Other": {
+          "pred": 138,
+          "true": 113,
+          "tp": 97
+        }
+      },
+      "fresh": {
+        "n": 182,
+        "accuracy": 0.6813,
+        "macro_f1": 0.6393,
+        "alert_precision": 0.6961,
+        "alerts": 102,
+        "Product Launch": {
+          "pred": 7,
+          "true": 5,
+          "tp": 2
+        },
+        "Merger/Acquisition": {
+          "pred": 11,
+          "true": 4,
+          "tp": 3
+        },
+        "Credit Event": {
+          "pred": 4,
+          "true": 2,
+          "tp": 2
+        },
+        "Macroeconomic": {
+          "pred": 21,
+          "true": 26,
+          "tp": 17
+        },
+        "Other": {
+          "pred": 80,
+          "true": 78,
+          "tp": 53
+        }
+      },
+      "confirmed_tier": {
+        "alerts": 69,
+        "correct": 65,
+        "precision": 0.942,
+        "ci95": [
+          0.8602,
+          0.9772
+        ]
+      }
+    },
+    {
+      "rules": "R2",
+      "head": "v3+human x3",
+      "policy": "P3 P1+P2",
+      "all": {
+        "n": 478,
+        "accuracy": 0.7364,
+        "macro_f1": 0.7376,
+        "alert_precision": 0.7769,
+        "alerts": 260,
+        "Product Launch": {
+          "pred": 38,
+          "true": 46,
+          "tp": 31
+        },
+        "Merger/Acquisition": {
+          "pred": 17,
+          "true": 13,
+          "tp": 9
+        },
+        "Credit Event": {
+          "pred": 14,
+          "true": 14,
+          "tp": 12
+        },
+        "Macroeconomic": {
+          "pred": 45,
+          "true": 58,
+          "tp": 36
+        },
+        "Other": {
+          "pred": 218,
+          "true": 191,
+          "tp": 150
+        }
+      },
+      "human": {
+        "n": 296,
+        "accuracy": 0.7703,
+        "macro_f1": 0.7728,
+        "alert_precision": 0.8291,
+        "alerts": 158,
+        "Product Launch": {
+          "pred": 31,
+          "true": 41,
+          "tp": 29
+        },
+        "Merger/Acquisition": {
+          "pred": 6,
+          "true": 9,
+          "tp": 6
+        },
+        "Credit Event": {
+          "pred": 10,
+          "true": 12,
+          "tp": 10
+        },
+        "Macroeconomic": {
+          "pred": 24,
+          "true": 32,
+          "tp": 19
+        },
+        "Other": {
+          "pred": 138,
+          "true": 113,
+          "tp": 97
+        }
+      },
+      "fresh": {
+        "n": 182,
+        "accuracy": 0.6813,
+        "macro_f1": 0.6393,
+        "alert_precision": 0.6961,
+        "alerts": 102,
+        "Product Launch": {
+          "pred": 7,
+          "true": 5,
+          "tp": 2
+        },
+        "Merger/Acquisition": {
+          "pred": 11,
+          "true": 4,
+          "tp": 3
+        },
+        "Credit Event": {
+          "pred": 4,
+          "true": 2,
+          "tp": 2
+        },
+        "Macroeconomic": {
+          "pred": 21,
+          "true": 26,
+          "tp": 17
+        },
+        "Other": {
+          "pred": 80,
+          "true": 78,
+          "tp": 53
+        }
+      },
+      "confirmed_tier": {
+        "alerts": 69,
+        "correct": 65,
+        "precision": 0.942,
+        "ci95": [
+          0.8602,
+          0.9772
+        ]
+      }
+    },
+    {
+      "rules": "R3",
+      "head": "v3+human x3",
+      "policy": "P3 P1+P2",
+      "all": {
+        "n": 478,
+        "accuracy": 0.7364,
+        "macro_f1": 0.7376,
+        "alert_precision": 0.7769,
+        "alerts": 260,
+        "Product Launch": {
+          "pred": 38,
+          "true": 46,
+          "tp": 31
+        },
+        "Merger/Acquisition": {
+          "pred": 17,
+          "true": 13,
+          "tp": 9
+        },
+        "Credit Event": {
+          "pred": 14,
+          "true": 14,
+          "tp": 12
+        },
+        "Macroeconomic": {
+          "pred": 45,
+          "true": 58,
+          "tp": 36
+        },
+        "Other": {
+          "pred": 218,
+          "true": 191,
+          "tp": 150
+        }
+      },
+      "human": {
+        "n": 296,
+        "accuracy": 0.7703,
+        "macro_f1": 0.7728,
+        "alert_precision": 0.8291,
+        "alerts": 158,
+        "Product Launch": {
+          "pred": 31,
+          "true": 41,
+          "tp": 29
+        },
+        "Merger/Acquisition": {
+          "pred": 6,
+          "true": 9,
+          "tp": 6
+        },
+        "Credit Event": {
+          "pred": 10,
+          "true": 12,
+          "tp": 10
+        },
+        "Macroeconomic": {
+          "pred": 24,
+          "true": 32,
+          "tp": 19
+        },
+        "Other": {
+          "pred": 138,
+          "true": 113,
+          "tp": 97
+        }
+      },
+      "fresh": {
+        "n": 182,
+        "accuracy": 0.6813,
+        "macro_f1": 0.6393,
+        "alert_precision": 0.6961,
+        "alerts": 102,
+        "Product Launch": {
+          "pred": 7,
+          "true": 5,
+          "tp": 2
+        },
+        "Merger/Acquisition": {
+          "pred": 11,
+          "true": 4,
+          "tp": 3
+        },
+        "Credit Event": {
+          "pred": 4,
+          "true": 2,
+          "tp": 2
+        },
+        "Macroeconomic": {
+          "pred": 21,
+          "true": 26,
+          "tp": 17
+        },
+        "Other": {
+          "pred": 80,
+          "true": 78,
+          "tp": 53
+        }
+      },
+      "confirmed_tier": {
+        "alerts": 69,
+        "correct": 65,
+        "precision": 0.942,
+        "ci95": [
+          0.8602,
+          0.9772
+        ]
+      }
+    },
+    {
+      "rules": "R0",
+      "head": "v3+human x3",
+      "policy": "P1 verify PL",
+      "all": {
+        "n": 478,
+        "accuracy": 0.728,
+        "macro_f1": 0.7328,
+        "alert_precision": 0.7584,
+        "alerts": 269,
+        "Product Launch": {
+          "pred": 42,
+          "true": 46,
+          "tp": 32
+        },
+        "Merger/Acquisition": {
+          "pred": 22,
+          "true": 13,
+          "tp": 10
+        },
+        "Credit Event": {
+          "pred": 14,
+          "true": 14,
+          "tp": 12
+        },
+        "Macroeconomic": {
+          "pred": 45,
+          "true": 58,
+          "tp": 36
+        },
+        "Other": {
+          "pred": 209,
+          "true": 191,
+          "tp": 144
+        }
+      },
+      "human": {
+        "n": 296,
+        "accuracy": 0.7669,
+        "macro_f1": 0.7681,
+        "alert_precision": 0.8199,
+        "alerts": 161,
+        "Product Launch": {
+          "pred": 33,
+          "true": 41,
+          "tp": 30
+        },
+        "Merger/Acquisition": {
+          "pred": 7,
+          "true": 9,
+          "tp": 6
+        },
+        "Credit Event": {
+          "pred": 10,
+          "true": 12,
+          "tp": 10
+        },
+        "Macroeconomic": {
+          "pred": 24,
+          "true": 32,
+          "tp": 19
+        },
+        "Other": {
+          "pred": 135,
+          "true": 113,
+          "tp": 95
+        }
+      },
+      "fresh": {
+        "n": 182,
+        "accuracy": 0.6648,
+        "macro_f1": 0.6345,
+        "alert_precision": 0.6667,
+        "alerts": 108,
+        "Product Launch": {
+          "pred": 9,
+          "true": 5,
+          "tp": 2
+        },
+        "Merger/Acquisition": {
+          "pred": 15,
+          "true": 4,
+          "tp": 4
+        },
+        "Credit Event": {
+          "pred": 4,
+          "true": 2,
+          "tp": 2
+        },
+        "Macroeconomic": {
+          "pred": 21,
+          "true": 26,
+          "tp": 17
+        },
+        "Other": {
+          "pred": 74,
+          "true": 78,
+          "tp": 49
+        }
+      },
+      "confirmed_tier": {
+        "alerts": 69,
+        "correct": 65,
+        "precision": 0.942,
+        "ci95": [
+          0.8602,
+          0.9772
+        ]
+      }
+    },
+    {
+      "rules": "R1",
+      "head": "v3+human x3",
+      "policy": "P1 verify PL",
+      "all": {
+        "n": 478,
+        "accuracy": 0.728,
+        "macro_f1": 0.7328,
+        "alert_precision": 0.7584,
+        "alerts": 269,
+        "Product Launch": {
+          "pred": 42,
+          "true": 46,
+          "tp": 32
+        },
+        "Merger/Acquisition": {
+          "pred": 22,
+          "true": 13,
+          "tp": 10
+        },
+        "Credit Event": {
+          "pred": 14,
+          "true": 14,
+          "tp": 12
+        },
+        "Macroeconomic": {
+          "pred": 45,
+          "true": 58,
+          "tp": 36
+        },
+        "Other": {
+          "pred": 209,
+          "true": 191,
+          "tp": 144
+        }
+      },
+      "human": {
+        "n": 296,
+        "accuracy": 0.7669,
+        "macro_f1": 0.7681,
+        "alert_precision": 0.8199,
+        "alerts": 161,
+        "Product Launch": {
+          "pred": 33,
+          "true": 41,
+          "tp": 30
+        },
+        "Merger/Acquisition": {
+          "pred": 7,
+          "true": 9,
+          "tp": 6
+        },
+        "Credit Event": {
+          "pred": 10,
+          "true": 12,
+          "tp": 10
+        },
+        "Macroeconomic": {
+          "pred": 24,
+          "true": 32,
+          "tp": 19
+        },
+        "Other": {
+          "pred": 135,
+          "true": 113,
+          "tp": 95
+        }
+      },
+      "fresh": {
+        "n": 182,
+        "accuracy": 0.6648,
+        "macro_f1": 0.6345,
+        "alert_precision": 0.6667,
+        "alerts": 108,
+        "Product Launch": {
+          "pred": 9,
+          "true": 5,
+          "tp": 2
+        },
+        "Merger/Acquisition": {
+          "pred": 15,
+          "true": 4,
+          "tp": 4
+        },
+        "Credit Event": {
+          "pred": 4,
+          "true": 2,
+          "tp": 2
+        },
+        "Macroeconomic": {
+          "pred": 21,
+          "true": 26,
+          "tp": 17
+        },
+        "Other": {
+          "pred": 74,
+          "true": 78,
+          "tp": 49
+        }
+      },
+      "confirmed_tier": {
+        "alerts": 69,
+        "correct": 65,
+        "precision": 0.942,
+        "ci95": [
+          0.8602,
+          0.9772
+        ]
+      }
+    },
+    {
+      "rules": "R2",
+      "head": "v3+human x3",
+      "policy": "P1 verify PL",
+      "all": {
+        "n": 478,
+        "accuracy": 0.728,
+        "macro_f1": 0.7328,
+        "alert_precision": 0.7584,
+        "alerts": 269,
+        "Product Launch": {
+          "pred": 42,
+          "true": 46,
+          "tp": 32
+        },
+        "Merger/Acquisition": {
+          "pred": 22,
+          "true": 13,
+          "tp": 10
+        },
+        "Credit Event": {
+          "pred": 14,
+          "true": 14,
+          "tp": 12
+        },
+        "Macroeconomic": {
+          "pred": 45,
+          "true": 58,
+          "tp": 36
+        },
+        "Other": {
+          "pred": 209,
+          "true": 191,
+          "tp": 144
+        }
+      },
+      "human": {
+        "n": 296,
+        "accuracy": 0.7669,
+        "macro_f1": 0.7681,
+        "alert_precision": 0.8199,
+        "alerts": 161,
+        "Product Launch": {
+          "pred": 33,
+          "true": 41,
+          "tp": 30
+        },
+        "Merger/Acquisition": {
+          "pred": 7,
+          "true": 9,
+          "tp": 6
+        },
+        "Credit Event": {
+          "pred": 10,
+          "true": 12,
+          "tp": 10
+        },
+        "Macroeconomic": {
+          "pred": 24,
+          "true": 32,
+          "tp": 19
+        },
+        "Other": {
+          "pred": 135,
+          "true": 113,
+          "tp": 95
+        }
+      },
+      "fresh": {
+        "n": 182,
+        "accuracy": 0.6648,
+        "macro_f1": 0.6345,
+        "alert_precision": 0.6667,
+        "alerts": 108,
+        "Product Launch": {
+          "pred": 9,
+          "true": 5,
+          "tp": 2
+        },
+        "Merger/Acquisition": {
+          "pred": 15,
+          "true": 4,
+          "tp": 4
+        },
+        "Credit Event": {
+          "pred": 4,
+          "true": 2,
+          "tp": 2
+        },
+        "Macroeconomic": {
+          "pred": 21,
+          "true": 26,
+          "tp": 17
+        },
+        "Other": {
+          "pred": 74,
+          "true": 78,
+          "tp": 49
+        }
+      },
+      "confirmed_tier": {
+        "alerts": 69,
+        "correct": 65,
+        "precision": 0.942,
+        "ci95": [
+          0.8602,
+          0.9772
+        ]
+      }
+    },
+    {
+      "rules": "R3",
+      "head": "v3+human x3",
+      "policy": "P1 verify PL",
+      "all": {
+        "n": 478,
+        "accuracy": 0.728,
+        "macro_f1": 0.7328,
+        "alert_precision": 0.7584,
+        "alerts": 269,
+        "Product Launch": {
+          "pred": 42,
+          "true": 46,
+          "tp": 32
+        },
+        "Merger/Acquisition": {
+          "pred": 22,
+          "true": 13,
+          "tp": 10
+        },
+        "Credit Event": {
+          "pred": 14,
+          "true": 14,
+          "tp": 12
+        },
+        "Macroeconomic": {
+          "pred": 45,
+          "true": 58,
+          "tp": 36
+        },
+        "Other": {
+          "pred": 209,
+          "true": 191,
+          "tp": 144
+        }
+      },
+      "human": {
+        "n": 296,
+        "accuracy": 0.7669,
+        "macro_f1": 0.7681,
+        "alert_precision": 0.8199,
+        "alerts": 161,
+        "Product Launch": {
+          "pred": 33,
+          "true": 41,
+          "tp": 30
+        },
+        "Merger/Acquisition": {
+          "pred": 7,
+          "true": 9,
+          "tp": 6
+        },
+        "Credit Event": {
+          "pred": 10,
+          "true": 12,
+          "tp": 10
+        },
+        "Macroeconomic": {
+          "pred": 24,
+          "true": 32,
+          "tp": 19
+        },
+        "Other": {
+          "pred": 135,
+          "true": 113,
+          "tp": 95
+        }
+      },
+      "fresh": {
+        "n": 182,
+        "accuracy": 0.6648,
+        "macro_f1": 0.6345,
+        "alert_precision": 0.6667,
+        "alerts": 108,
+        "Product Launch": {
+          "pred": 9,
+          "true": 5,
+          "tp": 2
+        },
+        "Merger/Acquisition": {
+          "pred": 15,
+          "true": 4,
+          "tp": 4
+        },
+        "Credit Event": {
+          "pred": 4,
+          "true": 2,
+          "tp": 2
+        },
+        "Macroeconomic": {
+          "pred": 21,
+          "true": 26,
+          "tp": 17
+        },
+        "Other": {
+          "pred": 74,
+          "true": 78,
+          "tp": 49
+        }
+      },
+      "confirmed_tier": {
+        "alerts": 69,
+        "correct": 65,
+        "precision": 0.942,
+        "ci95": [
+          0.8602,
+          0.9772
+        ]
+      }
+    },
+    {
+      "rules": "R0",
+      "head": "v3+human x1",
+      "policy": "P2 PL/MA>=0.5",
+      "all": {
+        "n": 478,
+        "accuracy": 0.7406,
+        "macro_f1": 0.7299,
+        "alert_precision": 0.7743,
+        "alerts": 257,
+        "Product Launch": {
+          "pred": 37,
+          "true": 46,
+          "tp": 32
+        },
+        "Merger/Acquisition": {
+          "pred": 16,
+          "true": 13,
+          "tp": 9
+        },
+        "Credit Event": {
+          "pred": 15,
+          "true": 14,
+          "tp": 12
+        },
+        "Macroeconomic": {
+          "pred": 42,
+          "true": 58,
+          "tp": 34
+        },
+        "Other": {
+          "pred": 221,
+          "true": 191,
+          "tp": 155
+        }
+      },
+      "human": {
+        "n": 296,
+        "accuracy": 0.7669,
+        "macro_f1": 0.7581,
+        "alert_precision": 0.8205,
+        "alerts": 156,
+        "Product Launch": {
+          "pred": 31,
+          "true": 41,
+          "tp": 29
+        },
+        "Merger/Acquisition": {
+          "pred": 6,
+          "true": 9,
+          "tp": 6
+        },
+        "Credit Event": {
+          "pred": 11,
+          "true": 12,
+          "tp": 10
+        },
+        "Macroeconomic": {
+          "pred": 23,
+          "true": 32,
+          "tp": 19
+        },
+        "Other": {
+          "pred": 140,
+          "true": 113,
+          "tp": 99
+        }
+      },
+      "fresh": {
+        "n": 182,
+        "accuracy": 0.6978,
+        "macro_f1": 0.6625,
+        "alert_precision": 0.703,
+        "alerts": 101,
+        "Product Launch": {
+          "pred": 6,
+          "true": 5,
+          "tp": 3
+        },
+        "Merger/Acquisition": {
+          "pred": 10,
+          "true": 4,
+          "tp": 3
+        },
+        "Credit Event": {
+          "pred": 4,
+          "true": 2,
+          "tp": 2
+        },
+        "Macroeconomic": {
+          "pred": 19,
+          "true": 26,
+          "tp": 15
+        },
+        "Other": {
+          "pred": 81,
+          "true": 78,
+          "tp": 56
+        }
+      },
+      "confirmed_tier": {
+        "alerts": 69,
+        "correct": 65,
+        "precision": 0.942,
+        "ci95": [
+          0.8602,
+          0.9772
+        ]
+      }
+    },
+    {
+      "rules": "R1",
+      "head": "v3+human x1",
+      "policy": "P2 PL/MA>=0.5",
+      "all": {
+        "n": 478,
+        "accuracy": 0.7406,
+        "macro_f1": 0.7299,
+        "alert_precision": 0.7743,
+        "alerts": 257,
+        "Product Launch": {
+          "pred": 37,
+          "true": 46,
+          "tp": 32
+        },
+        "Merger/Acquisition": {
+          "pred": 16,
+          "true": 13,
+          "tp": 9
+        },
+        "Credit Event": {
+          "pred": 15,
+          "true": 14,
+          "tp": 12
+        },
+        "Macroeconomic": {
+          "pred": 42,
+          "true": 58,
+          "tp": 34
+        },
+        "Other": {
+          "pred": 221,
+          "true": 191,
+          "tp": 155
+        }
+      },
+      "human": {
+        "n": 296,
+        "accuracy": 0.7669,
+        "macro_f1": 0.7581,
+        "alert_precision": 0.8205,
+        "alerts": 156,
+        "Product Launch": {
+          "pred": 31,
+          "true": 41,
+          "tp": 29
+        },
+        "Merger/Acquisition": {
+          "pred": 6,
+          "true": 9,
+          "tp": 6
+        },
+        "Credit Event": {
+          "pred": 11,
+          "true": 12,
+          "tp": 10
+        },
+        "Macroeconomic": {
+          "pred": 23,
+          "true": 32,
+          "tp": 19
+        },
+        "Other": {
+          "pred": 140,
+          "true": 113,
+          "tp": 99
+        }
+      },
+      "fresh": {
+        "n": 182,
+        "accuracy": 0.6978,
+        "macro_f1": 0.6625,
+        "alert_precision": 0.703,
+        "alerts": 101,
+        "Product Launch": {
+          "pred": 6,
+          "true": 5,
+          "tp": 3
+        },
+        "Merger/Acquisition": {
+          "pred": 10,
+          "true": 4,
+          "tp": 3
+        },
+        "Credit Event": {
+          "pred": 4,
+          "true": 2,
+          "tp": 2
+        },
+        "Macroeconomic": {
+          "pred": 19,
+          "true": 26,
+          "tp": 15
+        },
+        "Other": {
+          "pred": 81,
+          "true": 78,
+          "tp": 56
+        }
+      },
+      "confirmed_tier": {
+        "alerts": 69,
+        "correct": 65,
+        "precision": 0.942,
+        "ci95": [
+          0.8602,
+          0.9772
+        ]
+      }
+    },
+    {
+      "rules": "R2",
+      "head": "v3+human x1",
+      "policy": "P2 PL/MA>=0.5",
+      "all": {
+        "n": 478,
+        "accuracy": 0.7406,
+        "macro_f1": 0.7299,
+        "alert_precision": 0.7743,
+        "alerts": 257,
+        "Product Launch": {
+          "pred": 37,
+          "true": 46,
+          "tp": 32
+        },
+        "Merger/Acquisition": {
+          "pred": 16,
+          "true": 13,
+          "tp": 9
+        },
+        "Credit Event": {
+          "pred": 15,
+          "true": 14,
+          "tp": 12
+        },
+        "Macroeconomic": {
+          "pred": 42,
+          "true": 58,
+          "tp": 34
+        },
+        "Other": {
+          "pred": 221,
+          "true": 191,
+          "tp": 155
+        }
+      },
+      "human": {
+        "n": 296,
+        "accuracy": 0.7669,
+        "macro_f1": 0.7581,
+        "alert_precision": 0.8205,
+        "alerts": 156,
+        "Product Launch": {
+          "pred": 31,
+          "true": 41,
+          "tp": 29
+        },
+        "Merger/Acquisition": {
+          "pred": 6,
+          "true": 9,
+          "tp": 6
+        },
+        "Credit Event": {
+          "pred": 11,
+          "true": 12,
+          "tp": 10
+        },
+        "Macroeconomic": {
+          "pred": 23,
+          "true": 32,
+          "tp": 19
+        },
+        "Other": {
+          "pred": 140,
+          "true": 113,
+          "tp": 99
+        }
+      },
+      "fresh": {
+        "n": 182,
+        "accuracy": 0.6978,
+        "macro_f1": 0.6625,
+        "alert_precision": 0.703,
+        "alerts": 101,
+        "Product Launch": {
+          "pred": 6,
+          "true": 5,
+          "tp": 3
+        },
+        "Merger/Acquisition": {
+          "pred": 10,
+          "true": 4,
+          "tp": 3
+        },
+        "Credit Event": {
+          "pred": 4,
+          "true": 2,
+          "tp": 2
+        },
+        "Macroeconomic": {
+          "pred": 19,
+          "true": 26,
+          "tp": 15
+        },
+        "Other": {
+          "pred": 81,
+          "true": 78,
+          "tp": 56
+        }
+      },
+      "confirmed_tier": {
+        "alerts": 69,
+        "correct": 65,
+        "precision": 0.942,
+        "ci95": [
+          0.8602,
+          0.9772
+        ]
+      }
+    },
+    {
+      "rules": "R3",
+      "head": "v3+human x1",
+      "policy": "P2 PL/MA>=0.5",
+      "all": {
+        "n": 478,
+        "accuracy": 0.7406,
+        "macro_f1": 0.7299,
+        "alert_precision": 0.7743,
+        "alerts": 257,
+        "Product Launch": {
+          "pred": 37,
+          "true": 46,
+          "tp": 32
+        },
+        "Merger/Acquisition": {
+          "pred": 16,
+          "true": 13,
+          "tp": 9
+        },
+        "Credit Event": {
+          "pred": 15,
+          "true": 14,
+          "tp": 12
+        },
+        "Macroeconomic": {
+          "pred": 42,
+          "true": 58,
+          "tp": 34
+        },
+        "Other": {
+          "pred": 221,
+          "true": 191,
+          "tp": 155
+        }
+      },
+      "human": {
+        "n": 296,
+        "accuracy": 0.7669,
+        "macro_f1": 0.7581,
+        "alert_precision": 0.8205,
+        "alerts": 156,
+        "Product Launch": {
+          "pred": 31,
+          "true": 41,
+          "tp": 29
+        },
+        "Merger/Acquisition": {
+          "pred": 6,
+          "true": 9,
+          "tp": 6
+        },
+        "Credit Event": {
+          "pred": 11,
+          "true": 12,
+          "tp": 10
+        },
+        "Macroeconomic": {
+          "pred": 23,
+          "true": 32,
+          "tp": 19
+        },
+        "Other": {
+          "pred": 140,
+          "true": 113,
+          "tp": 99
+        }
+      },
+      "fresh": {
+        "n": 182,
+        "accuracy": 0.6978,
+        "macro_f1": 0.6625,
+        "alert_precision": 0.703,
+        "alerts": 101,
+        "Product Launch": {
+          "pred": 6,
+          "true": 5,
+          "tp": 3
+        },
+        "Merger/Acquisition": {
+          "pred": 10,
+          "true": 4,
+          "tp": 3
+        },
+        "Credit Event": {
+          "pred": 4,
+          "true": 2,
+          "tp": 2
+        },
+        "Macroeconomic": {
+          "pred": 19,
+          "true": 26,
+          "tp": 15
+        },
+        "Other": {
+          "pred": 81,
+          "true": 78,
+          "tp": 56
+        }
+      },
+      "confirmed_tier": {
+        "alerts": 69,
+        "correct": 65,
+        "precision": 0.942,
+        "ci95": [
+          0.8602,
+          0.9772
+        ]
+      }
+    },
+    {
+      "rules": "R0",
+      "head": "v3+human x3",
+      "policy": "P0",
+      "all": {
+        "n": 478,
+        "accuracy": 0.7134,
+        "macro_f1": 0.7277,
+        "alert_precision": 0.7186,
+        "alerts": 295,
+        "Product Launch": {
+          "pred": 68,
+          "true": 46,
+          "tp": 40
+        },
+        "Merger/Acquisition": {
+          "pred": 22,
+          "true": 13,
+          "tp": 10
+        },
+        "Credit Event": {
+          "pred": 14,
+          "true": 14,
+          "tp": 12
+        },
+        "Macroeconomic": {
+          "pred": 45,
+          "true": 58,
+          "tp": 36
+        },
+        "Other": {
+          "pred": 183,
+          "true": 191,
+          "tp": 129
+        }
+      },
+      "human": {
+        "n": 296,
+        "accuracy": 0.75,
+        "macro_f1": 0.7611,
+        "alert_precision": 0.7654,
+        "alerts": 179,
+        "Product Launch": {
+          "pred": 51,
+          "true": 41,
+          "tp": 35
+        },
+        "Merger/Acquisition": {
+          "pred": 7,
+          "true": 9,
+          "tp": 6
+        },
+        "Credit Event": {
+          "pred": 10,
+          "true": 12,
+          "tp": 10
+        },
+        "Macroeconomic": {
+          "pred": 24,
+          "true": 32,
+          "tp": 19
+        },
+        "Other": {
+          "pred": 117,
+          "true": 113,
+          "tp": 85
+        }
+      },
+      "fresh": {
+        "n": 182,
+        "accuracy": 0.6538,
+        "macro_f1": 0.6468,
+        "alert_precision": 0.6466,
+        "alerts": 116,
+        "Product Launch": {
+          "pred": 17,
+          "true": 5,
+          "tp": 5
+        },
+        "Merger/Acquisition": {
+          "pred": 15,
+          "true": 4,
+          "tp": 4
+        },
+        "Credit Event": {
+          "pred": 4,
+          "true": 2,
+          "tp": 2
+        },
+        "Macroeconomic": {
+          "pred": 21,
+          "true": 26,
+          "tp": 17
+        },
+        "Other": {
+          "pred": 66,
+          "true": 78,
+          "tp": 44
+        }
+      },
+      "confirmed_tier": {
+        "alerts": 69,
+        "correct": 65,
+        "precision": 0.942,
+        "ci95": [
+          0.8602,
+          0.9772
+        ]
+      }
+    },
+    {
+      "rules": "R1",
+      "head": "v3+human x3",
+      "policy": "P0",
+      "all": {
+        "n": 478,
+        "accuracy": 0.7134,
+        "macro_f1": 0.7277,
+        "alert_precision": 0.7186,
+        "alerts": 295,
+        "Product Launch": {
+          "pred": 68,
+          "true": 46,
+          "tp": 40
+        },
+        "Merger/Acquisition": {
+          "pred": 22,
+          "true": 13,
+          "tp": 10
+        },
+        "Credit Event": {
+          "pred": 14,
+          "true": 14,
+          "tp": 12
+        },
+        "Macroeconomic": {
+          "pred": 45,
+          "true": 58,
+          "tp": 36
+        },
+        "Other": {
+          "pred": 183,
+          "true": 191,
+          "tp": 129
+        }
+      },
+      "human": {
+        "n": 296,
+        "accuracy": 0.75,
+        "macro_f1": 0.7611,
+        "alert_precision": 0.7654,
+        "alerts": 179,
+        "Product Launch": {
+          "pred": 51,
+          "true": 41,
+          "tp": 35
+        },
+        "Merger/Acquisition": {
+          "pred": 7,
+          "true": 9,
+          "tp": 6
+        },
+        "Credit Event": {
+          "pred": 10,
+          "true": 12,
+          "tp": 10
+        },
+        "Macroeconomic": {
+          "pred": 24,
+          "true": 32,
+          "tp": 19
+        },
+        "Other": {
+          "pred": 117,
+          "true": 113,
+          "tp": 85
+        }
+      },
+      "fresh": {
+        "n": 182,
+        "accuracy": 0.6538,
+        "macro_f1": 0.6468,
+        "alert_precision": 0.6466,
+        "alerts": 116,
+        "Product Launch": {
+          "pred": 17,
+          "true": 5,
+          "tp": 5
+        },
+        "Merger/Acquisition": {
+          "pred": 15,
+          "true": 4,
+          "tp": 4
+        },
+        "Credit Event": {
+          "pred": 4,
+          "true": 2,
+          "tp": 2
+        },
+        "Macroeconomic": {
+          "pred": 21,
+          "true": 26,
+          "tp": 17
+        },
+        "Other": {
+          "pred": 66,
+          "true": 78,
+          "tp": 44
+        }
+      },
+      "confirmed_tier": {
+        "alerts": 69,
+        "correct": 65,
+        "precision": 0.942,
+        "ci95": [
+          0.8602,
+          0.9772
+        ]
+      }
+    },
+    {
+      "rules": "R2",
+      "head": "v3+human x3",
+      "policy": "P0",
+      "all": {
+        "n": 478,
+        "accuracy": 0.7134,
+        "macro_f1": 0.7277,
+        "alert_precision": 0.7186,
+        "alerts": 295,
+        "Product Launch": {
+          "pred": 68,
+          "true": 46,
+          "tp": 40
+        },
+        "Merger/Acquisition": {
+          "pred": 22,
+          "true": 13,
+          "tp": 10
+        },
+        "Credit Event": {
+          "pred": 14,
+          "true": 14,
+          "tp": 12
+        },
+        "Macroeconomic": {
+          "pred": 45,
+          "true": 58,
+          "tp": 36
+        },
+        "Other": {
+          "pred": 183,
+          "true": 191,
+          "tp": 129
+        }
+      },
+      "human": {
+        "n": 296,
+        "accuracy": 0.75,
+        "macro_f1": 0.7611,
+        "alert_precision": 0.7654,
+        "alerts": 179,
+        "Product Launch": {
+          "pred": 51,
+          "true": 41,
+          "tp": 35
+        },
+        "Merger/Acquisition": {
+          "pred": 7,
+          "true": 9,
+          "tp": 6
+        },
+        "Credit Event": {
+          "pred": 10,
+          "true": 12,
+          "tp": 10
+        },
+        "Macroeconomic": {
+          "pred": 24,
+          "true": 32,
+          "tp": 19
+        },
+        "Other": {
+          "pred": 117,
+          "true": 113,
+          "tp": 85
+        }
+      },
+      "fresh": {
+        "n": 182,
+        "accuracy": 0.6538,
+        "macro_f1": 0.6468,
+        "alert_precision": 0.6466,
+        "alerts": 116,
+        "Product Launch": {
+          "pred": 17,
+          "true": 5,
+          "tp": 5
+        },
+        "Merger/Acquisition": {
+          "pred": 15,
+          "true": 4,
+          "tp": 4
+        },
+        "Credit Event": {
+          "pred": 4,
+          "true": 2,
+          "tp": 2
+        },
+        "Macroeconomic": {
+          "pred": 21,
+          "true": 26,
+          "tp": 17
+        },
+        "Other": {
+          "pred": 66,
+          "true": 78,
+          "tp": 44
+        }
+      },
+      "confirmed_tier": {
+        "alerts": 69,
+        "correct": 65,
+        "precision": 0.942,
+        "ci95": [
+          0.8602,
+          0.9772
+        ]
+      }
+    },
+    {
+      "rules": "R3",
+      "head": "v3+human x3",
+      "policy": "P0",
+      "all": {
+        "n": 478,
+        "accuracy": 0.7134,
+        "macro_f1": 0.7277,
+        "alert_precision": 0.7186,
+        "alerts": 295,
+        "Product Launch": {
+          "pred": 68,
+          "true": 46,
+          "tp": 40
+        },
+        "Merger/Acquisition": {
+          "pred": 22,
+          "true": 13,
+          "tp": 10
+        },
+        "Credit Event": {
+          "pred": 14,
+          "true": 14,
+          "tp": 12
+        },
+        "Macroeconomic": {
+          "pred": 45,
+          "true": 58,
+          "tp": 36
+        },
+        "Other": {
+          "pred": 183,
+          "true": 191,
+          "tp": 129
+        }
+      },
+      "human": {
+        "n": 296,
+        "accuracy": 0.75,
+        "macro_f1": 0.7611,
+        "alert_precision": 0.7654,
+        "alerts": 179,
+        "Product Launch": {
+          "pred": 51,
+          "true": 41,
+          "tp": 35
+        },
+        "Merger/Acquisition": {
+          "pred": 7,
+          "true": 9,
+          "tp": 6
+        },
+        "Credit Event": {
+          "pred": 10,
+          "true": 12,
+          "tp": 10
+        },
+        "Macroeconomic": {
+          "pred": 24,
+          "true": 32,
+          "tp": 19
+        },
+        "Other": {
+          "pred": 117,
+          "true": 113,
+          "tp": 85
+        }
+      },
+      "fresh": {
+        "n": 182,
+        "accuracy": 0.6538,
+        "macro_f1": 0.6468,
+        "alert_precision": 0.6466,
+        "alerts": 116,
+        "Product Launch": {
+          "pred": 17,
+          "true": 5,
+          "tp": 5
+        },
+        "Merger/Acquisition": {
+          "pred": 15,
+          "true": 4,
+          "tp": 4
+        },
+        "Credit Event": {
+          "pred": 4,
+          "true": 2,
+          "tp": 2
+        },
+        "Macroeconomic": {
+          "pred": 21,
+          "true": 26,
+          "tp": 17
+        },
+        "Other": {
+          "pred": 66,
+          "true": 78,
+          "tp": 44
+        }
+      },
+      "confirmed_tier": {
+        "alerts": 69,
+        "correct": 65,
+        "precision": 0.942,
+        "ci95": [
+          0.8602,
+          0.9772
+        ]
+      }
+    },
+    {
+      "rules": "R0",
+      "head": "v3+human x1",
+      "policy": "P3 P1+P2",
+      "all": {
+        "n": 478,
+        "accuracy": 0.7364,
+        "macro_f1": 0.7275,
+        "alert_precision": 0.7756,
+        "alerts": 254,
+        "Product Launch": {
+          "pred": 34,
+          "true": 46,
+          "tp": 30
+        },
+        "Merger/Acquisition": {
+          "pred": 16,
+          "true": 13,
+          "tp": 9
+        },
+        "Credit Event": {
+          "pred": 15,
+          "true": 14,
+          "tp": 12
+        },
+        "Macroeconomic": {
+          "pred": 42,
+          "true": 58,
+          "tp": 34
+        },
+        "Other": {
+          "pred": 224,
+          "true": 191,
+          "tp": 155
+        }
+      },
+      "human": {
+        "n": 296,
+        "accuracy": 0.7635,
+        "macro_f1": 0.757,
+        "alert_precision": 0.8247,
+        "alerts": 154,
+        "Product Launch": {
+          "pred": 29,
+          "true": 41,
+          "tp": 28
+        },
+        "Merger/Acquisition": {
+          "pred": 6,
+          "true": 9,
+          "tp": 6
+        },
+        "Credit Event": {
+          "pred": 11,
+          "true": 12,
+          "tp": 10
+        },
+        "Macroeconomic": {
+          "pred": 23,
+          "true": 32,
+          "tp": 19
+        },
+        "Other": {
+          "pred": 142,
+          "true": 113,
+          "tp": 99
+        }
+      },
+      "fresh": {
+        "n": 182,
+        "accuracy": 0.6923,
+        "macro_f1": 0.6489,
+        "alert_precision": 0.7,
+        "alerts": 100,
+        "Product Launch": {
+          "pred": 5,
+          "true": 5,
+          "tp": 2
+        },
+        "Merger/Acquisition": {
+          "pred": 10,
+          "true": 4,
+          "tp": 3
+        },
+        "Credit Event": {
+          "pred": 4,
+          "true": 2,
+          "tp": 2
+        },
+        "Macroeconomic": {
+          "pred": 19,
+          "true": 26,
+          "tp": 15
+        },
+        "Other": {
+          "pred": 82,
+          "true": 78,
+          "tp": 56
+        }
+      },
+      "confirmed_tier": {
+        "alerts": 69,
+        "correct": 65,
+        "precision": 0.942,
+        "ci95": [
+          0.8602,
+          0.9772
+        ]
+      }
+    },
+    {
+      "rules": "R1",
+      "head": "v3+human x1",
+      "policy": "P3 P1+P2",
+      "all": {
+        "n": 478,
+        "accuracy": 0.7364,
+        "macro_f1": 0.7275,
+        "alert_precision": 0.7756,
+        "alerts": 254,
+        "Product Launch": {
+          "pred": 34,
+          "true": 46,
+          "tp": 30
+        },
+        "Merger/Acquisition": {
+          "pred": 16,
+          "true": 13,
+          "tp": 9
+        },
+        "Credit Event": {
+          "pred": 15,
+          "true": 14,
+          "tp": 12
+        },
+        "Macroeconomic": {
+          "pred": 42,
+          "true": 58,
+          "tp": 34
+        },
+        "Other": {
+          "pred": 224,
+          "true": 191,
+          "tp": 155
+        }
+      },
+      "human": {
+        "n": 296,
+        "accuracy": 0.7635,
+        "macro_f1": 0.757,
+        "alert_precision": 0.8247,
+        "alerts": 154,
+        "Product Launch": {
+          "pred": 29,
+          "true": 41,
+          "tp": 28
+        },
+        "Merger/Acquisition": {
+          "pred": 6,
+          "true": 9,
+          "tp": 6
+        },
+        "Credit Event": {
+          "pred": 11,
+          "true": 12,
+          "tp": 10
+        },
+        "Macroeconomic": {
+          "pred": 23,
+          "true": 32,
+          "tp": 19
+        },
+        "Other": {
+          "pred": 142,
+          "true": 113,
+          "tp": 99
+        }
+      },
+      "fresh": {
+        "n": 182,
+        "accuracy": 0.6923,
+        "macro_f1": 0.6489,
+        "alert_precision": 0.7,
+        "alerts": 100,
+        "Product Launch": {
+          "pred": 5,
+          "true": 5,
+          "tp": 2
+        },
+        "Merger/Acquisition": {
+          "pred": 10,
+          "true": 4,
+          "tp": 3
+        },
+        "Credit Event": {
+          "pred": 4,
+          "true": 2,
+          "tp": 2
+        },
+        "Macroeconomic": {
+          "pred": 19,
+          "true": 26,
+          "tp": 15
+        },
+        "Other": {
+          "pred": 82,
+          "true": 78,
+          "tp": 56
+        }
+      },
+      "confirmed_tier": {
+        "alerts": 69,
+        "correct": 65,
+        "precision": 0.942,
+        "ci95": [
+          0.8602,
+          0.9772
+        ]
+      }
+    },
+    {
+      "rules": "R2",
+      "head": "v3+human x1",
+      "policy": "P3 P1+P2",
+      "all": {
+        "n": 478,
+        "accuracy": 0.7364,
+        "macro_f1": 0.7275,
+        "alert_precision": 0.7756,
+        "alerts": 254,
+        "Product Launch": {
+          "pred": 34,
+          "true": 46,
+          "tp": 30
+        },
+        "Merger/Acquisition": {
+          "pred": 16,
+          "true": 13,
+          "tp": 9
+        },
+        "Credit Event": {
+          "pred": 15,
+          "true": 14,
+          "tp": 12
+        },
+        "Macroeconomic": {
+          "pred": 42,
+          "true": 58,
+          "tp": 34
+        },
+        "Other": {
+          "pred": 224,
+          "true": 191,
+          "tp": 155
+        }
+      },
+      "human": {
+        "n": 296,
+        "accuracy": 0.7635,
+        "macro_f1": 0.757,
+        "alert_precision": 0.8247,
+        "alerts": 154,
+        "Product Launch": {
+          "pred": 29,
+          "true": 41,
+          "tp": 28
+        },
+        "Merger/Acquisition": {
+          "pred": 6,
+          "true": 9,
+          "tp": 6
+        },
+        "Credit Event": {
+          "pred": 11,
+          "true": 12,
+          "tp": 10
+        },
+        "Macroeconomic": {
+          "pred": 23,
+          "true": 32,
+          "tp": 19
+        },
+        "Other": {
+          "pred": 142,
+          "true": 113,
+          "tp": 99
+        }
+      },
+      "fresh": {
+        "n": 182,
+        "accuracy": 0.6923,
+        "macro_f1": 0.6489,
+        "alert_precision": 0.7,
+        "alerts": 100,
+        "Product Launch": {
+          "pred": 5,
+          "true": 5,
+          "tp": 2
+        },
+        "Merger/Acquisition": {
+          "pred": 10,
+          "true": 4,
+          "tp": 3
+        },
+        "Credit Event": {
+          "pred": 4,
+          "true": 2,
+          "tp": 2
+        },
+        "Macroeconomic": {
+          "pred": 19,
+          "true": 26,
+          "tp": 15
+        },
+        "Other": {
+          "pred": 82,
+          "true": 78,
+          "tp": 56
+        }
+      },
+      "confirmed_tier": {
+        "alerts": 69,
+        "correct": 65,
+        "precision": 0.942,
+        "ci95": [
+          0.8602,
+          0.9772
+        ]
+      }
+    },
+    {
+      "rules": "R3",
+      "head": "v3+human x1",
+      "policy": "P3 P1+P2",
+      "all": {
+        "n": 478,
+        "accuracy": 0.7364,
+        "macro_f1": 0.7275,
+        "alert_precision": 0.7756,
+        "alerts": 254,
+        "Product Launch": {
+          "pred": 34,
+          "true": 46,
+          "tp": 30
+        },
+        "Merger/Acquisition": {
+          "pred": 16,
+          "true": 13,
+          "tp": 9
+        },
+        "Credit Event": {
+          "pred": 15,
+          "true": 14,
+          "tp": 12
+        },
+        "Macroeconomic": {
+          "pred": 42,
+          "true": 58,
+          "tp": 34
+        },
+        "Other": {
+          "pred": 224,
+          "true": 191,
+          "tp": 155
+        }
+      },
+      "human": {
+        "n": 296,
+        "accuracy": 0.7635,
+        "macro_f1": 0.757,
+        "alert_precision": 0.8247,
+        "alerts": 154,
+        "Product Launch": {
+          "pred": 29,
+          "true": 41,
+          "tp": 28
+        },
+        "Merger/Acquisition": {
+          "pred": 6,
+          "true": 9,
+          "tp": 6
+        },
+        "Credit Event": {
+          "pred": 11,
+          "true": 12,
+          "tp": 10
+        },
+        "Macroeconomic": {
+          "pred": 23,
+          "true": 32,
+          "tp": 19
+        },
+        "Other": {
+          "pred": 142,
+          "true": 113,
+          "tp": 99
+        }
+      },
+      "fresh": {
+        "n": 182,
+        "accuracy": 0.6923,
+        "macro_f1": 0.6489,
+        "alert_precision": 0.7,
+        "alerts": 100,
+        "Product Launch": {
+          "pred": 5,
+          "true": 5,
+          "tp": 2
+        },
+        "Merger/Acquisition": {
+          "pred": 10,
+          "true": 4,
+          "tp": 3
+        },
+        "Credit Event": {
+          "pred": 4,
+          "true": 2,
+          "tp": 2
+        },
+        "Macroeconomic": {
+          "pred": 19,
+          "true": 26,
+          "tp": 15
+        },
+        "Other": {
+          "pred": 82,
+          "true": 78,
+          "tp": 56
+        }
+      },
+      "confirmed_tier": {
+        "alerts": 69,
+        "correct": 65,
+        "precision": 0.942,
+        "ci95": [
+          0.8602,
+          0.9772
+        ]
+      }
+    },
+    {
+      "rules": "R0",
+      "head": "v3+human x1",
+      "policy": "P1 verify PL",
+      "all": {
+        "n": 478,
+        "accuracy": 0.7197,
+        "macro_f1": 0.7177,
+        "alert_precision": 0.7435,
+        "alerts": 269,
+        "Product Launch": {
+          "pred": 43,
+          "true": 46,
+          "tp": 32
+        },
+        "Merger/Acquisition": {
+          "pred": 22,
+          "true": 13,
+          "tp": 10
+        },
+        "Credit Event": {
+          "pred": 15,
+          "true": 14,
+          "tp": 12
+        },
+        "Macroeconomic": {
+          "pred": 42,
+          "true": 58,
+          "tp": 34
+        },
+        "Other": {
+          "pred": 209,
+          "true": 191,
+          "tp": 144
+        }
+      },
+      "human": {
+        "n": 296,
+        "accuracy": 0.7601,
+        "macro_f1": 0.7527,
+        "alert_precision": 0.8113,
+        "alerts": 159,
+        "Product Launch": {
+          "pred": 33,
+          "true": 41,
+          "tp": 30
+        },
+        "Merger/Acquisition": {
+          "pred": 7,
+          "true": 9,
+          "tp": 6
+        },
+        "Credit Event": {
+          "pred": 11,
+          "true": 12,
+          "tp": 10
+        },
+        "Macroeconomic": {
+          "pred": 23,
+          "true": 32,
+          "tp": 19
+        },
+        "Other": {
+          "pred": 137,
+          "true": 113,
+          "tp": 96
+        }
+      },
+      "fresh": {
+        "n": 182,
+        "accuracy": 0.6538,
+        "macro_f1": 0.6307,
+        "alert_precision": 0.6455,
+        "alerts": 110,
+        "Product Launch": {
+          "pred": 10,
+          "true": 5,
+          "tp": 2
+        },
+        "Merger/Acquisition": {
+          "pred": 15,
+          "true": 4,
+          "tp": 4
+        },
+        "Credit Event": {
+          "pred": 4,
+          "true": 2,
+          "tp": 2
+        },
+        "Macroeconomic": {
+          "pred": 19,
+          "true": 26,
+          "tp": 15
+        },
+        "Other": {
+          "pred": 72,
+          "true": 78,
+          "tp": 48
+        }
+      },
+      "confirmed_tier": {
+        "alerts": 69,
+        "correct": 65,
+        "precision": 0.942,
+        "ci95": [
+          0.8602,
+          0.9772
+        ]
+      }
+    },
+    {
+      "rules": "R1",
+      "head": "v3+human x1",
+      "policy": "P1 verify PL",
+      "all": {
+        "n": 478,
+        "accuracy": 0.7197,
+        "macro_f1": 0.7177,
+        "alert_precision": 0.7435,
+        "alerts": 269,
+        "Product Launch": {
+          "pred": 43,
+          "true": 46,
+          "tp": 32
+        },
+        "Merger/Acquisition": {
+          "pred": 22,
+          "true": 13,
+          "tp": 10
+        },
+        "Credit Event": {
+          "pred": 15,
+          "true": 14,
+          "tp": 12
+        },
+        "Macroeconomic": {
+          "pred": 42,
+          "true": 58,
+          "tp": 34
+        },
+        "Other": {
+          "pred": 209,
+          "true": 191,
+          "tp": 144
+        }
+      },
+      "human": {
+        "n": 296,
+        "accuracy": 0.7601,
+        "macro_f1": 0.7527,
+        "alert_precision": 0.8113,
+        "alerts": 159,
+        "Product Launch": {
+          "pred": 33,
+          "true": 41,
+          "tp": 30
+        },
+        "Merger/Acquisition": {
+          "pred": 7,
+          "true": 9,
+          "tp": 6
+        },
+        "Credit Event": {
+          "pred": 11,
+          "true": 12,
+          "tp": 10
+        },
+        "Macroeconomic": {
+          "pred": 23,
+          "true": 32,
+          "tp": 19
+        },
+        "Other": {
+          "pred": 137,
+          "true": 113,
+          "tp": 96
+        }
+      },
+      "fresh": {
+        "n": 182,
+        "accuracy": 0.6538,
+        "macro_f1": 0.6307,
+        "alert_precision": 0.6455,
+        "alerts": 110,
+        "Product Launch": {
+          "pred": 10,
+          "true": 5,
+          "tp": 2
+        },
+        "Merger/Acquisition": {
+          "pred": 15,
+          "true": 4,
+          "tp": 4
+        },
+        "Credit Event": {
+          "pred": 4,
+          "true": 2,
+          "tp": 2
+        },
+        "Macroeconomic": {
+          "pred": 19,
+          "true": 26,
+          "tp": 15
+        },
+        "Other": {
+          "pred": 72,
+          "true": 78,
+          "tp": 48
+        }
+      },
+      "confirmed_tier": {
+        "alerts": 69,
+        "correct": 65,
+        "precision": 0.942,
+        "ci95": [
+          0.8602,
+          0.9772
+        ]
+      }
+    },
+    {
+      "rules": "R2",
+      "head": "v3+human x1",
+      "policy": "P1 verify PL",
+      "all": {
+        "n": 478,
+        "accuracy": 0.7197,
+        "macro_f1": 0.7177,
+        "alert_precision": 0.7435,
+        "alerts": 269,
+        "Product Launch": {
+          "pred": 43,
+          "true": 46,
+          "tp": 32
+        },
+        "Merger/Acquisition": {
+          "pred": 22,
+          "true": 13,
+          "tp": 10
+        },
+        "Credit Event": {
+          "pred": 15,
+          "true": 14,
+          "tp": 12
+        },
+        "Macroeconomic": {
+          "pred": 42,
+          "true": 58,
+          "tp": 34
+        },
+        "Other": {
+          "pred": 209,
+          "true": 191,
+          "tp": 144
+        }
+      },
+      "human": {
+        "n": 296,
+        "accuracy": 0.7601,
+        "macro_f1": 0.7527,
+        "alert_precision": 0.8113,
+        "alerts": 159,
+        "Product Launch": {
+          "pred": 33,
+          "true": 41,
+          "tp": 30
+        },
+        "Merger/Acquisition": {
+          "pred": 7,
+          "true": 9,
+          "tp": 6
+        },
+        "Credit Event": {
+          "pred": 11,
+          "true": 12,
+          "tp": 10
+        },
+        "Macroeconomic": {
+          "pred": 23,
+          "true": 32,
+          "tp": 19
+        },
+        "Other": {
+          "pred": 137,
+          "true": 113,
+          "tp": 96
+        }
+      },
+      "fresh": {
+        "n": 182,
+        "accuracy": 0.6538,
+        "macro_f1": 0.6307,
+        "alert_precision": 0.6455,
+        "alerts": 110,
+        "Product Launch": {
+          "pred": 10,
+          "true": 5,
+          "tp": 2
+        },
+        "Merger/Acquisition": {
+          "pred": 15,
+          "true": 4,
+          "tp": 4
+        },
+        "Credit Event": {
+          "pred": 4,
+          "true": 2,
+          "tp": 2
+        },
+        "Macroeconomic": {
+          "pred": 19,
+          "true": 26,
+          "tp": 15
+        },
+        "Other": {
+          "pred": 72,
+          "true": 78,
+          "tp": 48
+        }
+      },
+      "confirmed_tier": {
+        "alerts": 69,
+        "correct": 65,
+        "precision": 0.942,
+        "ci95": [
+          0.8602,
+          0.9772
+        ]
+      }
+    },
+    {
+      "rules": "R3",
+      "head": "v3+human x1",
+      "policy": "P1 verify PL",
+      "all": {
+        "n": 478,
+        "accuracy": 0.7197,
+        "macro_f1": 0.7177,
+        "alert_precision": 0.7435,
+        "alerts": 269,
+        "Product Launch": {
+          "pred": 43,
+          "true": 46,
+          "tp": 32
+        },
+        "Merger/Acquisition": {
+          "pred": 22,
+          "true": 13,
+          "tp": 10
+        },
+        "Credit Event": {
+          "pred": 15,
+          "true": 14,
+          "tp": 12
+        },
+        "Macroeconomic": {
+          "pred": 42,
+          "true": 58,
+          "tp": 34
+        },
+        "Other": {
+          "pred": 209,
+          "true": 191,
+          "tp": 144
+        }
+      },
+      "human": {
+        "n": 296,
+        "accuracy": 0.7601,
+        "macro_f1": 0.7527,
+        "alert_precision": 0.8113,
+        "alerts": 159,
+        "Product Launch": {
+          "pred": 33,
+          "true": 41,
+          "tp": 30
+        },
+        "Merger/Acquisition": {
+          "pred": 7,
+          "true": 9,
+          "tp": 6
+        },
+        "Credit Event": {
+          "pred": 11,
+          "true": 12,
+          "tp": 10
+        },
+        "Macroeconomic": {
+          "pred": 23,
+          "true": 32,
+          "tp": 19
+        },
+        "Other": {
+          "pred": 137,
+          "true": 113,
+          "tp": 96
+        }
+      },
+      "fresh": {
+        "n": 182,
+        "accuracy": 0.6538,
+        "macro_f1": 0.6307,
+        "alert_precision": 0.6455,
+        "alerts": 110,
+        "Product Launch": {
+          "pred": 10,
+          "true": 5,
+          "tp": 2
+        },
+        "Merger/Acquisition": {
+          "pred": 15,
+          "true": 4,
+          "tp": 4
+        },
+        "Credit Event": {
+          "pred": 4,
+          "true": 2,
+          "tp": 2
+        },
+        "Macroeconomic": {
+          "pred": 19,
+          "true": 26,
+          "tp": 15
+        },
+        "Other": {
+          "pred": 72,
+          "true": 78,
+          "tp": 48
+        }
+      },
+      "confirmed_tier": {
+        "alerts": 69,
+        "correct": 65,
+        "precision": 0.942,
+        "ci95": [
+          0.8602,
+          0.9772
+        ]
+      }
+    },
+    {
+      "rules": "R0",
+      "head": "v3+human x1",
+      "policy": "P0",
+      "all": {
+        "n": 478,
+        "accuracy": 0.7092,
+        "macro_f1": 0.7139,
+        "alert_precision": 0.7128,
+        "alerts": 289,
+        "Product Launch": {
+          "pred": 63,
+          "true": 46,
+          "tp": 38
+        },
+        "Merger/Acquisition": {
+          "pred": 22,
+          "true": 13,
+          "tp": 10
+        },
+        "Credit Event": {
+          "pred": 15,
+          "true": 14,
+          "tp": 12
+        },
+        "Macroeconomic": {
+          "pred": 42,
+          "true": 58,
+          "tp": 34
+        },
+        "Other": {
+          "pred": 189,
+          "true": 191,
+          "tp": 133
+        }
+      },
+      "human": {
+        "n": 296,
+        "accuracy": 0.75,
+        "macro_f1": 0.7477,
+        "alert_precision": 0.7719,
+        "alerts": 171,
+        "Product Launch": {
+          "pred": 45,
+          "true": 41,
+          "tp": 33
+        },
+        "Merger/Acquisition": {
+          "pred": 7,
+          "true": 9,
+          "tp": 6
+        },
+        "Credit Event": {
+          "pred": 11,
+          "true": 12,
+          "tp": 10
+        },
+        "Macroeconomic": {
+          "pred": 23,
+          "true": 32,
+          "tp": 19
+        },
+        "Other": {
+          "pred": 125,
+          "true": 113,
+          "tp": 90
+        }
+      },
+      "fresh": {
+        "n": 182,
+        "accuracy": 0.6429,
+        "macro_f1": 0.6428,
+        "alert_precision": 0.6271,
+        "alerts": 118,
+        "Product Launch": {
+          "pred": 18,
+          "true": 5,
+          "tp": 5
+        },
+        "Merger/Acquisition": {
+          "pred": 15,
+          "true": 4,
+          "tp": 4
+        },
+        "Credit Event": {
+          "pred": 4,
+          "true": 2,
+          "tp": 2
+        },
+        "Macroeconomic": {
+          "pred": 19,
+          "true": 26,
+          "tp": 15
+        },
+        "Other": {
+          "pred": 64,
+          "true": 78,
+          "tp": 43
+        }
+      },
+      "confirmed_tier": {
+        "alerts": 69,
+        "correct": 65,
+        "precision": 0.942,
+        "ci95": [
+          0.8602,
+          0.9772
+        ]
+      }
+    },
+    {
+      "rules": "R1",
+      "head": "v3+human x1",
+      "policy": "P0",
+      "all": {
+        "n": 478,
+        "accuracy": 0.7092,
+        "macro_f1": 0.7139,
+        "alert_precision": 0.7128,
+        "alerts": 289,
+        "Product Launch": {
+          "pred": 63,
+          "true": 46,
+          "tp": 38
+        },
+        "Merger/Acquisition": {
+          "pred": 22,
+          "true": 13,
+          "tp": 10
+        },
+        "Credit Event": {
+          "pred": 15,
+          "true": 14,
+          "tp": 12
+        },
+        "Macroeconomic": {
+          "pred": 42,
+          "true": 58,
+          "tp": 34
+        },
+        "Other": {
+          "pred": 189,
+          "true": 191,
+          "tp": 133
+        }
+      },
+      "human": {
+        "n": 296,
+        "accuracy": 0.75,
+        "macro_f1": 0.7477,
+        "alert_precision": 0.7719,
+        "alerts": 171,
+        "Product Launch": {
+          "pred": 45,
+          "true": 41,
+          "tp": 33
+        },
+        "Merger/Acquisition": {
+          "pred": 7,
+          "true": 9,
+          "tp": 6
+        },
+        "Credit Event": {
+          "pred": 11,
+          "true": 12,
+          "tp": 10
+        },
+        "Macroeconomic": {
+          "pred": 23,
+          "true": 32,
+          "tp": 19
+        },
+        "Other": {
+          "pred": 125,
+          "true": 113,
+          "tp": 90
+        }
+      },
+      "fresh": {
+        "n": 182,
+        "accuracy": 0.6429,
+        "macro_f1": 0.6428,
+        "alert_precision": 0.6271,
+        "alerts": 118,
+        "Product Launch": {
+          "pred": 18,
+          "true": 5,
+          "tp": 5
+        },
+        "Merger/Acquisition": {
+          "pred": 15,
+          "true": 4,
+          "tp": 4
+        },
+        "Credit Event": {
+          "pred": 4,
+          "true": 2,
+          "tp": 2
+        },
+        "Macroeconomic": {
+          "pred": 19,
+          "true": 26,
+          "tp": 15
+        },
+        "Other": {
+          "pred": 64,
+          "true": 78,
+          "tp": 43
+        }
+      },
+      "confirmed_tier": {
+        "alerts": 69,
+        "correct": 65,
+        "precision": 0.942,
+        "ci95": [
+          0.8602,
+          0.9772
+        ]
+      }
+    },
+    {
+      "rules": "R2",
+      "head": "v3+human x1",
+      "policy": "P0",
+      "all": {
+        "n": 478,
+        "accuracy": 0.7092,
+        "macro_f1": 0.7139,
+        "alert_precision": 0.7128,
+        "alerts": 289,
+        "Product Launch": {
+          "pred": 63,
+          "true": 46,
+          "tp": 38
+        },
+        "Merger/Acquisition": {
+          "pred": 22,
+          "true": 13,
+          "tp": 10
+        },
+        "Credit Event": {
+          "pred": 15,
+          "true": 14,
+          "tp": 12
+        },
+        "Macroeconomic": {
+          "pred": 42,
+          "true": 58,
+          "tp": 34
+        },
+        "Other": {
+          "pred": 189,
+          "true": 191,
+          "tp": 133
+        }
+      },
+      "human": {
+        "n": 296,
+        "accuracy": 0.75,
+        "macro_f1": 0.7477,
+        "alert_precision": 0.7719,
+        "alerts": 171,
+        "Product Launch": {
+          "pred": 45,
+          "true": 41,
+          "tp": 33
+        },
+        "Merger/Acquisition": {
+          "pred": 7,
+          "true": 9,
+          "tp": 6
+        },
+        "Credit Event": {
+          "pred": 11,
+          "true": 12,
+          "tp": 10
+        },
+        "Macroeconomic": {
+          "pred": 23,
+          "true": 32,
+          "tp": 19
+        },
+        "Other": {
+          "pred": 125,
+          "true": 113,
+          "tp": 90
+        }
+      },
+      "fresh": {
+        "n": 182,
+        "accuracy": 0.6429,
+        "macro_f1": 0.6428,
+        "alert_precision": 0.6271,
+        "alerts": 118,
+        "Product Launch": {
+          "pred": 18,
+          "true": 5,
+          "tp": 5
+        },
+        "Merger/Acquisition": {
+          "pred": 15,
+          "true": 4,
+          "tp": 4
+        },
+        "Credit Event": {
+          "pred": 4,
+          "true": 2,
+          "tp": 2
+        },
+        "Macroeconomic": {
+          "pred": 19,
+          "true": 26,
+          "tp": 15
+        },
+        "Other": {
+          "pred": 64,
+          "true": 78,
+          "tp": 43
+        }
+      },
+      "confirmed_tier": {
+        "alerts": 69,
+        "correct": 65,
+        "precision": 0.942,
+        "ci95": [
+          0.8602,
+          0.9772
+        ]
+      }
+    },
+    {
+      "rules": "R3",
+      "head": "v3+human x1",
+      "policy": "P0",
+      "all": {
+        "n": 478,
+        "accuracy": 0.7092,
+        "macro_f1": 0.7139,
+        "alert_precision": 0.7128,
+        "alerts": 289,
+        "Product Launch": {
+          "pred": 63,
+          "true": 46,
+          "tp": 38
+        },
+        "Merger/Acquisition": {
+          "pred": 22,
+          "true": 13,
+          "tp": 10
+        },
+        "Credit Event": {
+          "pred": 15,
+          "true": 14,
+          "tp": 12
+        },
+        "Macroeconomic": {
+          "pred": 42,
+          "true": 58,
+          "tp": 34
+        },
+        "Other": {
+          "pred": 189,
+          "true": 191,
+          "tp": 133
+        }
+      },
+      "human": {
+        "n": 296,
+        "accuracy": 0.75,
+        "macro_f1": 0.7477,
+        "alert_precision": 0.7719,
+        "alerts": 171,
+        "Product Launch": {
+          "pred": 45,
+          "true": 41,
+          "tp": 33
+        },
+        "Merger/Acquisition": {
+          "pred": 7,
+          "true": 9,
+          "tp": 6
+        },
+        "Credit Event": {
+          "pred": 11,
+          "true": 12,
+          "tp": 10
+        },
+        "Macroeconomic": {
+          "pred": 23,
+          "true": 32,
+          "tp": 19
+        },
+        "Other": {
+          "pred": 125,
+          "true": 113,
+          "tp": 90
+        }
+      },
+      "fresh": {
+        "n": 182,
+        "accuracy": 0.6429,
+        "macro_f1": 0.6428,
+        "alert_precision": 0.6271,
+        "alerts": 118,
+        "Product Launch": {
+          "pred": 18,
+          "true": 5,
+          "tp": 5
+        },
+        "Merger/Acquisition": {
+          "pred": 15,
+          "true": 4,
+          "tp": 4
+        },
+        "Credit Event": {
+          "pred": 4,
+          "true": 2,
+          "tp": 2
+        },
+        "Macroeconomic": {
+          "pred": 19,
+          "true": 26,
+          "tp": 15
+        },
+        "Other": {
+          "pred": 64,
+          "true": 78,
+          "tp": 43
+        }
+      },
+      "confirmed_tier": {
+        "alerts": 69,
+        "correct": 65,
+        "precision": 0.942,
+        "ci95": [
+          0.8602,
+          0.9772
+        ]
+      }
+    },
+    {
+      "rules": "R0",
+      "head": "v3",
+      "policy": "P3 P1+P2",
+      "all": {
+        "n": 478,
+        "accuracy": 0.7092,
+        "macro_f1": 0.7022,
+        "alert_precision": 0.7549,
+        "alerts": 253,
+        "Product Launch": {
+          "pred": 34,
+          "true": 46,
+          "tp": 30
+        },
+        "Merger/Acquisition": {
+          "pred": 17,
+          "true": 13,
+          "tp": 9
+        },
+        "Credit Event": {
+          "pred": 15,
+          "true": 14,
+          "tp": 11
+        },
+        "Macroeconomic": {
+          "pred": 44,
+          "true": 58,
+          "tp": 34
+        },
+        "Other": {
+          "pred": 225,
+          "true": 191,
+          "tp": 148
+        }
+      },
+      "human": {
+        "n": 296,
+        "accuracy": 0.7331,
+        "macro_f1": 0.7298,
+        "alert_precision": 0.8079,
+        "alerts": 151,
+        "Product Launch": {
+          "pred": 29,
+          "true": 41,
+          "tp": 28
+        },
+        "Merger/Acquisition": {
+          "pred": 6,
+          "true": 9,
+          "tp": 6
+        },
+        "Credit Event": {
+          "pred": 11,
+          "true": 12,
+          "tp": 9
+        },
+        "Macroeconomic": {
+          "pred": 25,
+          "true": 32,
+          "tp": 19
+        },
+        "Other": {
+          "pred": 145,
+          "true": 113,
+          "tp": 95
+        }
+      },
+      "fresh": {
+        "n": 182,
+        "accuracy": 0.6703,
+        "macro_f1": 0.63,
+        "alert_precision": 0.6765,
+        "alerts": 102,
+        "Product Launch": {
+          "pred": 5,
+          "true": 5,
+          "tp": 2
+        },
+        "Merger/Acquisition": {
+          "pred": 11,
+          "true": 4,
+          "tp": 3
+        },
+        "Credit Event": {
+          "pred": 4,
+          "true": 2,
+          "tp": 2
+        },
+        "Macroeconomic": {
+          "pred": 19,
+          "true": 26,
+          "tp": 15
+        },
+        "Other": {
+          "pred": 80,
+          "true": 78,
+          "tp": 53
+        }
+      },
+      "confirmed_tier": {
+        "alerts": 69,
+        "correct": 65,
+        "precision": 0.942,
+        "ci95": [
+          0.8602,
+          0.9772
+        ]
+      }
+    },
+    {
+      "rules": "R1",
+      "head": "v3",
+      "policy": "P3 P1+P2",
+      "all": {
+        "n": 478,
+        "accuracy": 0.7092,
+        "macro_f1": 0.7022,
+        "alert_precision": 0.7549,
+        "alerts": 253,
+        "Product Launch": {
+          "pred": 34,
+          "true": 46,
+          "tp": 30
+        },
+        "Merger/Acquisition": {
+          "pred": 17,
+          "true": 13,
+          "tp": 9
+        },
+        "Credit Event": {
+          "pred": 15,
+          "true": 14,
+          "tp": 11
+        },
+        "Macroeconomic": {
+          "pred": 44,
+          "true": 58,
+          "tp": 34
+        },
+        "Other": {
+          "pred": 225,
+          "true": 191,
+          "tp": 148
+        }
+      },
+      "human": {
+        "n": 296,
+        "accuracy": 0.7331,
+        "macro_f1": 0.7298,
+        "alert_precision": 0.8079,
+        "alerts": 151,
+        "Product Launch": {
+          "pred": 29,
+          "true": 41,
+          "tp": 28
+        },
+        "Merger/Acquisition": {
+          "pred": 6,
+          "true": 9,
+          "tp": 6
+        },
+        "Credit Event": {
+          "pred": 11,
+          "true": 12,
+          "tp": 9
+        },
+        "Macroeconomic": {
+          "pred": 25,
+          "true": 32,
+          "tp": 19
+        },
+        "Other": {
+          "pred": 145,
+          "true": 113,
+          "tp": 95
+        }
+      },
+      "fresh": {
+        "n": 182,
+        "accuracy": 0.6703,
+        "macro_f1": 0.63,
+        "alert_precision": 0.6765,
+        "alerts": 102,
+        "Product Launch": {
+          "pred": 5,
+          "true": 5,
+          "tp": 2
+        },
+        "Merger/Acquisition": {
+          "pred": 11,
+          "true": 4,
+          "tp": 3
+        },
+        "Credit Event": {
+          "pred": 4,
+          "true": 2,
+          "tp": 2
+        },
+        "Macroeconomic": {
+          "pred": 19,
+          "true": 26,
+          "tp": 15
+        },
+        "Other": {
+          "pred": 80,
+          "true": 78,
+          "tp": 53
+        }
+      },
+      "confirmed_tier": {
+        "alerts": 69,
+        "correct": 65,
+        "precision": 0.942,
+        "ci95": [
+          0.8602,
+          0.9772
+        ]
+      }
+    },
+    {
+      "rules": "R2",
+      "head": "v3",
+      "policy": "P3 P1+P2",
+      "all": {
+        "n": 478,
+        "accuracy": 0.7092,
+        "macro_f1": 0.7022,
+        "alert_precision": 0.7549,
+        "alerts": 253,
+        "Product Launch": {
+          "pred": 34,
+          "true": 46,
+          "tp": 30
+        },
+        "Merger/Acquisition": {
+          "pred": 17,
+          "true": 13,
+          "tp": 9
+        },
+        "Credit Event": {
+          "pred": 15,
+          "true": 14,
+          "tp": 11
+        },
+        "Macroeconomic": {
+          "pred": 44,
+          "true": 58,
+          "tp": 34
+        },
+        "Other": {
+          "pred": 225,
+          "true": 191,
+          "tp": 148
+        }
+      },
+      "human": {
+        "n": 296,
+        "accuracy": 0.7331,
+        "macro_f1": 0.7298,
+        "alert_precision": 0.8079,
+        "alerts": 151,
+        "Product Launch": {
+          "pred": 29,
+          "true": 41,
+          "tp": 28
+        },
+        "Merger/Acquisition": {
+          "pred": 6,
+          "true": 9,
+          "tp": 6
+        },
+        "Credit Event": {
+          "pred": 11,
+          "true": 12,
+          "tp": 9
+        },
+        "Macroeconomic": {
+          "pred": 25,
+          "true": 32,
+          "tp": 19
+        },
+        "Other": {
+          "pred": 145,
+          "true": 113,
+          "tp": 95
+        }
+      },
+      "fresh": {
+        "n": 182,
+        "accuracy": 0.6703,
+        "macro_f1": 0.63,
+        "alert_precision": 0.6765,
+        "alerts": 102,
+        "Product Launch": {
+          "pred": 5,
+          "true": 5,
+          "tp": 2
+        },
+        "Merger/Acquisition": {
+          "pred": 11,
+          "true": 4,
+          "tp": 3
+        },
+        "Credit Event": {
+          "pred": 4,
+          "true": 2,
+          "tp": 2
+        },
+        "Macroeconomic": {
+          "pred": 19,
+          "true": 26,
+          "tp": 15
+        },
+        "Other": {
+          "pred": 80,
+          "true": 78,
+          "tp": 53
+        }
+      },
+      "confirmed_tier": {
+        "alerts": 69,
+        "correct": 65,
+        "precision": 0.942,
+        "ci95": [
+          0.8602,
+          0.9772
+        ]
+      }
+    },
+    {
+      "rules": "R3",
+      "head": "v3",
+      "policy": "P3 P1+P2",
+      "all": {
+        "n": 478,
+        "accuracy": 0.7092,
+        "macro_f1": 0.7022,
+        "alert_precision": 0.7549,
+        "alerts": 253,
+        "Product Launch": {
+          "pred": 34,
+          "true": 46,
+          "tp": 30
+        },
+        "Merger/Acquisition": {
+          "pred": 17,
+          "true": 13,
+          "tp": 9
+        },
+        "Credit Event": {
+          "pred": 15,
+          "true": 14,
+          "tp": 11
+        },
+        "Macroeconomic": {
+          "pred": 44,
+          "true": 58,
+          "tp": 34
+        },
+        "Other": {
+          "pred": 225,
+          "true": 191,
+          "tp": 148
+        }
+      },
+      "human": {
+        "n": 296,
+        "accuracy": 0.7331,
+        "macro_f1": 0.7298,
+        "alert_precision": 0.8079,
+        "alerts": 151,
+        "Product Launch": {
+          "pred": 29,
+          "true": 41,
+          "tp": 28
+        },
+        "Merger/Acquisition": {
+          "pred": 6,
+          "true": 9,
+          "tp": 6
+        },
+        "Credit Event": {
+          "pred": 11,
+          "true": 12,
+          "tp": 9
+        },
+        "Macroeconomic": {
+          "pred": 25,
+          "true": 32,
+          "tp": 19
+        },
+        "Other": {
+          "pred": 145,
+          "true": 113,
+          "tp": 95
+        }
+      },
+      "fresh": {
+        "n": 182,
+        "accuracy": 0.6703,
+        "macro_f1": 0.63,
+        "alert_precision": 0.6765,
+        "alerts": 102,
+        "Product Launch": {
+          "pred": 5,
+          "true": 5,
+          "tp": 2
+        },
+        "Merger/Acquisition": {
+          "pred": 11,
+          "true": 4,
+          "tp": 3
+        },
+        "Credit Event": {
+          "pred": 4,
+          "true": 2,
+          "tp": 2
+        },
+        "Macroeconomic": {
+          "pred": 19,
+          "true": 26,
+          "tp": 15
+        },
+        "Other": {
+          "pred": 80,
+          "true": 78,
+          "tp": 53
+        }
+      },
+      "confirmed_tier": {
+        "alerts": 69,
+        "correct": 65,
+        "precision": 0.942,
+        "ci95": [
+          0.8602,
+          0.9772
+        ]
+      }
+    },
+    {
+      "rules": "R0",
+      "head": "v3",
+      "policy": "P2 PL/MA>=0.5",
+      "all": {
+        "n": 478,
+        "accuracy": 0.705,
+        "macro_f1": 0.7002,
+        "alert_precision": 0.7423,
+        "alerts": 260,
+        "Product Launch": {
+          "pred": 41,
+          "true": 46,
+          "tp": 32
+        },
+        "Merger/Acquisition": {
+          "pred": 17,
+          "true": 13,
+          "tp": 9
+        },
+        "Credit Event": {
+          "pred": 15,
+          "true": 14,
+          "tp": 11
+        },
+        "Macroeconomic": {
+          "pred": 44,
+          "true": 58,
+          "tp": 34
+        },
+        "Other": {
+          "pred": 218,
+          "true": 191,
+          "tp": 144
+        }
+      },
+      "human": {
+        "n": 296,
+        "accuracy": 0.7297,
+        "macro_f1": 0.7279,
+        "alert_precision": 0.7935,
+        "alerts": 155,
+        "Product Launch": {
+          "pred": 33,
+          "true": 41,
+          "tp": 29
+        },
+        "Merger/Acquisition": {
+          "pred": 6,
+          "true": 9,
+          "tp": 6
+        },
+        "Credit Event": {
+          "pred": 11,
+          "true": 12,
+          "tp": 9
+        },
+        "Macroeconomic": {
+          "pred": 25,
+          "true": 32,
+          "tp": 19
+        },
+        "Other": {
+          "pred": 141,
+          "true": 113,
+          "tp": 93
+        }
+      },
+      "fresh": {
+        "n": 182,
+        "accuracy": 0.6648,
+        "macro_f1": 0.6344,
+        "alert_precision": 0.6667,
+        "alerts": 105,
+        "Product Launch": {
+          "pred": 8,
+          "true": 5,
+          "tp": 3
+        },
+        "Merger/Acquisition": {
+          "pred": 11,
+          "true": 4,
+          "tp": 3
+        },
+        "Credit Event": {
+          "pred": 4,
+          "true": 2,
+          "tp": 2
+        },
+        "Macroeconomic": {
+          "pred": 19,
+          "true": 26,
+          "tp": 15
+        },
+        "Other": {
+          "pred": 77,
+          "true": 78,
+          "tp": 51
+        }
+      },
+      "confirmed_tier": {
+        "alerts": 69,
+        "correct": 65,
+        "precision": 0.942,
+        "ci95": [
+          0.8602,
+          0.9772
+        ]
+      }
+    },
+    {
+      "rules": "R1",
+      "head": "v3",
+      "policy": "P2 PL/MA>=0.5",
+      "all": {
+        "n": 478,
+        "accuracy": 0.705,
+        "macro_f1": 0.7002,
+        "alert_precision": 0.7423,
+        "alerts": 260,
+        "Product Launch": {
+          "pred": 41,
+          "true": 46,
+          "tp": 32
+        },
+        "Merger/Acquisition": {
+          "pred": 17,
+          "true": 13,
+          "tp": 9
+        },
+        "Credit Event": {
+          "pred": 15,
+          "true": 14,
+          "tp": 11
+        },
+        "Macroeconomic": {
+          "pred": 44,
+          "true": 58,
+          "tp": 34
+        },
+        "Other": {
+          "pred": 218,
+          "true": 191,
+          "tp": 144
+        }
+      },
+      "human": {
+        "n": 296,
+        "accuracy": 0.7297,
+        "macro_f1": 0.7279,
+        "alert_precision": 0.7935,
+        "alerts": 155,
+        "Product Launch": {
+          "pred": 33,
+          "true": 41,
+          "tp": 29
+        },
+        "Merger/Acquisition": {
+          "pred": 6,
+          "true": 9,
+          "tp": 6
+        },
+        "Credit Event": {
+          "pred": 11,
+          "true": 12,
+          "tp": 9
+        },
+        "Macroeconomic": {
+          "pred": 25,
+          "true": 32,
+          "tp": 19
+        },
+        "Other": {
+          "pred": 141,
+          "true": 113,
+          "tp": 93
+        }
+      },
+      "fresh": {
+        "n": 182,
+        "accuracy": 0.6648,
+        "macro_f1": 0.6344,
+        "alert_precision": 0.6667,
+        "alerts": 105,
+        "Product Launch": {
+          "pred": 8,
+          "true": 5,
+          "tp": 3
+        },
+        "Merger/Acquisition": {
+          "pred": 11,
+          "true": 4,
+          "tp": 3
+        },
+        "Credit Event": {
+          "pred": 4,
+          "true": 2,
+          "tp": 2
+        },
+        "Macroeconomic": {
+          "pred": 19,
+          "true": 26,
+          "tp": 15
+        },
+        "Other": {
+          "pred": 77,
+          "true": 78,
+          "tp": 51
+        }
+      },
+      "confirmed_tier": {
+        "alerts": 69,
+        "correct": 65,
+        "precision": 0.942,
+        "ci95": [
+          0.8602,
+          0.9772
+        ]
+      }
+    },
+    {
+      "rules": "R2",
+      "head": "v3",
+      "policy": "P2 PL/MA>=0.5",
+      "all": {
+        "n": 478,
+        "accuracy": 0.705,
+        "macro_f1": 0.7002,
+        "alert_precision": 0.7423,
+        "alerts": 260,
+        "Product Launch": {
+          "pred": 41,
+          "true": 46,
+          "tp": 32
+        },
+        "Merger/Acquisition": {
+          "pred": 17,
+          "true": 13,
+          "tp": 9
+        },
+        "Credit Event": {
+          "pred": 15,
+          "true": 14,
+          "tp": 11
+        },
+        "Macroeconomic": {
+          "pred": 44,
+          "true": 58,
+          "tp": 34
+        },
+        "Other": {
+          "pred": 218,
+          "true": 191,
+          "tp": 144
+        }
+      },
+      "human": {
+        "n": 296,
+        "accuracy": 0.7297,
+        "macro_f1": 0.7279,
+        "alert_precision": 0.7935,
+        "alerts": 155,
+        "Product Launch": {
+          "pred": 33,
+          "true": 41,
+          "tp": 29
+        },
+        "Merger/Acquisition": {
+          "pred": 6,
+          "true": 9,
+          "tp": 6
+        },
+        "Credit Event": {
+          "pred": 11,
+          "true": 12,
+          "tp": 9
+        },
+        "Macroeconomic": {
+          "pred": 25,
+          "true": 32,
+          "tp": 19
+        },
+        "Other": {
+          "pred": 141,
+          "true": 113,
+          "tp": 93
+        }
+      },
+      "fresh": {
+        "n": 182,
+        "accuracy": 0.6648,
+        "macro_f1": 0.6344,
+        "alert_precision": 0.6667,
+        "alerts": 105,
+        "Product Launch": {
+          "pred": 8,
+          "true": 5,
+          "tp": 3
+        },
+        "Merger/Acquisition": {
+          "pred": 11,
+          "true": 4,
+          "tp": 3
+        },
+        "Credit Event": {
+          "pred": 4,
+          "true": 2,
+          "tp": 2
+        },
+        "Macroeconomic": {
+          "pred": 19,
+          "true": 26,
+          "tp": 15
+        },
+        "Other": {
+          "pred": 77,
+          "true": 78,
+          "tp": 51
+        }
+      },
+      "confirmed_tier": {
+        "alerts": 69,
+        "correct": 65,
+        "precision": 0.942,
+        "ci95": [
+          0.8602,
+          0.9772
+        ]
+      }
+    },
+    {
+      "rules": "R3",
+      "head": "v3",
+      "policy": "P2 PL/MA>=0.5",
+      "all": {
+        "n": 478,
+        "accuracy": 0.705,
+        "macro_f1": 0.7002,
+        "alert_precision": 0.7423,
+        "alerts": 260,
+        "Product Launch": {
+          "pred": 41,
+          "true": 46,
+          "tp": 32
+        },
+        "Merger/Acquisition": {
+          "pred": 17,
+          "true": 13,
+          "tp": 9
+        },
+        "Credit Event": {
+          "pred": 15,
+          "true": 14,
+          "tp": 11
+        },
+        "Macroeconomic": {
+          "pred": 44,
+          "true": 58,
+          "tp": 34
+        },
+        "Other": {
+          "pred": 218,
+          "true": 191,
+          "tp": 144
+        }
+      },
+      "human": {
+        "n": 296,
+        "accuracy": 0.7297,
+        "macro_f1": 0.7279,
+        "alert_precision": 0.7935,
+        "alerts": 155,
+        "Product Launch": {
+          "pred": 33,
+          "true": 41,
+          "tp": 29
+        },
+        "Merger/Acquisition": {
+          "pred": 6,
+          "true": 9,
+          "tp": 6
+        },
+        "Credit Event": {
+          "pred": 11,
+          "true": 12,
+          "tp": 9
+        },
+        "Macroeconomic": {
+          "pred": 25,
+          "true": 32,
+          "tp": 19
+        },
+        "Other": {
+          "pred": 141,
+          "true": 113,
+          "tp": 93
+        }
+      },
+      "fresh": {
+        "n": 182,
+        "accuracy": 0.6648,
+        "macro_f1": 0.6344,
+        "alert_precision": 0.6667,
+        "alerts": 105,
+        "Product Launch": {
+          "pred": 8,
+          "true": 5,
+          "tp": 3
+        },
+        "Merger/Acquisition": {
+          "pred": 11,
+          "true": 4,
+          "tp": 3
+        },
+        "Credit Event": {
+          "pred": 4,
+          "true": 2,
+          "tp": 2
+        },
+        "Macroeconomic": {
+          "pred": 19,
+          "true": 26,
+          "tp": 15
+        },
+        "Other": {
+          "pred": 77,
+          "true": 78,
+          "tp": 51
+        }
+      },
+      "confirmed_tier": {
+        "alerts": 69,
+        "correct": 65,
+        "precision": 0.942,
+        "ci95": [
+          0.8602,
+          0.9772
+        ]
+      }
+    },
+    {
+      "rules": "R0",
+      "head": "v3",
+      "policy": "P1 verify PL",
+      "all": {
+        "n": 478,
+        "accuracy": 0.6946,
+        "macro_f1": 0.6945,
+        "alert_precision": 0.7266,
+        "alerts": 267,
+        "Product Launch": {
+          "pred": 43,
+          "true": 46,
+          "tp": 32
+        },
+        "Merger/Acquisition": {
+          "pred": 22,
+          "true": 13,
+          "tp": 10
+        },
+        "Credit Event": {
+          "pred": 15,
+          "true": 14,
+          "tp": 11
+        },
+        "Macroeconomic": {
+          "pred": 44,
+          "true": 58,
+          "tp": 34
+        },
+        "Other": {
+          "pred": 211,
+          "true": 191,
+          "tp": 138
+        }
+      },
+      "human": {
+        "n": 296,
+        "accuracy": 0.7264,
+        "macro_f1": 0.7239,
+        "alert_precision": 0.7898,
+        "alerts": 157,
+        "Product Launch": {
+          "pred": 34,
+          "true": 41,
+          "tp": 30
+        },
+        "Merger/Acquisition": {
+          "pred": 7,
+          "true": 9,
+          "tp": 6
+        },
+        "Credit Event": {
+          "pred": 11,
+          "true": 12,
+          "tp": 9
+        },
+        "Macroeconomic": {
+          "pred": 25,
+          "true": 32,
+          "tp": 19
+        },
+        "Other": {
+          "pred": 139,
+          "true": 113,
+          "tp": 91
+        }
+      },
+      "fresh": {
+        "n": 182,
+        "accuracy": 0.6429,
+        "macro_f1": 0.6175,
+        "alert_precision": 0.6364,
+        "alerts": 110,
+        "Product Launch": {
+          "pred": 9,
+          "true": 5,
+          "tp": 2
+        },
+        "Merger/Acquisition": {
+          "pred": 15,
+          "true": 4,
+          "tp": 4
+        },
+        "Credit Event": {
+          "pred": 4,
+          "true": 2,
+          "tp": 2
+        },
+        "Macroeconomic": {
+          "pred": 19,
+          "true": 26,
+          "tp": 15
+        },
+        "Other": {
+          "pred": 72,
+          "true": 78,
+          "tp": 47
+        }
+      },
+      "confirmed_tier": {
+        "alerts": 69,
+        "correct": 65,
+        "precision": 0.942,
+        "ci95": [
+          0.8602,
+          0.9772
+        ]
+      }
+    },
+    {
+      "rules": "R1",
+      "head": "v3",
+      "policy": "P1 verify PL",
+      "all": {
+        "n": 478,
+        "accuracy": 0.6946,
+        "macro_f1": 0.6945,
+        "alert_precision": 0.7266,
+        "alerts": 267,
+        "Product Launch": {
+          "pred": 43,
+          "true": 46,
+          "tp": 32
+        },
+        "Merger/Acquisition": {
+          "pred": 22,
+          "true": 13,
+          "tp": 10
+        },
+        "Credit Event": {
+          "pred": 15,
+          "true": 14,
+          "tp": 11
+        },
+        "Macroeconomic": {
+          "pred": 44,
+          "true": 58,
+          "tp": 34
+        },
+        "Other": {
+          "pred": 211,
+          "true": 191,
+          "tp": 138
+        }
+      },
+      "human": {
+        "n": 296,
+        "accuracy": 0.7264,
+        "macro_f1": 0.7239,
+        "alert_precision": 0.7898,
+        "alerts": 157,
+        "Product Launch": {
+          "pred": 34,
+          "true": 41,
+          "tp": 30
+        },
+        "Merger/Acquisition": {
+          "pred": 7,
+          "true": 9,
+          "tp": 6
+        },
+        "Credit Event": {
+          "pred": 11,
+          "true": 12,
+          "tp": 9
+        },
+        "Macroeconomic": {
+          "pred": 25,
+          "true": 32,
+          "tp": 19
+        },
+        "Other": {
+          "pred": 139,
+          "true": 113,
+          "tp": 91
+        }
+      },
+      "fresh": {
+        "n": 182,
+        "accuracy": 0.6429,
+        "macro_f1": 0.6175,
+        "alert_precision": 0.6364,
+        "alerts": 110,
+        "Product Launch": {
+          "pred": 9,
+          "true": 5,
+          "tp": 2
+        },
+        "Merger/Acquisition": {
+          "pred": 15,
+          "true": 4,
+          "tp": 4
+        },
+        "Credit Event": {
+          "pred": 4,
+          "true": 2,
+          "tp": 2
+        },
+        "Macroeconomic": {
+          "pred": 19,
+          "true": 26,
+          "tp": 15
+        },
+        "Other": {
+          "pred": 72,
+          "true": 78,
+          "tp": 47
+        }
+      },
+      "confirmed_tier": {
+        "alerts": 69,
+        "correct": 65,
+        "precision": 0.942,
+        "ci95": [
+          0.8602,
+          0.9772
+        ]
+      }
+    },
+    {
+      "rules": "R2",
+      "head": "v3",
+      "policy": "P1 verify PL",
+      "all": {
+        "n": 478,
+        "accuracy": 0.6946,
+        "macro_f1": 0.6945,
+        "alert_precision": 0.7266,
+        "alerts": 267,
+        "Product Launch": {
+          "pred": 43,
+          "true": 46,
+          "tp": 32
+        },
+        "Merger/Acquisition": {
+          "pred": 22,
+          "true": 13,
+          "tp": 10
+        },
+        "Credit Event": {
+          "pred": 15,
+          "true": 14,
+          "tp": 11
+        },
+        "Macroeconomic": {
+          "pred": 44,
+          "true": 58,
+          "tp": 34
+        },
+        "Other": {
+          "pred": 211,
+          "true": 191,
+          "tp": 138
+        }
+      },
+      "human": {
+        "n": 296,
+        "accuracy": 0.7264,
+        "macro_f1": 0.7239,
+        "alert_precision": 0.7898,
+        "alerts": 157,
+        "Product Launch": {
+          "pred": 34,
+          "true": 41,
+          "tp": 30
+        },
+        "Merger/Acquisition": {
+          "pred": 7,
+          "true": 9,
+          "tp": 6
+        },
+        "Credit Event": {
+          "pred": 11,
+          "true": 12,
+          "tp": 9
+        },
+        "Macroeconomic": {
+          "pred": 25,
+          "true": 32,
+          "tp": 19
+        },
+        "Other": {
+          "pred": 139,
+          "true": 113,
+          "tp": 91
+        }
+      },
+      "fresh": {
+        "n": 182,
+        "accuracy": 0.6429,
+        "macro_f1": 0.6175,
+        "alert_precision": 0.6364,
+        "alerts": 110,
+        "Product Launch": {
+          "pred": 9,
+          "true": 5,
+          "tp": 2
+        },
+        "Merger/Acquisition": {
+          "pred": 15,
+          "true": 4,
+          "tp": 4
+        },
+        "Credit Event": {
+          "pred": 4,
+          "true": 2,
+          "tp": 2
+        },
+        "Macroeconomic": {
+          "pred": 19,
+          "true": 26,
+          "tp": 15
+        },
+        "Other": {
+          "pred": 72,
+          "true": 78,
+          "tp": 47
+        }
+      },
+      "confirmed_tier": {
+        "alerts": 69,
+        "correct": 65,
+        "precision": 0.942,
+        "ci95": [
+          0.8602,
+          0.9772
+        ]
+      }
+    },
+    {
+      "rules": "R3",
+      "head": "v3",
+      "policy": "P1 verify PL",
+      "all": {
+        "n": 478,
+        "accuracy": 0.6946,
+        "macro_f1": 0.6945,
+        "alert_precision": 0.7266,
+        "alerts": 267,
+        "Product Launch": {
+          "pred": 43,
+          "true": 46,
+          "tp": 32
+        },
+        "Merger/Acquisition": {
+          "pred": 22,
+          "true": 13,
+          "tp": 10
+        },
+        "Credit Event": {
+          "pred": 15,
+          "true": 14,
+          "tp": 11
+        },
+        "Macroeconomic": {
+          "pred": 44,
+          "true": 58,
+          "tp": 34
+        },
+        "Other": {
+          "pred": 211,
+          "true": 191,
+          "tp": 138
+        }
+      },
+      "human": {
+        "n": 296,
+        "accuracy": 0.7264,
+        "macro_f1": 0.7239,
+        "alert_precision": 0.7898,
+        "alerts": 157,
+        "Product Launch": {
+          "pred": 34,
+          "true": 41,
+          "tp": 30
+        },
+        "Merger/Acquisition": {
+          "pred": 7,
+          "true": 9,
+          "tp": 6
+        },
+        "Credit Event": {
+          "pred": 11,
+          "true": 12,
+          "tp": 9
+        },
+        "Macroeconomic": {
+          "pred": 25,
+          "true": 32,
+          "tp": 19
+        },
+        "Other": {
+          "pred": 139,
+          "true": 113,
+          "tp": 91
+        }
+      },
+      "fresh": {
+        "n": 182,
+        "accuracy": 0.6429,
+        "macro_f1": 0.6175,
+        "alert_precision": 0.6364,
+        "alerts": 110,
+        "Product Launch": {
+          "pred": 9,
+          "true": 5,
+          "tp": 2
+        },
+        "Merger/Acquisition": {
+          "pred": 15,
+          "true": 4,
+          "tp": 4
+        },
+        "Credit Event": {
+          "pred": 4,
+          "true": 2,
+          "tp": 2
+        },
+        "Macroeconomic": {
+          "pred": 19,
+          "true": 26,
+          "tp": 15
+        },
+        "Other": {
+          "pred": 72,
+          "true": 78,
+          "tp": 47
+        }
+      },
+      "confirmed_tier": {
+        "alerts": 69,
+        "correct": 65,
+        "precision": 0.942,
+        "ci95": [
+          0.8602,
+          0.9772
+        ]
+      }
+    },
+    {
+      "rules": "R0",
+      "head": "v3",
+      "policy": "P0",
+      "all": {
+        "n": 478,
+        "accuracy": 0.6715,
+        "macro_f1": 0.6839,
+        "alert_precision": 0.6734,
+        "alerts": 297,
+        "Product Launch": {
+          "pred": 73,
+          "true": 46,
+          "tp": 38
+        },
+        "Merger/Acquisition": {
+          "pred": 22,
+          "true": 13,
+          "tp": 10
+        },
+        "Credit Event": {
+          "pred": 15,
+          "true": 14,
+          "tp": 11
+        },
+        "Macroeconomic": {
+          "pred": 44,
+          "true": 58,
+          "tp": 34
+        },
+        "Other": {
+          "pred": 181,
+          "true": 191,
+          "tp": 121
+        }
+      },
+      "human": {
+        "n": 296,
+        "accuracy": 0.7061,
+        "macro_f1": 0.7138,
+        "alert_precision": 0.7257,
+        "alerts": 175,
+        "Product Launch": {
+          "pred": 52,
+          "true": 41,
+          "tp": 33
+        },
+        "Merger/Acquisition": {
+          "pred": 7,
+          "true": 9,
+          "tp": 6
+        },
+        "Credit Event": {
+          "pred": 11,
+          "true": 12,
+          "tp": 9
+        },
+        "Macroeconomic": {
+          "pred": 25,
+          "true": 32,
+          "tp": 19
+        },
+        "Other": {
+          "pred": 121,
+          "true": 113,
+          "tp": 82
+        }
+      },
+      "fresh": {
+        "n": 182,
+        "accuracy": 0.6154,
+        "macro_f1": 0.6209,
+        "alert_precision": 0.5984,
+        "alerts": 122,
+        "Product Launch": {
+          "pred": 21,
+          "true": 5,
+          "tp": 5
+        },
+        "Merger/Acquisition": {
+          "pred": 15,
+          "true": 4,
+          "tp": 4
+        },
+        "Credit Event": {
+          "pred": 4,
+          "true": 2,
+          "tp": 2
+        },
+        "Macroeconomic": {
+          "pred": 19,
+          "true": 26,
+          "tp": 15
+        },
+        "Other": {
+          "pred": 60,
+          "true": 78,
+          "tp": 39
+        }
+      },
+      "confirmed_tier": {
+        "alerts": 69,
+        "correct": 65,
+        "precision": 0.942,
+        "ci95": [
+          0.8602,
+          0.9772
+        ]
+      }
+    },
+    {
+      "rules": "R1",
+      "head": "v3",
+      "policy": "P0",
+      "all": {
+        "n": 478,
+        "accuracy": 0.6715,
+        "macro_f1": 0.6839,
+        "alert_precision": 0.6734,
+        "alerts": 297,
+        "Product Launch": {
+          "pred": 73,
+          "true": 46,
+          "tp": 38
+        },
+        "Merger/Acquisition": {
+          "pred": 22,
+          "true": 13,
+          "tp": 10
+        },
+        "Credit Event": {
+          "pred": 15,
+          "true": 14,
+          "tp": 11
+        },
+        "Macroeconomic": {
+          "pred": 44,
+          "true": 58,
+          "tp": 34
+        },
+        "Other": {
+          "pred": 181,
+          "true": 191,
+          "tp": 121
+        }
+      },
+      "human": {
+        "n": 296,
+        "accuracy": 0.7061,
+        "macro_f1": 0.7138,
+        "alert_precision": 0.7257,
+        "alerts": 175,
+        "Product Launch": {
+          "pred": 52,
+          "true": 41,
+          "tp": 33
+        },
+        "Merger/Acquisition": {
+          "pred": 7,
+          "true": 9,
+          "tp": 6
+        },
+        "Credit Event": {
+          "pred": 11,
+          "true": 12,
+          "tp": 9
+        },
+        "Macroeconomic": {
+          "pred": 25,
+          "true": 32,
+          "tp": 19
+        },
+        "Other": {
+          "pred": 121,
+          "true": 113,
+          "tp": 82
+        }
+      },
+      "fresh": {
+        "n": 182,
+        "accuracy": 0.6154,
+        "macro_f1": 0.6209,
+        "alert_precision": 0.5984,
+        "alerts": 122,
+        "Product Launch": {
+          "pred": 21,
+          "true": 5,
+          "tp": 5
+        },
+        "Merger/Acquisition": {
+          "pred": 15,
+          "true": 4,
+          "tp": 4
+        },
+        "Credit Event": {
+          "pred": 4,
+          "true": 2,
+          "tp": 2
+        },
+        "Macroeconomic": {
+          "pred": 19,
+          "true": 26,
+          "tp": 15
+        },
+        "Other": {
+          "pred": 60,
+          "true": 78,
+          "tp": 39
+        }
+      },
+      "confirmed_tier": {
+        "alerts": 69,
+        "correct": 65,
+        "precision": 0.942,
+        "ci95": [
+          0.8602,
+          0.9772
+        ]
+      }
+    },
+    {
+      "rules": "R2",
+      "head": "v3",
+      "policy": "P0",
+      "all": {
+        "n": 478,
+        "accuracy": 0.6715,
+        "macro_f1": 0.6839,
+        "alert_precision": 0.6734,
+        "alerts": 297,
+        "Product Launch": {
+          "pred": 73,
+          "true": 46,
+          "tp": 38
+        },
+        "Merger/Acquisition": {
+          "pred": 22,
+          "true": 13,
+          "tp": 10
+        },
+        "Credit Event": {
+          "pred": 15,
+          "true": 14,
+          "tp": 11
+        },
+        "Macroeconomic": {
+          "pred": 44,
+          "true": 58,
+          "tp": 34
+        },
+        "Other": {
+          "pred": 181,
+          "true": 191,
+          "tp": 121
+        }
+      },
+      "human": {
+        "n": 296,
+        "accuracy": 0.7061,
+        "macro_f1": 0.7138,
+        "alert_precision": 0.7257,
+        "alerts": 175,
+        "Product Launch": {
+          "pred": 52,
+          "true": 41,
+          "tp": 33
+        },
+        "Merger/Acquisition": {
+          "pred": 7,
+          "true": 9,
+          "tp": 6
+        },
+        "Credit Event": {
+          "pred": 11,
+          "true": 12,
+          "tp": 9
+        },
+        "Macroeconomic": {
+          "pred": 25,
+          "true": 32,
+          "tp": 19
+        },
+        "Other": {
+          "pred": 121,
+          "true": 113,
+          "tp": 82
+        }
+      },
+      "fresh": {
+        "n": 182,
+        "accuracy": 0.6154,
+        "macro_f1": 0.6209,
+        "alert_precision": 0.5984,
+        "alerts": 122,
+        "Product Launch": {
+          "pred": 21,
+          "true": 5,
+          "tp": 5
+        },
+        "Merger/Acquisition": {
+          "pred": 15,
+          "true": 4,
+          "tp": 4
+        },
+        "Credit Event": {
+          "pred": 4,
+          "true": 2,
+          "tp": 2
+        },
+        "Macroeconomic": {
+          "pred": 19,
+          "true": 26,
+          "tp": 15
+        },
+        "Other": {
+          "pred": 60,
+          "true": 78,
+          "tp": 39
+        }
+      },
+      "confirmed_tier": {
+        "alerts": 69,
+        "correct": 65,
+        "precision": 0.942,
+        "ci95": [
+          0.8602,
+          0.9772
+        ]
+      }
+    },
+    {
+      "rules": "R3",
+      "head": "v3",
+      "policy": "P0",
+      "all": {
+        "n": 478,
+        "accuracy": 0.6715,
+        "macro_f1": 0.6839,
+        "alert_precision": 0.6734,
+        "alerts": 297,
+        "Product Launch": {
+          "pred": 73,
+          "true": 46,
+          "tp": 38
+        },
+        "Merger/Acquisition": {
+          "pred": 22,
+          "true": 13,
+          "tp": 10
+        },
+        "Credit Event": {
+          "pred": 15,
+          "true": 14,
+          "tp": 11
+        },
+        "Macroeconomic": {
+          "pred": 44,
+          "true": 58,
+          "tp": 34
+        },
+        "Other": {
+          "pred": 181,
+          "true": 191,
+          "tp": 121
+        }
+      },
+      "human": {
+        "n": 296,
+        "accuracy": 0.7061,
+        "macro_f1": 0.7138,
+        "alert_precision": 0.7257,
+        "alerts": 175,
+        "Product Launch": {
+          "pred": 52,
+          "true": 41,
+          "tp": 33
+        },
+        "Merger/Acquisition": {
+          "pred": 7,
+          "true": 9,
+          "tp": 6
+        },
+        "Credit Event": {
+          "pred": 11,
+          "true": 12,
+          "tp": 9
+        },
+        "Macroeconomic": {
+          "pred": 25,
+          "true": 32,
+          "tp": 19
+        },
+        "Other": {
+          "pred": 121,
+          "true": 113,
+          "tp": 82
+        }
+      },
+      "fresh": {
+        "n": 182,
+        "accuracy": 0.6154,
+        "macro_f1": 0.6209,
+        "alert_precision": 0.5984,
+        "alerts": 122,
+        "Product Launch": {
+          "pred": 21,
+          "true": 5,
+          "tp": 5
+        },
+        "Merger/Acquisition": {
+          "pred": 15,
+          "true": 4,
+          "tp": 4
+        },
+        "Credit Event": {
+          "pred": 4,
+          "true": 2,
+          "tp": 2
+        },
+        "Macroeconomic": {
+          "pred": 19,
+          "true": 26,
+          "tp": 15
+        },
+        "Other": {
+          "pred": 60,
+          "true": 78,
+          "tp": 39
+        }
+      },
+      "confirmed_tier": {
+        "alerts": 69,
+        "correct": 65,
+        "precision": 0.942,
+        "ci95": [
+          0.8602,
+          0.9772
+        ]
+      }
+    }
+  ],
+  "encoder": "BAAI/bge-large-en-v1.5"
+}

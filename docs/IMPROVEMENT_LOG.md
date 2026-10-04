@@ -346,6 +346,25 @@ items no longer end with no subject. Also fixed: the `macro_markets` rule was mi
 Weak rules found, not changed (counts too small to act on without overfitting): `supply` 0/3, `tariffs` 1/4,
 `legal` 8/14.
 
+### Encoder switch: e5-large-v2 (shipped 2026-10-04)
+
+Same protocol as round 3 (5-fold CV over the 478 human labels, rules R1, policy P2, head v3 + human labels x3;
+`docs/results/round3_experiment_*.json`). Rows marked "shipped" in those files are in-sample (the shipped head is
+trained on all human labels) and are not comparable.
+
+| Encoder | Accuracy | Macro-F1 | 296 subset | 182 subset |
+|---|---|---|---|---|
+| bge-base-en-v1.5 (previous) | 0.741 | 0.739 | 0.757 | 0.714 |
+| all-mpnet-base-v2 | 0.741 | 0.748 | 0.757 | 0.714 |
+| bge-large-en-v1.5 | 0.741 | 0.740 | 0.774 | 0.687 |
+| **e5-large-v2 (shipped)** | **0.770** | **0.769** | **0.774** | **0.764** |
+
+Rule applied: a model is shipped only if it beats the current one on this comparison on accuracy and macro-F1.
+After the switch and a full re-annotation, recalibration and golden-test regeneration (WAL: Impact 7.48 -> 7.43, P&L
+-2.19M -> -2.15M, test passes), the Impact model on the 1,003 out-of-time filings reads AUC 0.724, Spearman 0.330,
+Brier 0.138. For the record: round 3 with bge-base had moved it from 0.728 to 0.720; e5 recovers most of that.
+Previous head kept on the server as `models/event_head_bge_base.pkl`. Next: a new fresh test set validates this.
+
 ### Still open
 - Consistency review of the first 50 human labels (made before the definitions card; 15 conflict with an explicit
   card rule), to be decided by the labeller.

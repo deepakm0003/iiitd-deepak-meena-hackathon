@@ -1,30 +1,33 @@
 {
-  "trained_at": "2026-10-03T02:19:21.514886+00:00",
-  "recipe": "v3",
-  "encoder": "BAAI/bge-base-en-v1.5",
+  "trained_at": "2026-10-04T03:08:15.050169+00:00",
+  "recipe": "v3 + human labels",
+  "encoder": "intfloat/e5-large-v2",
   "train": {
-    "n": 1273,
+    "n": 1302,
     "by_label": {
-      "Other": 150,
-      "Macroeconomic": 150,
-      "Regulatory/Legal": 150,
-      "Earnings": 150,
       "Management Change": 150,
+      "Regulatory/Legal": 150,
+      "Product Launch": 150,
+      "Macroeconomic": 150,
       "Geopolitical": 150,
+      "Earnings": 150,
       "Merger/Acquisition": 150,
-      "Product Launch": 142,
-      "Cyber/Operational": 55,
-      "Credit Event": 15,
+      "Other": 150,
+      "Cyber/Operational": 75,
+      "Credit Event": 16,
       "Natural Disaster/Supply Chain": 11
     },
     "by_origin": {
-      "seed": 1056,
-      "twitter": 127,
-      "8k": 90
+      "seed": 1081,
+      "twitter": 122,
+      "8k": 99
     }
   },
-  "in_domain_rule_examples": 1428,
+  "in_domain_rule_examples": 3024,
   "opinion_other_examples": 400,
-  "excluded_gold_items": 296,
-  "selection": "human gold DEV split, docs/results/event_head_experiment_human.json"
+  "human_labelled_examples": 478,
+  "human_weight": 3.0,
+  "human_label_files": "human_check.jsonl,fresh_labels.jsonl",
+  "excluded_candidates": 478,
+  "selection": "5-fold CV on 478 human labels, docs/results/round3_experiment.json"
 }
