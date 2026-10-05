@@ -365,6 +365,28 @@ After the switch and a full re-annotation, recalibration and golden-test regener
 Brier 0.138. For the record: round 3 with bge-base had moved it from 0.728 to 0.720; e5 recovers most of that.
 Previous head kept on the server as `models/event_head_bge_base.pkl`. Next: a new fresh test set validates this.
 
+### Second fresh out-of-time TEST (run once, 2026-10-05, e5-large model)
+
+202 articles published after the e5 freeze (2026-10-04 03:08 UTC), sampled with `scripts/make_fresh_set.py --name fresh2`,
+labelled by the author (8 government appointments revised from Management Change to Other after a guideline check; a
+block of 29 answers pasted from an earlier batch was caught by comparing answers with titles and relabelled). Evaluated
+once (`docs/results/gold_eval_fresh2.json`, `fresh2_tier_precision.json`).
+
+| Metric | Fresh test 1 (bge-base, round 2) | **Fresh test 2 (e5-large, round 3)** |
+|---|---|---|
+| Event accuracy | 0.632 | **0.703** |
+| Macro-F1 | 0.612 | **0.693** |
+| Weighted F1 | 0.649 | **0.712** |
+| Entity accuracy | 0.665 | **0.703** |
+| Standard-tier precision | 58.7% (71/121) | **74.4% (96/129)** |
+| Confirmed-tier precision | 54.5% (6/11) | 50.0% (3/6, CI 19-81%) |
+
+Reading: the round-3 changes and the e5 encoder held on new data (+7 points accuracy, +8 macro-F1). Weakest classes:
+Management Change precision 0.13 (the model calls government appointments management changes; the guide says Other),
+Cyber/Operational recall 0.53, Product Launch precision 0.55. The confirmed tier is still the weak spot: `rule:launch`
+fired on "launches 8.6% yield monthly dividend" and "auto show debuts", `rule:disaster` on "buyers flood in". These are
+fixable rule bugs, but a fix can only be claimed after another fresh set. This fresh set is now spent (development data).
+
 ### Still open
 - Consistency review of the first 50 human labels (made before the definitions card; 15 conflict with an explicit
   card rule), to be decided by the labeller.

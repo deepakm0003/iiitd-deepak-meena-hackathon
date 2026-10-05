@@ -75,6 +75,9 @@ class StressRequest(BaseModel):
 
 def create_app(store=None, stress=None, analyzer_preload: bool | None = None) -> FastAPI:
     settings = get_settings()
+    def now() -> datetime:
+        return settings.as_of or datetime.now(UTC)
+
     preload = analyzer_preload if analyzer_preload is not None else store is None  # the server, not tests
     store = store or build_store(settings)
     if stress is None:
@@ -88,7 +91,7 @@ def create_app(store=None, stress=None, analyzer_preload: bool | None = None) ->
         return stress
     from tripwire.analyze import Analyzer
 
-    analyzer = Analyzer(store, stress, settings.data_dir.parent)
+    analyzer = Analyzer(store, stress, settings.data_dir.parent, clock=now)
     if preload:  # load the models in the background so the first upload does not wait for them
         threading.Thread(target=analyzer.warm, daemon=True).start()
     tickers = {c["ticker"] for c in load_yaml("universe.yaml").get("companies", [])}
@@ -97,7 +100,8 @@ def create_app(store=None, stress=None, analyzer_preload: bool | None = None) ->
 
     @app.get("/health")
     def health():
-        return {"status": "ok", "store": store.health(), "time": datetime.now(UTC).isoformat()}
+        return {"status": "ok", "store": store.health(), "time": now().isoformat(),
+                "as_of": settings.as_of.isoformat() if settings.as_of else None}
 
     @app.get("/signals")
     def list_signals(
@@ -116,7 +120,7 @@ def create_app(store=None, stress=None, analyzer_preload: bool | None = None) ->
 
     @app.get("/signals/stats")
     def signal_stats(days: int = Query(7, ge=1, le=90)):
-        rows = store.signal_rows(datetime.now(UTC) - timedelta(days=days))
+        rows = store.signal_rows(now() - timedelta(days=days))
         by_day: dict[str, dict[str, int]] = {}
         for r in rows:
             day = by_day.setdefault(r["first_seen"].date().isoformat(), {})
@@ -145,7 +149,7 @@ def create_app(store=None, stress=None, analyzer_preload: bool | None = None) ->
 
     @app.get("/analyze/status")
     def analyze_status():
-        return {"ready": analyzer.ready(), "stored": False, "max_batch": 300,
+        return {"ready": analyzer.ready(), "error": analyzer.error, "stored": False, "max_batch": 300,
                 "reads": "headline + opening (two sentences, 600 characters), as for live news"}
 
     @app.post("/analyze/text")
@@ -175,7 +179,7 @@ def create_app(store=None, stress=None, analyzer_preload: bool | None = None) ->
         ticker = ticker.upper()
         if ticker not in tickers:
             raise HTTPException(404, "ticker not in the tracked universe")
-        recent = store.query_signals(entity=ticker, since=datetime.now(UTC) - timedelta(days=days), limit=1000)
+        recent = store.query_signals(entity=ticker, since=now() - timedelta(days=days), limit=1000)
         return {
             "ticker": ticker,
             "window_days": days,
@@ -200,8 +204,8 @@ def create_app(store=None, stress=None, analyzer_preload: bool | None = None) ->
     @app.get("/watchlist")
     def get_watchlist(status: str | None = Query(None, pattern="^(Red|Amber|Green)$"), limit: int = Query(100, ge=1)):
         days = load_yaml("book.yaml")["early_warning"]["lookback_days"]
-        recent = store.query_signals(since=datetime.now(UTC) - timedelta(days=days), limit=100_000)
-        out = service().watchlist(recent)
+        recent = store.query_signals(since=now() - timedelta(days=days), limit=100_000)
+        out = service().watchlist(recent, now=now())
         out["names"] = [r for r in out["names"] if status is None or r["status"] == status][:limit]
         return out
 

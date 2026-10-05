@@ -436,7 +436,10 @@ def cmd_eval_gold(args: argparse.Namespace) -> int:
             "sweep_test_for_reference_only": ge.threshold_sweep([r for r in ml if r["split"] == "test"], verify),
         },
     }
-    name = "silver_eval.json" if silver else ("gold_eval_fresh.json" if "fresh" in args.labels else "gold_eval.json")
+    # each fresh test set keeps its own result file (fresh2_labels.jsonl -> gold_eval_fresh2.json)
+    fresh_name = args.labels.removesuffix(".jsonl").removesuffix("_labels")
+    name = "silver_eval.json" if silver else (f"gold_eval_{fresh_name}.json" if args.labels.startswith("fresh")
+                                              else "gold_eval.json")
     out = settings.data_dir.parent / "docs" / "results" / name
     out.write_text(json.dumps(report, indent=2), encoding="utf-8")
     print(json.dumps({k: report[k] for k in ("labels", "entity_accuracy_test", "sentiment_accuracy_test")}, indent=2))
@@ -722,9 +725,52 @@ def cmd_status(_: argparse.Namespace) -> int:
     return 0
 
 
-def cmd_not_yet(args: argparse.Namespace) -> int:
-    print(f"'{args.command}' is not implemented yet; it arrives in Part 6 (dashboard).", file=sys.stderr)
-    return 2
+def cmd_demo(args: argparse.Namespace) -> int:
+    """The whole product on the committed demo snapshot (data/demo): website + API on one port, no server needed.
+
+    The snapshot is copied to var/demo/ first, so stress tests run from the dashboard never change the committed file.
+    """
+    import os
+    import shutil
+    import threading
+    import webbrowser
+    from pathlib import Path
+
+    import uvicorn
+
+    root = Path(__file__).resolve().parents[2]
+    snapshot, work = root / "data" / "demo", root / "var" / "demo"
+    packed = snapshot / "tripwire_demo.db.gz"
+    if not packed.exists():
+        print("data/demo/tripwire_demo.db.gz is missing (see README: demo snapshot).", file=sys.stderr)
+        return 1
+    work.mkdir(parents=True, exist_ok=True)
+    db = work / "tripwire_demo.db"
+    if args.reset or not db.exists():
+        import gzip
+
+        with gzip.open(packed, "rb") as src, open(db, "wb") as out:
+            shutil.copyfileobj(src, out)
+    if (snapshot / "collector_status.json").exists():
+        shutil.copy(snapshot / "collector_status.json", work / "collector_status.json")
+    os.environ["TRIPWIRE_DATABASE_URL"] = f"sqlite:///{db.as_posix()}"
+    os.environ["TRIPWIRE_VAR_DIR"] = str(work)
+    meta = json.loads((snapshot / "snapshot.json").read_text(encoding="utf-8"))
+    os.environ["TRIPWIRE_AS_OF"] = meta["exported_at"]  # "now" = when the snapshot was taken
+    get_settings.cache_clear()
+
+    from tripwire.api.site import create_site
+
+    url = f"http://127.0.0.1:{args.port}"
+    print(f"Tripwire demo: snapshot exported {meta['exported_at'][:16]} UTC, {meta['counts']['signals']} signals")
+    print(f"Open {url}  (dashboard: {url}/app). Ctrl+C to stop.")
+    if not args.no_analyze:
+        print("The Analyse page loads its models in the background (first run downloads them; a few minutes on CPU).")
+    if not args.no_browser:
+        threading.Timer(2.5, lambda: webbrowser.open(url)).start()
+    site = create_site(analyzer_preload=not args.no_analyze)
+    uvicorn.run(site, host="127.0.0.1", port=args.port, log_level="warning")
+    return 0
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -843,9 +889,12 @@ def main(argv: list[str] | None = None) -> int:
     gold_cmd.set_defaults(func=cmd_gold)
 
     sub.add_parser("status", help="store counts and recent collector runs").set_defaults(func=cmd_status)
-    sub.add_parser("demo", help="replay the demo storyline and open the dashboard (Part 6)").set_defaults(
-        func=cmd_not_yet
-    )
+    demo = sub.add_parser("demo", help="website + API on the committed demo snapshot (no server, GPU or keys)")
+    demo.add_argument("--port", type=int, default=8000)
+    demo.add_argument("--reset", action="store_true", help="start again from the committed snapshot")
+    demo.add_argument("--no-analyze", action="store_true", help="skip loading the NLP models for the Analyse page")
+    demo.add_argument("--no-browser", action="store_true")
+    demo.set_defaults(func=cmd_demo)
     args = parser.parse_args(argv)
     if get_settings().force_ipv4:
         from tripwire.netfix import prefer_ipv4

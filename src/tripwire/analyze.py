@@ -32,8 +32,9 @@ NOVELTY_LOOKBACK = timedelta(days=7)
 
 
 class Analyzer:
-    def __init__(self, store, stress, root: Path, engine=None, model: ImpactModel | None = None) -> None:
+    def __init__(self, store, stress, root: Path, engine=None, model: ImpactModel | None = None, clock=None) -> None:
         self.store = store
+        self.clock = clock or (lambda: datetime.now(UTC))  # demo mode: the snapshot time
         self.stress = stress
         self.root = root
         self._engine = engine
@@ -42,6 +43,7 @@ class Analyzer:
         self._importance = None
         self._lock = threading.Lock()
         self._ready = engine is not None and model is not None
+        self.error: str | None = None
         self._severity = EventRules()
         self._cfg = load_yaml("impact_weights.yaml")
         self._confirmed = set(load_yaml("event_rules.yaml").get("confirmed_sources", []))
@@ -54,7 +56,12 @@ class Analyzer:
     def warm(self) -> None:
         """Load every model now (they load lazily on first use), so the first upload is answered in seconds."""
         with self._lock:
-            self._load()
+            try:
+                self._load()
+            except ImportError as exc:  # core install without the ML stack (requirements-research.txt)
+                self.error = (f"The NLP models are not installed ({exc.name}). Install them with "
+                              "`pip install -r requirements-research.txt` to use Analyse.")
+                return
             probe = Document(raw_id=-1, dedup_key="warmup", source="upload", source_type="news",
                              title="Federal Reserve holds rates steady", lead="Officials signalled two cuts this year.",
                              published_at=datetime.now(UTC))
@@ -97,7 +104,7 @@ class Analyzer:
                       stress: bool) -> list[dict]:
         if source_type not in SOURCE_TYPES:
             raise ValueError(f"source_type must be one of {SOURCE_TYPES}")
-        now = datetime.now(UTC)
+        now = self.clock()
         docs = []
         for i, (title, text) in enumerate(items):
             title, text = clean_text(title)[:MAX_TITLE], clean_text(text)[:MAX_TEXT]
@@ -110,8 +117,15 @@ class Analyzer:
             docs.append(Document(raw_id=-(i + 1), dedup_key=key, source="upload", source_type=source_type,
                                  title=title, lead=make_lead(text) if text else "", url=url, published_at=now,
                                  hints={}))
+        if self.error:
+            raise ValueError(self.error)
         with self._lock:
-            self._load()
+            try:
+                self._load()
+            except ImportError as exc:
+                self.error = (f"The NLP models are not installed ({exc.name}). Install them with "
+                              "`pip install -r requirements-research.txt` to use Analyse.")
+                raise ValueError(self.error) from None
             annotations = [a.model_dump(mode="json") for a in self._engine.annotate(docs)]
         out = []
         recent_by_key: dict[str, list[dict]] = {}
@@ -199,7 +213,7 @@ class Analyzer:
         universe = {c["ticker"]: c for c in load_yaml("universe.yaml").get("companies", [])}
         book = build_uploaded_book(rows, self.stress.book["market_snapshot"], universe)
         svc = StressService(self.store, self.root / "data", book=book)
-        now = datetime.now(UTC)
+        now = self.clock()
         signals = self.store.query_signals(since=now - timedelta(days=30), limit=100_000, exclude_other=True)
         week = [s for s in signals if datetime.fromisoformat(s["first_seen_at"]) >= now - timedelta(days=7)
                 and s["event_type"] in svc.shocks["classes"]]
@@ -220,7 +234,7 @@ class Analyzer:
                 "pnl_by_asset_class": run["pnl_by_asset_class"], "top_contributors": run["top_contributors"][:5],
                 "reverse_stress": run.get("reverse_stress"), "decision": d,
             })
-        wl = svc.watchlist(signals)
+        wl = svc.watchlist(signals, now=now)
         return {
             "analysed_at": now.isoformat(),
             "stored": False,

@@ -137,8 +137,8 @@ class StressService:
         return out
 
     # ---- views ----------------------------------------------------------------------------------
-    def watchlist(self, signals: list[dict]) -> dict:
-        return watchlist(self.book, signals)
+    def watchlist(self, signals: list[dict], now: datetime | None = None) -> dict:
+        return watchlist(self.book, signals, now=now)
 
     def portfolio(self, include_positions: bool = False) -> dict:
         from tripwire.stress.trigger import position_exposure

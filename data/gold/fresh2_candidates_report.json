@@ -1,0 +1,27 @@
+{
+  "n": 202,
+  "frozen_at": "2026-10-04T03:08:15.043194+00:00",
+  "documents_after_freeze": 3514,
+  "by_stratum": {
+    "pred:Management Change": 8,
+    "pred:Credit Event": 6,
+    "pred:Other": 30,
+    "pred:Macroeconomic": 20,
+    "pred:Natural Disaster/Supply Chain": 6,
+    "recall:Cyber/Operational": 10,
+    "recall:Credit Event": 10,
+    "pred:Regulatory/Legal": 20,
+    "pred:Geopolitical": 20,
+    "pred:Product Launch": 20,
+    "pred:Merger/Acquisition": 15,
+    "recall:Product Launch": 10,
+    "pred:Earnings": 10,
+    "recall:Natural Disaster/Supply Chain": 10,
+    "pred:Cyber/Operational": 7
+  },
+  "by_source": {
+    "gdelt": 112,
+    "bluesky": 84,
+    "finnhub": 6
+  }
+}

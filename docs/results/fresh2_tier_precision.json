@@ -1,0 +1,20 @@
+{
+  "standard": {
+    "alerts": 129,
+    "correct": 96,
+    "precision": 0.7442,
+    "ci95": [
+      0.6626,
+      0.8117
+    ]
+  },
+  "confirmed": {
+    "alerts": 6,
+    "correct": 3,
+    "precision": 0.5,
+    "ci95": [
+      0.1876,
+      0.8124
+    ]
+  }
+}

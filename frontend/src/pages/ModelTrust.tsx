@@ -37,7 +37,7 @@ export function cardsFrom(m: Metrics) {
         `${after.n}-item test, evaluated once: event accuracy ${before ? `${pct(before.accuracy)} to ` : ""}${pct(after.accuracy)}, ` +
         `macro-F1 ${before ? `${before.macro_f1.toFixed(2)} to ` : ""}${after.macro_f1.toFixed(2)}.` +
         (fresh
-          ? ` A fresh ${fresh.n}-item set collected after the model freeze: ${pct(fresh.accuracy)} accuracy, macro-F1 ` +
+          ? ` The latest fresh ${fresh.n}-item set, collected after the model freeze: ${pct(fresh.accuracy)} accuracy, macro-F1 ` +
             `${fresh.macro_f1.toFixed(2)}, company resolution ${pct(fresh.entity_accuracy ?? 0)}.`
           : ""),
     });
@@ -82,7 +82,7 @@ export function cardsFrom(m: Metrics) {
       title: "The confirmed tier on new data",
       body:
         `On the fresh set, confirmed alerts were ${conf.correct} of ${conf.alerts} correct (${pct(conf.precision)}), well below ` +
-        "the development estimate: a disaster rule fired on climate court cases and a macro rule on round-ups. The disaster rule now skips court stories; that change waits for the next fresh set to prove it.",
+        "the development estimate: precise rules still fire on words used in another sense (\"launches a dividend\", \"buyers flood in\"). Rule-based alerts outside the confirmed tier were far more reliable on new data.",
     });
   }
   return cards;

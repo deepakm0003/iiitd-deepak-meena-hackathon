@@ -11,8 +11,16 @@ export const signedMoney = (v: number) => (v > 0 ? `+${money(v, 2)}` : money(v, 
 export const pct = (v: number, digits = 2) => `${(v * 100).toFixed(digits)}%`;
 export const signed = (v: number, digits = 2) => `${v > 0 ? "+" : v < 0 ? "−" : ""}${Math.abs(v).toFixed(digits)}`;
 
+// The engine's clock. Live: the same as ours. Demo: the snapshot's export time, so "2 h ago" and "last 7 days"
+// read as they did when the data was recorded. Set once from GET /health (lib/live.tsx).
+let clockOffset = 0;
+export const setServerTime = (iso: string) => {
+  clockOffset = new Date(iso).getTime() - Date.now();
+};
+export const nowMs = () => Date.now() + clockOffset;
+
 export function timeAgo(iso: string) {
-  const s = (Date.now() - new Date(iso).getTime()) / 1000;
+  const s = (nowMs() - new Date(iso).getTime()) / 1000;
   if (s < 60) return "just now";
   if (s < 3600) return `${Math.floor(s / 60)} min ago`;
   if (s < 86400) return `${Math.floor(s / 3600)} h ago`;

@@ -28,7 +28,7 @@ var/
 
 # Frontend (Part 6)
 node_modules/
-frontend/dist/
+# frontend/dist is committed: judges run the built site without Node.js
 
 # OS / editor
 .DS_Store
@@ -47,3 +47,4 @@ models/event_head_previous.pkl
 
 # Private handoff notes for a new Claude session (never commit)
 context.md
+!frontend/dist/

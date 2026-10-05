@@ -1,0 +1,641 @@
+{
+  "labels": {
+    "n": 202,
+    "joined": 202,
+    "test": 202,
+    "dev": 0,
+    "file": "fresh2_labels.jsonl",
+    "annotators": [
+      "deepak (human, quick check given in chat)"
+    ],
+    "kind": "human gold labels"
+  },
+  "note": "population = corpus-level estimates (stratified sampling, see eval/gold_eval.py); on_sample = metrics on the labelled test items, which over-represent rare classes by design. This is the full 11-class gold result, distinct from the 7-class validation-proxy result in event_selective.json.",
+  "population_test": {
+    "Credit Event": {
+      "precision": 0.6667,
+      "precision_ci95_approx": [
+        0.3,
+        0.9032
+      ],
+      "predicted_n": 6,
+      "recall_weighted": 0.1623,
+      "true_items_found": 6
+    },
+    "Geopolitical": {
+      "precision": 0.7,
+      "precision_ci95_approx": [
+        0.481,
+        0.8545
+      ],
+      "predicted_n": 20,
+      "recall_weighted": 0.3979,
+      "true_items_found": 16
+    },
+    "Macroeconomic": {
+      "precision": 0.8,
+      "precision_ci95_approx": [
+        0.584,
+        0.9193
+      ],
+      "predicted_n": 20,
+      "recall_weighted": 0.6541,
+      "true_items_found": 24
+    },
+    "Merger/Acquisition": {
+      "precision": 0.6667,
+      "precision_ci95_approx": [
+        0.4171,
+        0.8482
+      ],
+      "predicted_n": 15,
+      "recall_weighted": 1.0,
+      "true_items_found": 10
+    },
+    "Regulatory/Legal": {
+      "precision": 0.9894,
+      "precision_ci95_approx": [
+        0.8513,
+        1.0
+      ],
+      "predicted_n": 22,
+      "recall_weighted": 0.6265,
+      "true_items_found": 24
+    },
+    "Cyber/Operational": {
+      "precision": 1.0,
+      "precision_ci95_approx": [
+        0.6756,
+        1.0
+      ],
+      "predicted_n": 8,
+      "recall_weighted": 0.2702,
+      "true_items_found": 15
+    },
+    "Natural Disaster/Supply Chain": {
+      "precision": 0.6667,
+      "precision_ci95_approx": [
+        0.3,
+        0.9032
+      ],
+      "predicted_n": 6,
+      "recall_weighted": 0.9009,
+      "true_items_found": 5
+    },
+    "Earnings": {
+      "precision": 1.0,
+      "precision_ci95_approx": [
+        0.7225,
+        1.0
+      ],
+      "predicted_n": 10,
+      "recall_weighted": 0.2845,
+      "true_items_found": 13
+    },
+    "Management Change": {
+      "precision": 0.125,
+      "precision_ci95_approx": [
+        0.0224,
+        0.4709
+      ],
+      "predicted_n": 8,
+      "recall_weighted": 1.0,
+      "true_items_found": 1
+    },
+    "Product Launch": {
+      "precision": 0.55,
+      "precision_ci95_approx": [
+        0.3421,
+        0.7418
+      ],
+      "predicted_n": 20,
+      "recall_weighted": 0.6047,
+      "true_items_found": 17
+    },
+    "Other": {
+      "precision": 0.7799,
+      "precision_ci95_approx": [
+        0.6629,
+        0.8594
+      ],
+      "predicted_n": 67,
+      "recall_weighted": 0.9408,
+      "true_items_found": 71
+    }
+  },
+  "on_sample_test": {
+    "n": 202,
+    "accuracy": 0.703,
+    "macro_f1": 0.6925,
+    "weighted_f1": 0.7117,
+    "classes_with_support": 11,
+    "per_class": {
+      "Credit Event": {
+        "precision": 0.6667,
+        "recall": 0.6667,
+        "f1": 0.6667,
+        "support": 6,
+        "predicted": 6
+      },
+      "Cyber/Operational": {
+        "precision": 1.0,
+        "recall": 0.5333,
+        "f1": 0.6957,
+        "support": 15,
+        "predicted": 8
+      },
+      "Earnings": {
+        "precision": 1.0,
+        "recall": 0.7692,
+        "f1": 0.8696,
+        "support": 13,
+        "predicted": 10
+      },
+      "Geopolitical": {
+        "precision": 0.7,
+        "recall": 0.875,
+        "f1": 0.7778,
+        "support": 16,
+        "predicted": 20
+      },
+      "Macroeconomic": {
+        "precision": 0.8,
+        "recall": 0.6667,
+        "f1": 0.7273,
+        "support": 24,
+        "predicted": 20
+      },
+      "Management Change": {
+        "precision": 0.125,
+        "recall": 1.0,
+        "f1": 0.2222,
+        "support": 1,
+        "predicted": 8
+      },
+      "Merger/Acquisition": {
+        "precision": 0.6667,
+        "recall": 1.0,
+        "f1": 0.8,
+        "support": 10,
+        "predicted": 15
+      },
+      "Natural Disaster/Supply Chain": {
+        "precision": 0.6667,
+        "recall": 0.8,
+        "f1": 0.7273,
+        "support": 5,
+        "predicted": 6
+      },
+      "Other": {
+        "precision": 0.6418,
+        "recall": 0.6056,
+        "f1": 0.6232,
+        "support": 71,
+        "predicted": 67
+      },
+      "Product Launch": {
+        "precision": 0.55,
+        "recall": 0.6471,
+        "f1": 0.5946,
+        "support": 17,
+        "predicted": 20
+      },
+      "Regulatory/Legal": {
+        "precision": 0.9545,
+        "recall": 0.875,
+        "f1": 0.913,
+        "support": 24,
+        "predicted": 22
+      }
+    },
+    "confusion_true_by_pred": {
+      "Credit Event": {
+        "Credit Event": 4,
+        "Macroeconomic": 1,
+        "Other": 1
+      },
+      "Cyber/Operational": {
+        "Other": 7,
+        "Cyber/Operational": 8
+      },
+      "Earnings": {
+        "Geopolitical": 1,
+        "Earnings": 10,
+        "Macroeconomic": 1,
+        "Other": 1
+      },
+      "Geopolitical": {
+        "Geopolitical": 14,
+        "Other": 1,
+        "Regulatory/Legal": 1
+      },
+      "Macroeconomic": {
+        "Macroeconomic": 16,
+        "Geopolitical": 2,
+        "Credit Event": 1,
+        "Other": 4,
+        "Natural Disaster/Supply Chain": 1
+      },
+      "Management Change": {
+        "Management Change": 1
+      },
+      "Merger/Acquisition": {
+        "Merger/Acquisition": 10
+      },
+      "Natural Disaster/Supply Chain": {
+        "Natural Disaster/Supply Chain": 4,
+        "Other": 1
+      },
+      "Other": {
+        "Management Change": 7,
+        "Other": 43,
+        "Geopolitical": 3,
+        "Merger/Acquisition": 5,
+        "Product Launch": 9,
+        "Natural Disaster/Supply Chain": 1,
+        "Macroeconomic": 2,
+        "Credit Event": 1
+      },
+      "Product Launch": {
+        "Other": 6,
+        "Product Launch": 11
+      },
+      "Regulatory/Legal": {
+        "Regulatory/Legal": 21,
+        "Other": 3
+      }
+    }
+  },
+  "entity_accuracy_test": 0.703,
+  "sentiment_accuracy_test": null,
+  "factuality_accuracy_test": null,
+  "thresholds": {
+    "current": {
+      "min_p": 0.3,
+      "verifier_min_p": 0.2
+    },
+    "sweep_dev": [],
+    "sweep_test_for_reference_only": [
+      {
+        "min_p": 0.1,
+        "verifier_min_p": null,
+        "coverage": 0.8121,
+        "precision": 0.6777,
+        "recall": 0.8913,
+        "f1": 0.77,
+        "false_positive_rate": 0.5439
+      },
+      {
+        "min_p": 0.1,
+        "verifier_min_p": 0.05,
+        "coverage": 0.7785,
+        "precision": 0.6897,
+        "recall": 0.8696,
+        "f1": 0.7692,
+        "false_positive_rate": 0.5263
+      },
+      {
+        "min_p": 0.1,
+        "verifier_min_p": 0.1,
+        "coverage": 0.745,
+        "precision": 0.7027,
+        "recall": 0.8478,
+        "f1": 0.7685,
+        "false_positive_rate": 0.4737
+      },
+      {
+        "min_p": 0.1,
+        "verifier_min_p": 0.2,
+        "coverage": 0.6913,
+        "precision": 0.6893,
+        "recall": 0.7717,
+        "f1": 0.7282,
+        "false_positive_rate": 0.4561
+      },
+      {
+        "min_p": 0.1,
+        "verifier_min_p": 0.3,
+        "coverage": 0.6376,
+        "precision": 0.7053,
+        "recall": 0.7283,
+        "f1": 0.7166,
+        "false_positive_rate": 0.4211
+      },
+      {
+        "min_p": 0.15,
+        "verifier_min_p": null,
+        "coverage": 0.8121,
+        "precision": 0.6777,
+        "recall": 0.8913,
+        "f1": 0.77,
+        "false_positive_rate": 0.5439
+      },
+      {
+        "min_p": 0.15,
+        "verifier_min_p": 0.05,
+        "coverage": 0.7785,
+        "precision": 0.6897,
+        "recall": 0.8696,
+        "f1": 0.7692,
+        "false_positive_rate": 0.5263
+      },
+      {
+        "min_p": 0.15,
+        "verifier_min_p": 0.1,
+        "coverage": 0.745,
+        "precision": 0.7027,
+        "recall": 0.8478,
+        "f1": 0.7685,
+        "false_positive_rate": 0.4737
+      },
+      {
+        "min_p": 0.15,
+        "verifier_min_p": 0.2,
+        "coverage": 0.6913,
+        "precision": 0.6893,
+        "recall": 0.7717,
+        "f1": 0.7282,
+        "false_positive_rate": 0.4561
+      },
+      {
+        "min_p": 0.15,
+        "verifier_min_p": 0.3,
+        "coverage": 0.6376,
+        "precision": 0.7053,
+        "recall": 0.7283,
+        "f1": 0.7166,
+        "false_positive_rate": 0.4211
+      },
+      {
+        "min_p": 0.2,
+        "verifier_min_p": null,
+        "coverage": 0.8054,
+        "precision": 0.6833,
+        "recall": 0.8913,
+        "f1": 0.7736,
+        "false_positive_rate": 0.5263
+      },
+      {
+        "min_p": 0.2,
+        "verifier_min_p": 0.05,
+        "coverage": 0.7718,
+        "precision": 0.6957,
+        "recall": 0.8696,
+        "f1": 0.7729,
+        "false_positive_rate": 0.5088
+      },
+      {
+        "min_p": 0.2,
+        "verifier_min_p": 0.1,
+        "coverage": 0.7383,
+        "precision": 0.7091,
+        "recall": 0.8478,
+        "f1": 0.7723,
+        "false_positive_rate": 0.4561
+      },
+      {
+        "min_p": 0.2,
+        "verifier_min_p": 0.2,
+        "coverage": 0.6846,
+        "precision": 0.6961,
+        "recall": 0.7717,
+        "f1": 0.732,
+        "false_positive_rate": 0.4386
+      },
+      {
+        "min_p": 0.2,
+        "verifier_min_p": 0.3,
+        "coverage": 0.6309,
+        "precision": 0.7128,
+        "recall": 0.7283,
+        "f1": 0.7204,
+        "false_positive_rate": 0.4035
+      },
+      {
+        "min_p": 0.25,
+        "verifier_min_p": null,
+        "coverage": 0.7584,
+        "precision": 0.6991,
+        "recall": 0.8587,
+        "f1": 0.7707,
+        "false_positive_rate": 0.4737
+      },
+      {
+        "min_p": 0.25,
+        "verifier_min_p": 0.05,
+        "coverage": 0.7383,
+        "precision": 0.7,
+        "recall": 0.837,
+        "f1": 0.7624,
+        "false_positive_rate": 0.4737
+      },
+      {
+        "min_p": 0.25,
+        "verifier_min_p": 0.1,
+        "coverage": 0.7248,
+        "precision": 0.7037,
+        "recall": 0.8261,
+        "f1": 0.76,
+        "false_positive_rate": 0.4561
+      },
+      {
+        "min_p": 0.25,
+        "verifier_min_p": 0.2,
+        "coverage": 0.6711,
+        "precision": 0.69,
+        "recall": 0.75,
+        "f1": 0.7188,
+        "false_positive_rate": 0.4386
+      },
+      {
+        "min_p": 0.25,
+        "verifier_min_p": 0.3,
+        "coverage": 0.6174,
+        "precision": 0.7065,
+        "recall": 0.7065,
+        "f1": 0.7065,
+        "false_positive_rate": 0.4035
+      },
+      {
+        "min_p": 0.3,
+        "verifier_min_p": null,
+        "coverage": 0.7114,
+        "precision": 0.717,
+        "recall": 0.8261,
+        "f1": 0.7677,
+        "false_positive_rate": 0.4386
+      },
+      {
+        "min_p": 0.3,
+        "verifier_min_p": 0.05,
+        "coverage": 0.698,
+        "precision": 0.7115,
+        "recall": 0.8043,
+        "f1": 0.7551,
+        "false_positive_rate": 0.4386
+      },
+      {
+        "min_p": 0.3,
+        "verifier_min_p": 0.1,
+        "coverage": 0.6846,
+        "precision": 0.7157,
+        "recall": 0.7935,
+        "f1": 0.7526,
+        "false_positive_rate": 0.4211
+      },
+      {
+        "min_p": 0.3,
+        "verifier_min_p": 0.2,
+        "coverage": 0.6376,
+        "precision": 0.6947,
+        "recall": 0.7174,
+        "f1": 0.7059,
+        "false_positive_rate": 0.4211
+      },
+      {
+        "min_p": 0.3,
+        "verifier_min_p": 0.3,
+        "coverage": 0.5839,
+        "precision": 0.7126,
+        "recall": 0.6739,
+        "f1": 0.6927,
+        "false_positive_rate": 0.386
+      },
+      {
+        "min_p": 0.35,
+        "verifier_min_p": null,
+        "coverage": 0.5973,
+        "precision": 0.7416,
+        "recall": 0.7174,
+        "f1": 0.7293,
+        "false_positive_rate": 0.3158
+      },
+      {
+        "min_p": 0.35,
+        "verifier_min_p": 0.05,
+        "coverage": 0.5839,
+        "precision": 0.7356,
+        "recall": 0.6957,
+        "f1": 0.7151,
+        "false_positive_rate": 0.3158
+      },
+      {
+        "min_p": 0.35,
+        "verifier_min_p": 0.1,
+        "coverage": 0.5772,
+        "precision": 0.7326,
+        "recall": 0.6848,
+        "f1": 0.7079,
+        "false_positive_rate": 0.3158
+      },
+      {
+        "min_p": 0.35,
+        "verifier_min_p": 0.2,
+        "coverage": 0.5302,
+        "precision": 0.7089,
+        "recall": 0.6087,
+        "f1": 0.655,
+        "false_positive_rate": 0.3158
+      },
+      {
+        "min_p": 0.35,
+        "verifier_min_p": 0.3,
+        "coverage": 0.4966,
+        "precision": 0.7297,
+        "recall": 0.587,
+        "f1": 0.6506,
+        "false_positive_rate": 0.2982
+      },
+      {
+        "min_p": 0.4,
+        "verifier_min_p": null,
+        "coverage": 0.5101,
+        "precision": 0.7763,
+        "recall": 0.6413,
+        "f1": 0.7024,
+        "false_positive_rate": 0.2105
+      },
+      {
+        "min_p": 0.4,
+        "verifier_min_p": 0.05,
+        "coverage": 0.4966,
+        "precision": 0.7703,
+        "recall": 0.6196,
+        "f1": 0.6867,
+        "false_positive_rate": 0.2105
+      },
+      {
+        "min_p": 0.4,
+        "verifier_min_p": 0.1,
+        "coverage": 0.4899,
+        "precision": 0.7671,
+        "recall": 0.6087,
+        "f1": 0.6788,
+        "false_positive_rate": 0.2105
+      },
+      {
+        "min_p": 0.4,
+        "verifier_min_p": 0.2,
+        "coverage": 0.443,
+        "precision": 0.7424,
+        "recall": 0.5326,
+        "f1": 0.6203,
+        "false_positive_rate": 0.2105
+      },
+      {
+        "min_p": 0.4,
+        "verifier_min_p": 0.3,
+        "coverage": 0.4161,
+        "precision": 0.7742,
+        "recall": 0.5217,
+        "f1": 0.6234,
+        "false_positive_rate": 0.193
+      },
+      {
+        "min_p": 0.5,
+        "verifier_min_p": null,
+        "coverage": 0.4027,
+        "precision": 0.8167,
+        "recall": 0.5326,
+        "f1": 0.6447,
+        "false_positive_rate": 0.1579
+      },
+      {
+        "min_p": 0.5,
+        "verifier_min_p": 0.05,
+        "coverage": 0.3893,
+        "precision": 0.8103,
+        "recall": 0.5109,
+        "f1": 0.6267,
+        "false_positive_rate": 0.1579
+      },
+      {
+        "min_p": 0.5,
+        "verifier_min_p": 0.1,
+        "coverage": 0.3826,
+        "precision": 0.807,
+        "recall": 0.5,
+        "f1": 0.6174,
+        "false_positive_rate": 0.1579
+      },
+      {
+        "min_p": 0.5,
+        "verifier_min_p": 0.2,
+        "coverage": 0.3624,
+        "precision": 0.7963,
+        "recall": 0.4674,
+        "f1": 0.589,
+        "false_positive_rate": 0.1579
+      },
+      {
+        "min_p": 0.5,
+        "verifier_min_p": 0.3,
+        "coverage": 0.349,
+        "precision": 0.8077,
+        "recall": 0.4565,
+        "f1": 0.5833,
+        "false_positive_rate": 0.1579
+      }
+    ]
+  }
+}

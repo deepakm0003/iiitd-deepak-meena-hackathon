@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { api, useApi, type Signal, type StressRun, type StressRunSummary, type Trace } from "../app/api";
-import { ASSET_LABEL, FACTOR_LABEL, SOURCE_LABEL } from "../app/format";
+import { ASSET_LABEL, FACTOR_LABEL, SOURCE_LABEL, nowMs, setServerTime } from "../app/format";
 
 // Everything the public pages show about "a real trace" comes from the engine's API at page load: the most
 // severe automatic stress test of the last 7 days (or, if there is none, the Western Alliance 8-K of 2023),
@@ -136,8 +136,13 @@ async function tryCase(run: StressRunSummary, live: boolean): Promise<CaseData |
 }
 
 async function loadCase(): Promise<CaseData> {
+  try {
+    setServerTime((await api<{ time: string }>("/health")).time); // demo mode: the snapshot's time
+  } catch {
+    /* keep the local clock */
+  }
   const runs = await api<StressRunSummary[]>("/stress-runs?limit=200");
-  const weekAgo = Date.now() - 7 * 86400e3;
+  const weekAgo = nowMs() - 7 * 86400e3;
   const recent = runs
     .filter((r) => r.trigger === "auto" && r.event_id && r.signal_available !== false && r.pnl_total < 0 && new Date(r.created_at).getTime() > weekAgo)
     .sort((a, b) => a.pnl_total - b.pnl_total);

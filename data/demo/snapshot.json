@@ -1,0 +1,11 @@
+{
+  "exported_at": "2026-10-05T02:44:28.375284+00:00",
+  "days": 14,
+  "counts": {
+    "signals": 4661,
+    "stress_runs": 20,
+    "prices_daily": 111165
+  },
+  "size_mb": 34.7,
+  "gz_mb": 5.4
+}

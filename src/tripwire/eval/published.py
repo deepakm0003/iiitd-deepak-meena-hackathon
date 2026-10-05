@@ -15,6 +15,8 @@ FILES = {
     "locked_before": "gold_eval_baseline.json",
     "fresh": "gold_eval_fresh.json",
     "fresh_tiers": "fresh_tier_precision.json",
+    "fresh2": "gold_eval_fresh2.json",
+    "fresh2_tiers": "fresh2_tier_precision.json",
     "impact": "impact_validation.json",
     "agreement": "silver_agreement.json",
 }
@@ -44,8 +46,9 @@ def published_metrics(root: Path) -> dict:
     data = {k: _load(results / name) for k, name in FILES.items()}
     impact = (data["impact"] or {}).get("test", {}).get("final")
     agreement = data["agreement"] or {}
-    labels = sum(len((root / "data" / "gold" / f).read_text(encoding="utf-8").splitlines())
-                 for f in ("human_check.jsonl", "fresh_labels.jsonl") if (root / "data" / "gold" / f).exists())
+    gold_dir = root / "data" / "gold"
+    label_files = [gold_dir / "human_check.jsonl", *sorted(gold_dir.glob("fresh*_labels.jsonl"))]
+    labels = sum(len(f.read_text(encoding="utf-8").splitlines()) for f in label_files if f.exists())
     register = root / "config" / "assumptions_register.yaml"
     assumptions = (len(set(re.findall(r"\bA-\d+\b", register.read_text(encoding="utf-8"))))
                    if register.exists() else None)
@@ -56,7 +59,12 @@ def published_metrics(root: Path) -> dict:
         "event_classes": classes,
         "assumptions": assumptions,
         "locked_test": {"before": _event(data["locked_before"]), "after": _event(data["locked_after"])},
-        "fresh_test": {**(_event(data["fresh"]) or {}), "tiers": data["fresh_tiers"]} if data["fresh"] else None,
+        # the latest fresh out-of-time test is the headline; the earlier one is kept for comparison
+        "fresh_test": ({**_event(data["fresh2"]), "tiers": data["fresh2_tiers"], "set": "fresh2"} if data["fresh2"]
+                       else {**(_event(data["fresh"]) or {}), "tiers": data["fresh_tiers"], "set": "fresh"}
+                       if data["fresh"] else None),
+        "fresh_test_previous": ({**_event(data["fresh"]), "tiers": data["fresh_tiers"]}
+                                if data["fresh2"] and data["fresh"] else None),
         "impact": None if not impact else {
             "n": impact["n"], "auc": impact["auc_large_move"], "spearman": impact["spearman"],
             "brier": impact["probability"]["brier"], "brier_base_rate": impact["probability"]["brier_base_rate"],

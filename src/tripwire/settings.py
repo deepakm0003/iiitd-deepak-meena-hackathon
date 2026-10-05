@@ -4,6 +4,7 @@ Precedence (highest first): explicit arguments, environment variables, .env file
 field defaults. Secrets (API keys) are read only from the environment or .env, never from YAML.
 """
 
+from datetime import datetime
 from functools import lru_cache
 from pathlib import Path
 from typing import Literal
@@ -37,6 +38,8 @@ class Settings(BaseSettings):
     redis_url: str = "redis://localhost:6379/0"
     data_dir: Path = ROOT / "data"
     var_dir: Path = ROOT / "var"
+    # Demo mode: treat this time as "now" (the snapshot export time), so "last 24 h / 7 days" views stay meaningful.
+    as_of: datetime | None = None
     # Some networks (e.g. the college server) advertise IPv6 but cannot route it; Python then waits for each
     # IPv6 attempt to time out. TRIPWIRE_FORCE_IPV4=true makes HTTP and websocket clients use IPv4 only.
     force_ipv4: bool = False

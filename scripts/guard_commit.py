@@ -10,6 +10,8 @@ from datetime import datetime
 from pathlib import Path, PurePosixPath
 
 MAX_BYTES = 5 * 1024 * 1024
+# The compressed demo snapshot (scripts/make_demo_snapshot.py) is the one large file meant to be committed.
+LARGE_ALLOWED = {"data/demo/tripwire_demo.db.gz": 15 * 1024 * 1024}
 
 BLOCKED_NAMES = re.compile(
     r"(^|/)(users_data|cards_data|transactions_data|train_fraud_labels)[^/]*$|(^|/)\.env$",
@@ -66,8 +68,9 @@ def check_content(path: Path) -> list[str]:
         size = path.stat().st_size
     except OSError:
         return reasons  # deleted in this commit
-    if size > MAX_BYTES:
-        return [f"file larger than {MAX_BYTES // (1024 * 1024)} MB"]
+    limit = next((v for k, v in LARGE_ALLOWED.items() if path.as_posix().endswith(k)), MAX_BYTES)
+    if size > limit:
+        return [f"file larger than {limit // (1024 * 1024)} MB"]
     raw = path.read_bytes()
     if b"\x00" in raw[:4096]:
         return reasons  # binary; size check is enough

@@ -10,6 +10,7 @@ import { TraceView } from "./SignalDetail";
 
 interface Status {
   ready: boolean;
+  error?: string | null;
   max_batch: number;
   reads: string;
 }
@@ -48,6 +49,9 @@ export default function Analyze() {
         right={<ModelStatus status={status.data} error={status.error} />}
       />
 
+      {status.data?.error && (
+        <div className="mb-4 rounded-xl border border-gold/40 bg-gold/10 px-5 py-4 text-sm text-bone">{status.data.error}</div>
+      )}
       <div className="mb-6 flex items-start gap-3 rounded-xl border border-ember/40 bg-ember/10 px-5 py-4 text-sm">
         <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-ember-bright" />
         <div className="text-bone/90">
@@ -94,7 +98,7 @@ function ModelStatus({ status, error }: { status?: Status; error?: string }) {
   return (
     <span className="inline-flex items-center gap-2 rounded-full border border-line bg-ink-2 px-3 py-1.5 text-xs">
       <span className={`h-2 w-2 rounded-full ${error ? "bg-ember-bright" : ready ? "bg-sage" : "animate-pulse bg-gold"}`} />
-      {error ? "Engine unreachable" : ready ? "Models loaded" : "Loading models (about a minute after a restart)…"}
+      {error ? "Engine unreachable" : status?.error ? "Models not installed" : ready ? "Models loaded" : "Loading models (first run downloads them)…"}
     </span>
   );
 }

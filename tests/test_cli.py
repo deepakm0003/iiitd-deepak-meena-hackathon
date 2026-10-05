@@ -32,6 +32,6 @@ def test_collect_once_in_replay_mode_needs_no_network_or_keys(tmp_path):
     assert "replay" in result.stdout
 
 
-def test_unimplemented_commands_say_which_part(tmp_path):
-    result = run_cli("demo", tmp_path=tmp_path)
-    assert result.returncode == 2 and "Part 6" in result.stderr
+def test_demo_command_is_documented(tmp_path):
+    result = run_cli("demo", "--help", tmp_path=tmp_path)
+    assert result.returncode == 0 and "snapshot" in result.stdout and "--no-analyze" in result.stdout

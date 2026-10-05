@@ -3,7 +3,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { Activity, ArrowRight, BarChart3, Download, Layers, ShieldAlert } from "lucide-react";
 import { useApi, type OpsStatus, type Signal, type SignalStats, type StressRunSummary, type Watchlist } from "../api";
-import { EVENT_TYPES, RISK_STYLE, SHORT_TYPE, SOURCE_LABEL, TYPE_COLOR, money, signed, timeAgo } from "../format";
+import { EVENT_TYPES, RISK_STYLE, nowMs, SHORT_TYPE, SOURCE_LABEL, TYPE_COLOR, money, signed, timeAgo } from "../format";
 import { ErrorNote, ImpactRing, Kpi, PageHeader, Panel, RiskChip, Skeleton, Tag, TypeChip } from "../ui";
 
 const RISK_FILTERS = ["All", "High+", "Medium+"] as const;
@@ -42,7 +42,7 @@ export default function Signals() {
     return list;
   }, [feed.data, q, tickerLike, type, risk, confirmedOnly]);
 
-  const weekRuns = (runs.data ?? []).filter((r) => Date.now() - new Date(r.created_at).getTime() < 7 * 86400e3);
+  const weekRuns = (runs.data ?? []).filter((r) => nowMs() - new Date(r.created_at).getTime() < 7 * 86400e3);
   const autoRuns = weekRuns.filter((r) => r.trigger === "auto").length;
   const dayRisk = day.data ? day.data.total - (day.data.by_type.Other ?? 0) : null;
   const highWeek = week.data ? (week.data.by_risk.High ?? 0) + (week.data.by_risk.Critical ?? 0) : null;
@@ -59,7 +59,7 @@ export default function Signals() {
   return (
     <>
       <PageHeader
-        eyebrow={ops.data ? `Monitoring ${ops.data.store.documents.toLocaleString()} documents · ${ops.data.store.signals.toLocaleString()} signals` : "Monitoring"}
+        eyebrow={!ops.data ? "Monitoring" : ops.data.store.documents ? `Monitoring ${ops.data.store.documents.toLocaleString()} documents · ${ops.data.store.signals.toLocaleString()} signals` : `Demo snapshot · ${ops.data.store.signals.toLocaleString()} recorded signals`}
         title="Live signals"
         right={
           <button

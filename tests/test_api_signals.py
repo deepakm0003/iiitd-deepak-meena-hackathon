@@ -121,4 +121,5 @@ def test_published_metrics_come_from_the_result_files():
     m = published_metrics(root)
     assert m["event_classes"] == 11 and m["assumptions"] >= 28 and m["human_labels"] >= 296
     assert 0 < m["locked_test"]["after"]["accuracy"] < 1 and 0.5 < m["impact"]["auc"] < 1
-    assert m["fresh_test"]["n"] == 182 and "confirmed" in m["fresh_test"]["tiers"]
+    assert m["fresh_test"]["n"] == 202 and "confirmed" in m["fresh_test"]["tiers"]
+    assert m["fresh_test_previous"]["n"] == 182
