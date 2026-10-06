@@ -311,6 +311,17 @@ def test_bank_run_needs_an_actual_run(rules, text, fires):
     assert any(e.source == "rule:bank_run" for e in rules.evidence(d(text))) is fires
 
 
+@pytest.mark.parametrize("text, rule, fires", [
+    ("Buyers flood in as stocks rally", "rule:disaster", False),
+    ("Floods hit Texas refineries", "rule:disaster", True),
+    ("Fund launches 8.6% yield monthly dividend ETF", "rule:launch", False),
+    ("Hyundai debuts new EV at the Seoul auto show", "rule:launch", False),
+    ("Apple unveils new iPhone with AI features", "rule:launch", True),
+])
+def test_round4_excludes(rules, text, rule, fires):
+    assert any(e.source == rule for e in rules.evidence(d(text))) is fires
+
+
 def test_rule_exclude_and_title_scope():
     from tripwire.config import load_yaml
 

@@ -387,6 +387,25 @@ Cyber/Operational recall 0.53, Product Launch precision 0.55. The confirmed tier
 fired on "launches 8.6% yield monthly dividend" and "auto show debuts", `rule:disaster` on "buyers flood in". These are
 fixable rule bugs, but a fix can only be claimed after another fresh set. This fresh set is now spent (development data).
 
+## Round 4 (2026-10-05): rule fixes, all 680 labels, end-to-end fine-tune tried
+
+5-fold CV over all 680 human labels (both fresh sets are now development data), whole pipeline scored, e5-large
+encoder, recipe v3 + human labels x3, PL/M&A bar 0.5 (`scripts/round3_experiment.py`,
+`docs/results/round3_experiment_e5-large-v2_n680.json`; `scripts/finetune_experiment.py`,
+`docs/results/finetune_experiment_e5-large-v2_R4.json`).
+
+| Variant | Accuracy | Macro-F1 | Confirmed tier |
+|---|---|---|---|
+| R1 rules (shipped in round 3), frozen encoder + head | 0.752 | 0.755 | 68/75 |
+| **R4 rules, frozen encoder + head (shipped)** | **0.756** | **0.758** | **68/72** |
+| R4 rules, e5-large fine-tuned end to end (3 epochs, lr 2e-5) | 0.750 | 0.759 | 68/72 |
+
+- R4 = two excludes: `rule:disaster` ignores market slang ("buyers/money/orders flood in"; 4/5 -> 4/4) and
+  `rule:launch` ignores funds, dividends, ETFs, note offerings and trade/auto-show debuts (24/27 -> 24/25).
+- Fine-tuning the whole encoder did not beat the frozen encoder on accuracy (and needs a GPU at inference), so it
+  was not shipped (rule: a switch must win on both accuracy and macro-F1).
+- The head was retrained on all 680 human labels. The gain must still be confirmed on a third fresh set.
+
 ### Still open
 - Consistency review of the first 50 human labels (made before the definitions card; 15 conflict with an explicit
   card rule), to be decided by the labeller.

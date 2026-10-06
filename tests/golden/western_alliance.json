@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-04T04:15:39.914344+00:00",
+ "generated_at": "2026-10-05T12:40:44.401809+00:00",
  "provenance": "OBSERVED source document (SEC 8-K, public); outputs recorded from the pipeline as deployed",
  "document": {
   "raw_id": 5818,
@@ -104,7 +104,7 @@
     "H_historical_reaction": 0.1295
    },
    "p_large_move": 0.442,
-   "config_hash": "sha256:9a79acab66a0f75a"
+   "config_hash": "sha256:634b7938b2e9c666"
   },
   "p_large_move": 0.442,
   "corroboration": {

@@ -106,8 +106,8 @@ a batch of headlines or an uploaded portfolio. Nothing is stored, and the user d
   public names (bonds, loans, equity, swaps, an index put). Exposures are synthetic; every parameter is an assumption
   in the register.
 - **Evaluation data:**
-  - 478 human-labelled items (296 earlier + 182 from a fresh out-of-time set, [data/gold](data/gold)), labelled with
-    [docs/labeling_guide.md](docs/labeling_guide.md);
+  - 680 human-labelled items (296 earlier + 182 and 202 from two fresh out-of-time sets, [data/gold](data/gold)),
+    labelled with [docs/labeling_guide.md](docs/labeling_guide.md);
   - LLM-assisted (silver) labels are used only for training and agreement checks, never to report accuracy:
     [docs/ai_usage.md](docs/ai_usage.md).
 
@@ -165,16 +165,17 @@ history, including negative results, is in [docs/IMPROVEMENT_LOG.md](docs/IMPROV
 |---|---|---|---|---|
 | Locked human test, evaluated once (before -> after round 2) | 212 | 61.8% -> **66.0%** | 0.59 -> **0.64** | 75.9% |
 | Fresh out-of-time test 1 (articles after the round-2 freeze, evaluated once) | 182 | 63.2% | 0.61 | 66.5% |
-| **Fresh out-of-time test 2 (articles after the e5 freeze, evaluated once; current model)** | 202 | **70.3%** | **0.69** | **70.3%** |
+| **Fresh out-of-time test 2 (articles after the e5 freeze, evaluated once)** | 202 | **70.3%** | **0.69** | **70.3%** |
 
-On fresh test 2, alerts outside the confirmed tier were 74.4% precise (96/129). A 5-fold cross-validation over the
-earlier 478 human labels estimated 77.0%; the honest out-of-time number is the 70.3% above.
+On fresh test 2, alerts outside the confirmed tier were 74.4% precise (96/129). The current model adds two rule fixes
+found on that test and is retrained on all 680 human labels: 5-fold cross-validation over the 680 labels gives 75.6%
+(75.2% before the fixes). Cross-validation is a development estimate; the honest out-of-time number is the 70.3% above.
 
 ### Impact score
 On 1,003 SEC 8-K filings published after the calibration window:
 - **AUC 0.72** for large abnormal price moves (base rate 19%);
-- Spearman 0.33;
-- Brier score 0.138 against 0.155 for a no-skill forecast.
+- Spearman 0.32;
+- Brier score 0.139 against 0.155 for a no-skill forecast.
 
 ### Sentiment
 Entity-level FinBERT, on the SEntFiN held-out test set:
@@ -191,7 +192,7 @@ Entity-level FinBERT, on the SEntFiN held-out test set:
 - **Nature beats tone:** the bank's own reassuring statement (+0.86 sentiment) still triggers, because the event is
   adverse by nature.
 - **Honest limits** (published in the dashboard's Model trust page):
-  - Credit Event recall is the weakest area;
+  - the weakest classes on fresh test 2 are Cyber/Operational (recall 0.53) and Product Launch (precision 0.55);
   - the "confirmed" alert tier was 6/11 precise on fresh data, below its development estimate;
   - Impact is validated only on firm-specific filings.
 

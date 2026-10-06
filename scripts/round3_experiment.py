@@ -38,8 +38,9 @@ from tripwire.settings import get_settings
 
 ROOT = Path(__file__).resolve().parents[1]
 GOLD = ROOT / "data" / "gold"
-LABEL_FILES = ("human_check.jsonl", "fresh_labels.jsonl")
-CANDIDATE_FILES = ("candidates.jsonl", "fresh_candidates.jsonl")
+LABEL_FILES = ("human_check.jsonl", "fresh_labels.jsonl", "fresh2_labels.jsonl")
+CANDIDATE_FILES = ("candidates.jsonl", "fresh_candidates.jsonl", "fresh2_candidates.jsonl")
+OUT_TAG = os.environ.get("OUT_TAG", "")  # appended to the result file name
 ENCODER = os.environ.get("ENCODER", "BAAI/bge-base-en-v1.5")  # e.g. ENCODER=BAAI/bge-large-en-v1.5
 FOLDS = 5
 LEGAL = (r"\b(supreme court|court|lawsuits?|sues|sued|suing|litigation|trial|verdict|judge|ruling|plaintiffs?|"
@@ -49,6 +50,12 @@ RULE_VARIANTS = {
     "R1": {"disaster": {"exclude": LEGAL}},
     "R2": {"macro_data": {"scope": "title"}},
     "R3": {"disaster": {"exclude": LEGAL}, "macro_data": {"scope": "title"}},
+    # Round 4 (fresh test 2 errors): "buyers flood in" is not a flood; a dividend, fund or an auto show is not a
+    # product launch.
+    "R4": {"disaster": {"exclude": LEGAL[:-3] + r"|(buyers|investors|money|orders|inflows?|capital|cash|demand|bids)"
+                                   r"\s+flood(s|ed|ing)?)\b"},
+           "launch": {"exclude": r"\b(dividends?|yield|etfs?|funds?|notes due|bond offering|auto show|motor show|"
+                                 r"trade show|expo|exhibition|fair)\b"}},
 }
 WATCH = ("Product Launch", "Merger/Acquisition", "Credit Event", "Macroeconomic", "Other")
 
@@ -193,7 +200,7 @@ def main() -> int:
     for rule_name, head_name, policy_name in itertools.product(RULE_VARIANTS, heads, policies):
         pred, tiers = run(rule_name, head_name, policy_name)
         row = {"rules": rule_name, "head": head_name, "policy": policy_name, "all": scores(pred, y)}
-        for s in ("human", "fresh"):
+        for s in sorted({it["set"] for it in items}):
             idx = [i for i, it in enumerate(items) if it["set"] == s]
             row[s] = scores([pred[i] for i in idx], [y[i] for i in idx])
         conf = [p == t for p, t, tier in zip(pred, y, tiers, strict=True) if tier == "confirmed" and p != "Other"]
@@ -217,7 +224,7 @@ def main() -> int:
            "per_rule_precision": rule_report, "train_v3": td.describe(data), "results": results}
     tag = "" if ENCODER == "BAAI/bge-base-en-v1.5" else "_" + ENCODER.split("/")[-1]
     out["encoder"] = ENCODER
-    path = ROOT / "docs" / "results" / f"round3_experiment{tag}.json"
+    path = ROOT / "docs" / "results" / f"round3_experiment{tag}{OUT_TAG}.json"
     path.write_text(json.dumps(out, indent=2), encoding="utf-8")
     print("wrote", path)
     return 0

@@ -450,8 +450,8 @@ def cmd_eval_gold(args: argparse.Namespace) -> int:
 def cmd_train_head(args: argparse.Namespace) -> int:
     """Train the shipped event head: recipe v3 (repaired Twitter mappings + in-domain examples first) plus every
     human-labelled item (sample weight 3), excluding all labelled candidates and their near-duplicates from the
-    weak-label part. Chosen by 5-fold CV on 478 human labels (docs/results/round3_experiment.json); a NEW fresh
-    test set is the only fair measure of the result."""
+    weak-label part. Chosen by 5-fold CV on 680 human labels (docs/results/round3_experiment_e5-large-v2_n680.json);
+    a NEW fresh test set is the only fair measure of the result."""
     import pickle
     import shutil
     from datetime import UTC, datetime
@@ -473,7 +473,7 @@ def cmd_train_head(args: argparse.Namespace) -> int:
     gold_dir = settings.data_dir / "gold"
     utc = lambda s: datetime.fromisoformat(s).replace(tzinfo=UTC)  # noqa: E731
     exclude = set()
-    for name in ("candidates.jsonl", "fresh_candidates.jsonl"):
+    for name in ("candidates.jsonl", "fresh_candidates.jsonl", "fresh2_candidates.jsonl"):
         exclude |= {c["key"] for c in gold.read_jsonl(gold_dir / name)}
     docs = with_filing_leads(store, store.iter_documents())
     rules, other = td.in_domain_examples(store, docs, exclude)
@@ -500,7 +500,7 @@ def cmd_train_head(args: argparse.Namespace) -> int:
               "train": td.describe(data), "in_domain_rule_examples": len(rules), "opinion_other_examples": len(other),
               "human_labelled_examples": len(human_items), "human_weight": args.human_weight,
               "human_label_files": args.human_labels, "excluded_candidates": len(exclude),
-              "selection": "5-fold CV on 478 human labels, docs/results/round3_experiment.json"}
+              "selection": "5-fold CV on 680 human labels, docs/results/round3_experiment_e5-large-v2_n680.json"}
     out = settings.data_dir.parent / "docs" / "results" / "event_head_training.json"
     out.write_text(json.dumps(report, indent=2), encoding="utf-8")
     print(json.dumps(report, indent=2))
@@ -828,7 +828,7 @@ def main(argv: list[str] | None = None) -> int:
 
     head_cmd = sub.add_parser("train-head", help="train the shipped event head (recipe v3 + human labels)")
     head_cmd.add_argument("--encoder", default="BAAI/bge-base-en-v1.5")
-    head_cmd.add_argument("--human-labels", default="human_check.jsonl,fresh_labels.jsonl",
+    head_cmd.add_argument("--human-labels", default="human_check.jsonl,fresh_labels.jsonl,fresh2_labels.jsonl",
                           help="comma-separated label files in data/gold used as training examples")
     head_cmd.add_argument("--human-weight", type=float, default=3.0)
     head_cmd.set_defaults(func=cmd_train_head)

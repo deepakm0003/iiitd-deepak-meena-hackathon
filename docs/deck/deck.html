@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Tripwire deck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Cormorant+Garamond:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root { --ink:#111111; --ink2:#171717; --ink3:#1f1f1f; --line:#2b2b2b; --bone:#ede9e0; --mute:#9a958b;
+          --gold:#d9b46c; --ember:#b5523a; --emberB:#d0663f; --cream:#f3f0e8; --paper:#faf8f3; --sage:#7fa287; }
+  @page { size: 1920px 1080px; margin: 0; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--ink); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { font-family: Inter, sans-serif; color: var(--bone); }
+  .slide { width: 1920px; height: 1080px; position: relative; overflow: hidden; padding: 96px 120px 90px; page-break-after: always; break-after: page; background: var(--ink); }
+  .slide.cream { background: var(--cream); color: var(--ink); }
+  .eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 18px; letter-spacing: .18em; text-transform: uppercase; color: var(--gold); }
+  .cream .eyebrow { color: #8a6a2c; }
+  h1 { font-weight: 300; font-size: 112px; line-height: 1.0; letter-spacing: -.025em; }
+  h2 { font-weight: 300; font-size: 64px; line-height: 1.06; letter-spacing: -.02em; margin-top: 18px; }
+  h2 em, h1 em { font-style: normal; color: var(--gold); }
+  .serif { font-family: 'Cormorant Garamond', serif; }
+  p.lede { font-size: 28px; line-height: 1.5; color: var(--mute); margin-top: 26px; max-width: 1100px; }
+  .cream p.lede { color: #55524b; }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+  .foot { position: absolute; left: 120px; right: 120px; bottom: 44px; display: flex; justify-content: space-between; font-family: 'JetBrains Mono', monospace; font-size: 15px; letter-spacing: .14em; color: #6d6961; text-transform: uppercase; border-top: 1px solid var(--line); padding-top: 18px; }
+  .cream .foot { border-color: #d8d2c4; color: #8b857a; }
+  .logo { display: inline-flex; align-items: center; gap: 16px; font-weight: 600; letter-spacing: .24em; font-size: 26px; }
+  .card { background: var(--ink2); border: 1px solid var(--line); border-radius: 18px; padding: 36px; }
+  .cream .card { background: var(--paper); border-color: #e2dccd; }
+  .grid { display: grid; gap: 26px; }
+  .k { font-family: 'Cormorant Garamond', serif; font-size: 84px; line-height: 1; color: var(--gold); }
+  .kl { font-size: 20px; color: var(--mute); margin-top: 12px; line-height: 1.35; }
+  .chip { display: inline-block; font-family: 'JetBrains Mono', monospace; font-size: 15px; letter-spacing: .08em; text-transform: uppercase; padding: 5px 12px; border-radius: 6px; border: 1px solid var(--line); color: var(--mute); }
+  .chip.gold { color: var(--gold); border-color: rgba(217,180,108,.5); background: rgba(217,180,108,.08); }
+  .chip.sage { color: var(--sage); border-color: rgba(127,162,135,.5); background: rgba(127,162,135,.08); }
+  .chip.ember { color: var(--emberB); border-color: rgba(208,102,63,.5); background: rgba(208,102,63,.1); }
+  ul.dots { list-style: none; }
+  ul.dots li { position: relative; padding-left: 28px; font-size: 24px; line-height: 1.45; color: #cfcac0; margin-top: 12px; }
+  ul.dots li::before { content: ""; position: absolute; left: 0; top: 14px; width: 9px; height: 9px; border-radius: 50%; background: var(--gold); }
+  .cream ul.dots li { color: #3b3933; }
+  table { border-collapse: collapse; width: 100%; font-size: 22px; }
+  th { text-align: left; font-family: 'JetBrains Mono', monospace; font-size: 15px; letter-spacing: .12em; text-transform: uppercase; color: var(--gold); padding: 14px 18px; border-bottom: 1px solid var(--line); font-weight: 500; }
+  td { padding: 16px 18px; border-bottom: 1px solid var(--line); color: #d9d4ca; }
+  td.n { font-family: 'JetBrains Mono', monospace; color: var(--bone); }
+  tr.hl td { background: rgba(217,180,108,.07); color: var(--bone); }
+  .wordmark { position: absolute; right: -30px; bottom: -70px; font-weight: 700; font-size: 380px; letter-spacing: -.06em; color: #1a1a1a; line-height: 1; }
+  svg text { font-family: Inter, sans-serif; }
+  .appendix-note { display: none; }
+</style>
+</head>
+<body>
+
+<!-- 1 · COVER + PROBLEM -->
+<section class="slide">
+  <div class="wordmark">tripwire</div>
+  <div class="logo"><svg width="48" height="30" viewBox="0 0 32 20"><path d="M1 11h7l3-8 5 15 3-7h12" fill="none" stroke="#d9b46c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>TRIPWIRE</div>
+  <div class="grid" style="grid-template-columns:1.15fr 1fr; gap:80px; margin-top:70px; align-items:start">
+    <div>
+      <div class="eyebrow">AI / NLP risk engine · S&amp;P Global × CRISIL Code to Connect 2026</div>
+      <h1 style="margin-top:30px;font-size:100px">Engineering<br/>the clarity<br/><em>to act.</em></h1>
+      <p class="lede" style="font-size:26px">News, SEC filings, central-bank releases and social posts in; explainable risk signals and stress-tested capital impact out. Every number traceable to its source.</p>
+    </div>
+    <div class="card" style="margin-top:20px">
+      <div class="eyebrow" style="color:var(--emberB)">The problem</div>
+      <ul class="dots" style="margin-top:8px">
+        <li><b style="color:var(--bone)">Noise:</b> thousands of items a day; the few that matter (a deposit run, a default, a sanction) look like everything else.</li>
+        <li><b style="color:var(--bone)">No link to the book:</b> news stops at the headline; nobody connects the event to the loans, bonds and equity it moves.</li>
+        <li><b style="color:var(--bone)">Not defensible:</b> a score with no evidence, assumptions or measured accuracy cannot go to a credit committee.</li>
+      </ul>
+      <p style="font-size:22px;line-height:1.5;margin-top:22px;color:var(--bone)">Tripwire answers, for every event: <span style="color:var(--gold)">what happened, how much it matters, what it does to this bank's capital, and why we believe it.</span></p>
+    </div>
+  </div>
+  <div class="grid" style="grid-template-columns:repeat(4,300px); margin-top:56px">
+    <div><div class="k">70.3%</div><div class="kl">event accuracy on unseen,<br/>human-labelled articles</div></div>
+    <div><div class="k">0.72</div><div class="kl">Impact AUC on 1,003<br/>out-of-time 8-K filings</div></div>
+    <div><div class="k">680</div><div class="kl">human labels behind<br/>every accuracy claim</div></div>
+    <div><div class="k">6</div><div class="kl">live public sources,<br/>collected every 10-30 min</div></div>
+  </div>
+  <div class="foot"><span>Deepak Meena · IIIT Delhi · deepak23188@iiitd.ac.in</span><span>01</span></div>
+</section>
+
+<!-- 2 · SOLUTION + ARCHITECTURE -->
+<section class="slide">
+  <div class="eyebrow">01 / Solution &amp; system design</div>
+  <h2>One engine, <em>signal to capital</em>.</h2>
+  <div style="margin-top:22px;display:flex;gap:14px;flex-wrap:wrap"><span class="chip gold">Module A · risk engine: subject, event + evidence, sentiment, factuality, Impact 1-10</span><span class="chip ember">Module B · stress testing: P&amp;L, ECL, RWA, CET1</span><span class="chip sage">Website · dashboard · Analyse your own data</span></div>
+  <svg viewBox="0 0 1680 640" width="1680" height="640" style="margin-top:30px">
+    <defs><marker id="a" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#d9b46c"/></marker></defs>
+    <!-- sources -->
+    <g font-size="17" fill="#ede9e0">
+      <rect x="0" y="0" width="250" height="640" rx="16" fill="#171717" stroke="#2b2b2b"/>
+      <text x="24" y="40" fill="#d9b46c" font-family="JetBrains Mono" font-size="15" letter-spacing="2">SOURCES</text>
+      <g transform="translate(24,70)">
+        <rect width="202" height="70" rx="10" fill="#1f1f1f" stroke="#2b2b2b"/><text x="16" y="30">SEC EDGAR 8-K</text><text x="16" y="54" fill="#9a958b" font-size="14">filings · 10 min</text>
+        <rect y="88" width="202" height="70" rx="10" fill="#1f1f1f" stroke="#2b2b2b"/><text x="16" y="118">GDELT</text><text x="16" y="142" fill="#9a958b" font-size="14">global news · 15 min</text>
+        <rect y="176" width="202" height="70" rx="10" fill="#1f1f1f" stroke="#2b2b2b"/><text x="16" y="206">Finnhub</text><text x="16" y="230" fill="#9a958b" font-size="14">company news · 10 min</text>
+        <rect y="264" width="202" height="70" rx="10" fill="#1f1f1f" stroke="#2b2b2b"/><text x="16" y="294">Fed + RBI</text><text x="16" y="318" fill="#9a958b" font-size="14">regulators · 30 min</text>
+        <rect y="352" width="202" height="70" rx="10" fill="#1f1f1f" stroke="#2b2b2b"/><text x="16" y="382">Bluesky</text><text x="16" y="406" fill="#9a958b" font-size="14">social · stream</text>
+        <rect y="440" width="202" height="70" rx="10" fill="#1f1f1f" stroke="#2b2b2b"/><text x="16" y="470">Market data</text><text x="16" y="494" fill="#9a958b" font-size="14">prices · FRED</text>
+      </g>
+    </g>
+    <!-- pipeline boxes -->
+    <g font-size="20" fill="#ede9e0">
+      <rect x="320" y="60" width="270" height="150" rx="14" fill="#171717" stroke="#d9b46c"/><text x="344" y="102" fill="#d9b46c" font-family="JetBrains Mono" font-size="14" letter-spacing="2">COLLECTORS</text><text x="344" y="138">dedupe · normalise</text><text x="344" y="168" fill="#9a958b" font-size="16">quarantine bad records</text>
+      <rect x="320" y="270" width="270" height="150" rx="14" fill="#171717" stroke="#2b2b2b"/><text x="344" y="312" fill="#d9b46c" font-family="JetBrains Mono" font-size="14" letter-spacing="2">STORE (PORT)</text><text x="344" y="348">SQLite · Postgres-ready</text><text x="344" y="378" fill="#9a958b" font-size="16">documents, signals, runs</text>
+      <rect x="660" y="60" width="300" height="150" rx="14" fill="#171717" stroke="#d9b46c"/><text x="684" y="102" fill="#d9b46c" font-family="JetBrains Mono" font-size="14" letter-spacing="2">NLP DAEMON</text><text x="684" y="138">entity · event · sentiment</text><text x="684" y="168" fill="#9a958b" font-size="16">factuality · evidence span</text>
+      <rect x="660" y="270" width="300" height="150" rx="14" fill="#171717" stroke="#d9b46c"/><text x="684" y="312" fill="#d9b46c" font-family="JetBrains Mono" font-size="14" letter-spacing="2">SCORE DAEMON</text><text x="684" y="348">events · novelty</text><text x="684" y="378" fill="#9a958b" font-size="16">Impact 1-10 · calibration</text>
+      <rect x="1030" y="270" width="290" height="150" rx="14" fill="#171717" stroke="#b5523a"/><text x="1054" y="312" fill="#d0663f" font-family="JetBrains Mono" font-size="14" letter-spacing="2">MODULE B</text><text x="1054" y="348">trigger · stress test</text><text x="1054" y="378" fill="#9a958b" font-size="16">P&amp;L → ECL → RWA → CET1</text>
+      <rect x="1030" y="60" width="290" height="150" rx="14" fill="#171717" stroke="#2b2b2b"/><text x="1054" y="102" fill="#d9b46c" font-family="JetBrains Mono" font-size="14" letter-spacing="2">FASTAPI</text><text x="1054" y="138">/signals · /trace · /stress</text><text x="1054" y="168" fill="#9a958b" font-size="16">/analyze · /model/metrics</text>
+      <rect x="1390" y="60" width="290" height="360" rx="14" fill="#1f1a10" stroke="#d9b46c"/><text x="1414" y="102" fill="#d9b46c" font-family="JetBrains Mono" font-size="14" letter-spacing="2">REACT APP</text><text x="1414" y="142">Website</text><text x="1414" y="180">Live signals</text><text x="1414" y="218">Reasoning trace</text><text x="1414" y="256">Portfolio · what-if</text><text x="1414" y="294">Watchlist</text><text x="1414" y="332">Model trust</text><text x="1414" y="370" fill="#d9b46c">Analyse (uploads)</text>
+    </g>
+    <!-- arrows -->
+    <g stroke="#d9b46c" stroke-width="2.4" fill="none" marker-end="url(#a)">
+      <path d="M250,135 L316,135"/><path d="M455,212 L455,266"/><path d="M590,320 C 625,320 625,135 656,135"/><path d="M810,212 L810,266"/>
+      <path d="M960,345 L1026,345"/><path d="M1175,268 L1175,214"/><path d="M1320,135 L1386,135"/><path d="M590,370 C 760,470 1000,470 1060,424"/>
+    </g>
+    <!-- deployment strip -->
+    <g font-size="18" fill="#9a958b">
+      <rect x="320" y="480" width="1360" height="160" rx="14" fill="#141414" stroke="#2b2b2b" stroke-dasharray="6 6"/>
+      <text x="344" y="520" fill="#d9b46c" font-family="JetBrains Mono" font-size="14" letter-spacing="2">DEPLOYMENT</text>
+      <text x="344" y="556" fill="#ede9e0">Live: GPU server, four daemons (collect · nlp · score · api) in tmux; website served from the same API.</text>
+      <text x="344" y="590" fill="#ede9e0">Judges: `python -m tripwire demo` runs website + API on a 14-day snapshot. CPU-only, no keys, no server.</text>
+      <text x="344" y="624">Ports &amp; adapters: Store, Queue and Source interfaces; every value tagged OBSERVED / MEASURED / MODEL / DERIVED / SYNTHETIC / ASSUMPTION.</text>
+    </g>
+  </svg>
+  <div class="foot"><span>Tripwire · system design</span><span>02</span></div>
+</section>
+
+<!-- 3 · MODULE A: FLOW + IMPACT -->
+<section class="slide">
+  <div class="eyebrow">02 / Module A · how one article flows</div>
+  <h2>Strongest evidence decides first, <em>the model only fills gaps</em>.</h2>
+  <svg viewBox="0 0 1680 560" width="1440" height="480" style="margin-top:26px">
+    <defs><marker id="b" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#d9b46c"/></marker></defs>
+    <g font-size="19" fill="#ede9e0">
+      <rect x="0" y="200" width="200" height="140" rx="14" fill="#171717" stroke="#2b2b2b"/><text x="22" y="240" fill="#d9b46c" font-family="JetBrains Mono" font-size="14" letter-spacing="2">DOCUMENT</text><text x="22" y="276">headline +</text><text x="22" y="304">opening</text>
+      <rect x="250" y="200" width="250" height="140" rx="14" fill="#171717" stroke="#2b2b2b"/><text x="272" y="240" fill="#d9b46c" font-family="JetBrains Mono" font-size="14" letter-spacing="2">ENTITY</text><text x="272" y="276">alias table + GLiNER</text><text x="272" y="304" fill="#9a958b" font-size="16">relevance ≥ 0.55 → subject</text>
+      <!-- three layers -->
+      <rect x="560" y="20" width="560" height="120" rx="14" fill="#171717" stroke="#d9b46c"/><text x="584" y="60" fill="#d9b46c" font-family="JetBrains Mono" font-size="14" letter-spacing="2">L1 · 8-K ITEM MAP</text><text x="584" y="96">the filer declares it (e.g. 1.03 bankruptcy)</text><text x="1040" y="96" fill="#d9b46c" font-family="JetBrains Mono" font-size="17">0.95</text>
+      <rect x="560" y="210" width="560" height="120" rx="14" fill="#171717" stroke="#d9b46c"/><text x="584" y="250" fill="#d9b46c" font-family="JetBrains Mono" font-size="14" letter-spacing="2">L2 · CONTEXT RULES</text><text x="584" y="286">precise phrases with exclusions</text><text x="1040" y="286" fill="#d9b46c" font-family="JetBrains Mono" font-size="17">0.90</text>
+      <rect x="560" y="400" width="560" height="140" rx="14" fill="#171717" stroke="#d9b46c"/><text x="584" y="440" fill="#d9b46c" font-family="JetBrains Mono" font-size="14" letter-spacing="2">L3 · ML HEAD + VERIFIER</text><text x="584" y="476">e5-large embeddings → classifier (human + weak labels)</text><text x="584" y="508" fill="#9a958b" font-size="16">must pass DeBERTa zero-shot verifier; per-class bars</text>
+      <rect x="1180" y="120" width="230" height="300" rx="14" fill="#171717" stroke="#2b2b2b"/><text x="1202" y="160" fill="#d9b46c" font-family="JetBrains Mono" font-size="14" letter-spacing="2">ANNOTATE</text><text x="1202" y="200">entity FinBERT</text><text x="1202" y="226" fill="#9a958b" font-size="16">sentiment per company</text><text x="1202" y="266">factuality</text><text x="1202" y="292" fill="#9a958b" font-size="16">fact / rumour / opinion</text><text x="1202" y="332">evidence span</text><text x="1202" y="358" fill="#9a958b" font-size="16">exact source text</text>
+      <rect x="1460" y="170" width="220" height="200" rx="14" fill="#1f1a10" stroke="#d9b46c"/><text x="1482" y="210" fill="#d9b46c" font-family="JetBrains Mono" font-size="14" letter-spacing="2">SIGNAL</text><text x="1482" y="248">Impact 1-10</text><text x="1482" y="282">risk level</text><text x="1482" y="316">alert tier</text><text x="1482" y="350" fill="#9a958b" font-size="16">P(large move)</text>
+    </g>
+    <g stroke="#d9b46c" stroke-width="2.4" fill="none" marker-end="url(#b)">
+      <path d="M200,270 L246,270"/><path d="M500,250 C 530,250 530,80 556,80"/><path d="M500,270 L556,270"/><path d="M500,290 C 530,290 530,470 556,470"/>
+      <path d="M1120,80 C 1150,80 1150,200 1176,200"/><path d="M1120,270 L1176,270"/><path d="M1120,470 C 1150,470 1150,340 1176,340"/><path d="M1410,270 L1456,270"/>
+    </g>
+    <text x="0" y="420" font-size="18" fill="#9a958b">If no layer decides,</text><text x="0" y="446" font-size="18" fill="#9a958b">the item is "Other":</text><text x="0" y="472" font-size="18" fill="#9a958b">no alert, no score.</text>
+  </svg>
+  <div class="grid" style="grid-template-columns:1.5fr 1fr 1fr; gap:22px; margin-top:6px">
+    <div class="card" style="padding:24px 28px"><div class="eyebrow">Impact score · seven named factors</div>
+      <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap"><span class="chip gold">severity 0.25</span><span class="chip">sentiment 0.15</span><span class="chip">entity size 0.15</span><span class="chip sage">historical reaction 0.15</span><span class="chip">novelty 0.10</span><span class="chip sage">corroboration 0.10</span><span class="chip gold">credibility 0.10</span></div>
+      <div class="kl" style="font-size:18px">weighted sum → relevance gate → isotonic calibration to 1-10 and P(large price move); every factor shown on every signal</div></div>
+    <div class="card" style="padding:24px 28px"><div class="k" style="font-size:64px">0.72</div><div class="kl" style="font-size:18px">AUC for large moves on 1,003 out-of-time 8-K filings</div></div>
+    <div class="card" style="padding:24px 28px"><div class="k" style="font-size:64px">0.89</div><div class="kl" style="font-size:18px">entity-level sentiment macro-F1 (plain FinBERT 0.66)</div></div>
+  </div>
+  <div class="foot"><span>Tripwire · Module A</span><span>03</span></div>
+</section>
+
+<!-- 7 · MODULE B -->
+<section class="slide">
+  <div class="eyebrow">03 / Module B · from signal to capital</div>
+  <h2>Stress tests that show <em>exactly what moves CET1</em>.</h2>
+  <svg viewBox="0 0 1680 430" width="1680" height="430" style="margin-top:46px">
+    <defs><marker id="c" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#d0663f"/></marker></defs>
+    <g font-size="19" fill="#ede9e0">
+      <rect x="0" y="40" width="250" height="330" rx="14" fill="#171717" stroke="#2b2b2b"/><text x="22" y="82" fill="#d9b46c" font-family="JetBrains Mono" font-size="14" letter-spacing="2">TRIGGER</text>
+      <text x="22" y="124">✓ class has shocks</text><text x="22" y="164">✓ a fact, not talk</text><text x="22" y="204">✓ adverse</text><text x="22" y="244">✓ Impact ≥ bar</text><text x="22" y="290" fill="#9a958b" font-size="16">bar 5.5-7.0, lower when</text><text x="22" y="314" fill="#9a958b" font-size="16">more of the book is</text><text x="22" y="338" fill="#9a958b" font-size="16">exposed</text>
+      <rect x="320" y="40" width="330" height="330" rx="14" fill="#171717" stroke="#2b2b2b"/><text x="342" y="82" fill="#d9b46c" font-family="JetBrains Mono" font-size="14" letter-spacing="2">SCENARIO LAYERS</text>
+      <text x="342" y="126">Entity: spread, equity, PD</text><text x="342" y="170">Sector: peers via ETF</text><text x="342" y="214">Systemic: rates, spreads,</text><text x="342" y="240">vol from a historical analog</text><text x="342" y="290" fill="#7fa287" font-size="17">MEASURED analogs</text><text x="342" y="318" fill="#d9b46c" font-size="17">ASSUMPTION shock sizes</text>
+      <rect x="720" y="40" width="300" height="330" rx="14" fill="#171717" stroke="#2b2b2b"/><text x="742" y="82" fill="#d9b46c" font-family="JetBrains Mono" font-size="14" letter-spacing="2">REPRICE THE BOOK</text>
+      <text x="742" y="126">329 positions</text><text x="742" y="166">bonds: duration +</text><text x="742" y="192">convexity</text><text x="742" y="232">equity, swaps, puts</text><text x="742" y="272">loans: PD → IFRS 9</text><text x="742" y="298">stage → ECL</text>
+      <rect x="1090" y="40" width="270" height="330" rx="14" fill="#1a1210" stroke="#b5523a"/><text x="1112" y="82" fill="#d0663f" font-family="JetBrains Mono" font-size="14" letter-spacing="2">CAPITAL</text>
+      <text x="1112" y="126">P&amp;L net of tax</text><text x="1112" y="166">RWA from rating</text><text x="1112" y="192">migration</text><text x="1112" y="232">CET1 vs Basel 7%</text><text x="1112" y="258">and RBI 8% floors</text><text x="1112" y="304" fill="#9a958b" font-size="16">mild · base · severe</text>
+      <rect x="1430" y="40" width="250" height="330" rx="14" fill="#171717" stroke="#2b2b2b"/><text x="1452" y="82" fill="#d9b46c" font-family="JetBrains Mono" font-size="14" letter-spacing="2">OUTPUTS</text>
+      <text x="1452" y="126">reverse stress</text><text x="1452" y="166">top contributors</text><text x="1452" y="192" fill="#9a958b" font-size="16">with causal paths</text><text x="1452" y="232">"why not hit"</text><text x="1452" y="272">watchlist R/A/G</text>
+    </g>
+    <g stroke="#d0663f" stroke-width="2.4" fill="none" marker-end="url(#c)"><path d="M250,205 L316,205"/><path d="M650,205 L716,205"/><path d="M1020,205 L1086,205"/><path d="M1360,205 L1426,205"/></g>
+  </svg>
+  <div class="grid" style="grid-template-columns:repeat(4,1fr); margin-top:26px">
+    <div><div class="k" style="font-size:60px">$451M</div><div class="kl">synthetic book: 300 SME loans (from Kaggle merchants) + 29 corporate positions</div></div>
+    <div><div class="k" style="font-size:60px">$363M</div><div class="kl">risk-weighted assets (standardised weights, A-22)</div></div>
+    <div><div class="k" style="font-size:60px">12.0%</div><div class="kl">starting CET1 ratio ($43.6M, A-21)</div></div>
+    <div><div class="k" style="font-size:60px">28</div><div class="kl">documented assumptions, each with its rationale</div></div>
+  </div>
+  <div class="foot"><span>Tripwire · Module B</span><span>04</span></div>
+</section>
+
+<!-- 8 · CASE STUDY -->
+<section class="slide cream">
+  <div class="eyebrow">04 / One trace, end to end</div>
+  <h2>Western Alliance, 13 March 2023: <span style="color:#b5523a">a reassuring statement during a run</span>.</h2>
+  <div class="grid" style="grid-template-columns:repeat(5,1fr); margin-top:56px; gap:18px">
+    <div class="card"><div class="eyebrow">Source</div><div style="font-size:30px;margin-top:16px">SEC 8-K</div><div class="kl" style="color:#6b675f">Item 7.01, filed 14:58 UTC</div></div>
+    <div class="card"><div class="eyebrow">Event</div><div style="font-size:30px;margin-top:16px">Credit Event</div><div class="kl" style="color:#6b675f">liquidity stress · rule: bank run · "deposit outflows"</div></div>
+    <div class="card"><div class="eyebrow">Sentiment</div><div style="font-size:30px;margin-top:16px">+0.86</div><div class="kl" style="color:#6b675f">the text reads positive; the event is adverse by nature</div></div>
+    <div class="card"><div class="eyebrow">Impact</div><div style="font-size:30px;margin-top:16px">7.4 / 10</div><div class="kl" style="color:#6b675f">96th percentile · P(large move) 44%</div></div>
+    <div class="card" style="border-color:#b5523a"><div class="eyebrow" style="color:#b5523a">Stress</div><div style="font-size:30px;margin-top:16px">triggered</div><div class="kl" style="color:#6b675f">Impact clears the exposure bar (6.0)</div></div>
+  </div>
+  <div class="grid" style="grid-template-columns:1.2fr 1fr; margin-top:40px; gap:40px">
+    <div class="card">
+      <table style="font-size:21px">
+        <tr><th style="color:#8a6a2c">Asset class</th><th style="color:#8a6a2c">Stress P&amp;L</th></tr>
+        <tr><td style="color:#33312c">Bonds (rates + bank spreads)</td><td class="n" style="color:#b5523a">−$1.56M</td></tr>
+        <tr><td style="color:#33312c">Equity (regional banks, KRE −23%)</td><td class="n" style="color:#b5523a">−$0.89M</td></tr>
+        <tr><td style="color:#33312c">Corporate loan to WAL (ECL)</td><td class="n" style="color:#b5523a">−$0.03M</td></tr>
+        <tr><td style="color:#33312c">Index put + swaps (hedges)</td><td class="n" style="color:#4f7a5a">+$0.33M</td></tr>
+      </table>
+    </div>
+    <div class="card" style="background:#1d1b17;border-color:#1d1b17">
+      <div class="eyebrow">Result on the book</div>
+      <div class="k" style="font-size:96px;margin-top:20px;color:#f3f0e8">−$2.15M</div>
+      <div class="kl" style="color:#b8b2a6">across 25 positions</div>
+      <div style="font-size:40px;margin-top:26px;color:#d9b46c" class="serif">CET1 12.00% → 11.59%</div>
+      <div class="kl" style="color:#b8b2a6">above both floors; kept as an end-to-end regression test</div>
+    </div>
+  </div>
+  <div class="foot"><span>Tripwire · case study</span><span>05</span></div>
+</section>
+
+<!-- 9 · RESULTS -->
+<section class="slide">
+  <div class="eyebrow">05 / Measured, not marketed</div>
+  <h2>Every claim is measured on <em>data the model never saw</em>.</h2>
+  <div class="grid" style="grid-template-columns:1.25fr 1fr; margin-top:48px; gap:48px">
+    <div class="card" style="padding:28px 30px">
+      <table>
+        <tr><th>Event classifier (human labels)</th><th>n</th><th>Accuracy</th><th>Macro-F1</th></tr>
+        <tr><td>Locked test, before → after round 2</td><td class="n">212</td><td class="n">61.8 → 66.0%</td><td class="n">0.59 → 0.64</td></tr>
+        <tr><td>Fresh out-of-time test 1</td><td class="n">182</td><td class="n">63.2%</td><td class="n">0.61</td></tr>
+        <tr class="hl"><td><b>Fresh out-of-time test 2 (current)</b></td><td class="n">202</td><td class="n"><b>70.3%</b></td><td class="n"><b>0.69</b></td></tr>
+      </table>
+      <ul class="dots" style="margin-top:24px">
+        <li>Company resolution 70.3% · alert precision (standard tier) 74.4%</li>
+        <li>Entity-level sentiment: macro-F1 0.89 vs 0.66 for plain FinBERT (SEntFiN test)</li>
+        <li>Impact: AUC 0.72, Brier 0.139 on 1,003 out-of-time filings</li>
+      </ul>
+    </div>
+    <div>
+      <div class="card"><div class="eyebrow" style="color:var(--sage)">How we keep it honest</div>
+        <ul class="dots"><li>Each fresh test: articles after the model freeze, labelled by a person, evaluated once</li><li>Ship a model only if it beats the current one in cross-validation</li><li>LLM labels only for training and agreement checks (kappa 0.67)</li></ul></div>
+      <div class="card" style="margin-top:22px"><div class="eyebrow" style="color:var(--emberB)">Published limits</div>
+        <ul class="dots"><li>"Confirmed" tier: 3/6 on fresh test 2; rules fooled by "launches a dividend", "buyers flood in"</li><li>Weakest on new data: Cyber/Operational recall 0.53, Product Launch precision 0.55</li><li>Impact validated on firm-specific filings only</li></ul></div>
+    </div>
+  </div>
+  <div class="foot"><span>Tripwire · results · docs/IMPROVEMENT_LOG.md</span><span>06</span></div>
+</section>
+
+<!-- 10 · PRODUCT -->
+<section class="slide">
+  <div class="wordmark">tripwire</div>
+  <div class="eyebrow">06 / The product</div>
+  <h2>Try it on <em>your own data</em>, in two commands.</h2>
+  <div class="grid" style="grid-template-columns:1fr 1fr 1fr; margin-top:56px">
+    <div class="card"><div class="eyebrow">Dashboard</div><ul class="dots"><li>Live signals ranked by risk</li><li>Full reasoning trace per signal</li><li>Portfolio, what-if, watchlist</li><li>Model trust and data sources</li></ul></div>
+    <div class="card"><div class="eyebrow">Analyse</div><ul class="dots"><li>Article or PDF → full trace + stress run</li><li>Up to 300 headlines → scored table</li><li>Your portfolio vs this week's signals</li><li>Never stored · PDF report to keep</li></ul></div>
+    <div class="card"><div class="eyebrow">Run it</div>
+      <div class="mono" style="font-size:22px;line-height:1.8;margin-top:18px;color:#ede9e0;background:#0c0c0c;border:1px solid var(--line);border-radius:10px;padding:18px 22px">pip install -r requirements.txt<br/>python -m tripwire demo</div>
+      <div class="kl">CPU-only · no keys · real 14-day snapshot. Open source, MIT.</div></div>
+  </div>
+  <div class="grid" style="grid-template-columns:1fr 1fr; gap:26px; margin-top:34px">
+    <div class="card" style="border-color:rgba(217,180,108,.5)"><div class="eyebrow">Links</div>
+      <div style="font-size:26px;margin-top:16px;line-height:1.7"><span style="color:var(--mute)">Code</span>&nbsp;&nbsp;<span class="mono" style="color:var(--gold)">LINK_GITHUB</span><br/><span style="color:var(--mute)">Live website</span>&nbsp;&nbsp;<span class="mono" style="color:var(--gold)">LINK_WEBSITE</span></div></div>
+    <div class="card"><div class="eyebrow" style="color:var(--sage)">Next</div><p style="font-size:22px;line-height:1.5;margin-top:14px;color:#cfcac0">More human labels for the rare classes, end-to-end fine-tuning of the encoder, and the confirmed-tier rule fixes, each proven on a new fresh test before it ships.</p></div>
+  </div>
+  <div class="foot"><span>Tripwire · MIT licence</span><span>07</span></div>
+</section>
+
+</body>
+</html>

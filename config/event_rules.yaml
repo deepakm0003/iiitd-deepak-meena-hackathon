@@ -79,7 +79,9 @@ rules:
      pattern: "\\b(hurricane|typhoon|cyclone|earthquake|tornado|wildfires?)\\b(?! (protection|insurance|shutters|video))|\\b(flash floods?|floods? (hit|hits|swamp|ravage|kill|warning|waters|damage|victims)|flood(ed|ing)? (in|across|hits|forces|closes|halts|disrupts)|(heavy|severe|deadly|major|catastrophic) flood(s|ing)?|flood-(hit|affected|ravaged)|due to flood(s|ing)?|after (the )?flood(s|ing)?)\\b",
      # Round 3: court cases about past disasters ("Supreme Court to hear wildfire survivor's climate case") are
      # legal stories; 4/7 -> 4/4 correct on 478 human labels (docs/results/round3_experiment.json).
-     exclude: "\\b(supreme court|court|lawsuits?|sues|sued|suing|litigation|trial|verdict|judge|ruling|plaintiffs?|class action|case)\\b"}
+     # Round 4: market slang ("buyers flood in") is not a flood; 4/5 -> 4/4 on 680 human labels
+     # (R4 in docs/results/round3_experiment_e5-large-v2_n680.json).
+     exclude: "\\b(supreme court|court|lawsuits?|sues|sued|suing|litigation|trial|verdict|judge|ruling|plaintiffs?|class action|case|(buyers|investors|money|orders|inflows?|capital|cash|demand|bids)\\s+flood(s|ed|ing)?)\\b"}
   - {id: supply, class: Natural Disaster/Supply Chain, subtype: supply_disruption,
      pattern: "supply (chain )?(disruption|shortage|crunch)|chip shortage|port (closure|congestion)"}
   - {id: earnings, class: Earnings, subtype: results,
@@ -87,7 +89,9 @@ rules:
   - {id: management, class: Management Change, subtype: officer_change,
      pattern: "\\b(ceo|cfo|chief executive|chairman|president) .{0,40}(steps down|resigns|to retire|departs|ousted|fired)|(names|appoints|hires) .{0,40}(ceo|cfo|chief executive)|new (ceo|cfo)"}
   - {id: launch, class: Product Launch, subtype: launch,
-     pattern: "\\b(launches|unveils|introduces|rolls out|debuts)\\b(?![^.]{0,50}\\b(budget|buyback|repurchase|strategy|executive order|probe|investigation|review|push|campaign|initiative|edition|outlook|guidance|forecast|results)\\b)"}
+     pattern: "\\b(launches|unveils|introduces|rolls out|debuts)\\b(?![^.]{0,50}\\b(budget|buyback|repurchase|strategy|executive order|probe|investigation|review|push|campaign|initiative|edition|outlook|guidance|forecast|results)\\b)",
+     # Round 4: funds, dividends and trade-show debuts are not product launches; 24/27 -> 24/25 on 680 labels.
+     exclude: "\\b(dividends?|yield|etfs?|funds?|notes due|bond offering|auto show|motor show|trade show|expo|exhibition|fair)\\b"}
 
 # Alert tiers (2026-10-03). "confirmed" = the event label comes from a source measured at >= 90% precision with
 # at least 3 cases on the 296 human-labelled development items (scripts/tier_experiment.py,

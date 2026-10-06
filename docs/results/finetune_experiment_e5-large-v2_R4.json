@@ -1,0 +1,137 @@
+{
+  "run_at": "2026-10-05T11:01:48.855227+00:00",
+  "model": "intfloat/e5-large-v2",
+  "epochs": 3,
+  "lr": 2e-05,
+  "rules": "R4",
+  "policy": "P2 PL/MA>=0.5",
+  "n_items": 680,
+  "all": {
+    "n": 680,
+    "accuracy": 0.75,
+    "macro_f1": 0.7591,
+    "alert_precision": 0.7828,
+    "alerts": 396,
+    "Product Launch": {
+      "pred": 75,
+      "true": 63,
+      "tp": 53
+    },
+    "Merger/Acquisition": {
+      "pred": 28,
+      "true": 23,
+      "tp": 20
+    },
+    "Credit Event": {
+      "pred": 22,
+      "true": 20,
+      "tp": 16
+    },
+    "Macroeconomic": {
+      "pred": 64,
+      "true": 82,
+      "tp": 53
+    },
+    "Other": {
+      "pred": 284,
+      "true": 262,
+      "tp": 200
+    }
+  },
+  "fresh": {
+    "n": 182,
+    "accuracy": 0.7253,
+    "macro_f1": 0.6984,
+    "alert_precision": 0.7551,
+    "alerts": 98,
+    "Product Launch": {
+      "pred": 9,
+      "true": 5,
+      "tp": 5
+    },
+    "Merger/Acquisition": {
+      "pred": 6,
+      "true": 4,
+      "tp": 3
+    },
+    "Credit Event": {
+      "pred": 4,
+      "true": 2,
+      "tp": 2
+    },
+    "Macroeconomic": {
+      "pred": 22,
+      "true": 26,
+      "tp": 17
+    },
+    "Other": {
+      "pred": 84,
+      "true": 78,
+      "tp": 58
+    }
+  },
+  "fresh2": {
+    "n": 202,
+    "accuracy": 0.7376,
+    "macro_f1": 0.7254,
+    "alert_precision": 0.7869,
+    "alerts": 122,
+    "Product Launch": {
+      "pred": 24,
+      "true": 17,
+      "tp": 15
+    },
+    "Merger/Acquisition": {
+      "pred": 15,
+      "true": 10,
+      "tp": 10
+    },
+    "Credit Event": {
+      "pred": 6,
+      "true": 6,
+      "tp": 4
+    },
+    "Macroeconomic": {
+      "pred": 17,
+      "true": 24,
+      "tp": 15
+    },
+    "Other": {
+      "pred": 80,
+      "true": 71,
+      "tp": 53
+    }
+  },
+  "human": {
+    "n": 296,
+    "accuracy": 0.7736,
+    "macro_f1": 0.7787,
+    "alert_precision": 0.7955,
+    "alerts": 176,
+    "Product Launch": {
+      "pred": 42,
+      "true": 41,
+      "tp": 33
+    },
+    "Merger/Acquisition": {
+      "pred": 7,
+      "true": 9,
+      "tp": 7
+    },
+    "Credit Event": {
+      "pred": 12,
+      "true": 12,
+      "tp": 10
+    },
+    "Macroeconomic": {
+      "pred": 25,
+      "true": 32,
+      "tp": 21
+    },
+    "Other": {
+      "pred": 120,
+      "true": 113,
+      "tp": 89
+    }
+  }
+}
