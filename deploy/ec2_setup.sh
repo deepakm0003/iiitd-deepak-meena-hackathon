@@ -13,7 +13,7 @@ if [ "$MEM_GB" -ge 6 ]; then FULL=1; else FULL=0; fi
 echo "RAM ${MEM_GB} GB -> $([ $FULL = 1 ] && echo 'full install (Analyse on)' || echo 'light install (Analyse off)')"
 
 sudo apt-get update -y
-sudo apt-get install -y git curl gpg debian-keyring debian-archive-keyring apt-transport-https
+sudo apt-get install -y git curl gpg
 
 # swap as a safety margin (the NLP models need about 5 GB of RAM while loading; small machines need it too)
 if ! swapon --show | grep -q /swapfile; then
@@ -56,14 +56,10 @@ UNIT
 sudo systemctl daemon-reload
 sudo systemctl enable --now tripwire
 
-# Caddy reverse proxy with an automatic HTTPS certificate for <ip>.sslip.io (no domain needed)
-if ! command -v caddy > /dev/null; then
-  curl -1sLf https://dl.cloudsmith.io/public/caddy/stable/gpg.key \
-    | sudo gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
-  curl -1sLf https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt \
-    | sudo tee /etc/apt/sources.list.d/caddy-stable.list > /dev/null
-  sudo apt-get update -y && sudo apt-get install -y caddy
-fi
+# Caddy reverse proxy with an automatic HTTPS certificate for <ip>.sslip.io (no domain needed).
+# Ubuntu's own package (the upstream apt repository has refused anonymous downloads).
+sudo rm -f /etc/apt/sources.list.d/caddy-stable.list
+command -v caddy > /dev/null || { sudo apt-get update -y && sudo apt-get install -y caddy; }
 IP=$(curl -s https://checkip.amazonaws.com)
 HOST="${IP//./-}.sslip.io"
 printf '%s {\n  reverse_proxy 127.0.0.1:8000\n}\n' "$HOST" | sudo tee /etc/caddy/Caddyfile > /dev/null

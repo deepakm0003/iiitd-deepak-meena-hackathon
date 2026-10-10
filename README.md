@@ -4,7 +4,11 @@
 **College Email ID:** deepak23188@iiitd.ac.in
 **College / Campus:** Indraprastha Institute of Information Technology Delhi (IIIT Delhi)
 **Demo Video Link:** _to be added (YouTube, unlisted)_
-**Slide Deck Link (if hosted externally):** not hosted externally; see [docs/presentation.pdf](docs/presentation.pdf) _(added before submission)_
+**Slide Deck Link (if hosted externally):** not hosted externally; see [docs/presentation.pdf](docs/presentation.pdf)
+
+**Live website:** https://35-168-27-143.sslip.io (dashboard: https://35-168-27-143.sslip.io/app). It runs the same
+`python -m tripwire demo` on an AWS server (deployed with [deploy/ec2_setup.sh](deploy/ec2_setup.sh)), including the
+Analyse page with the real models.
 
 **Run it in two commands** (no GPU, no API keys, no Node.js; Python 3.11):
 
