@@ -6,7 +6,7 @@
 **Demo Video Link:** _to be added (YouTube, unlisted)_
 **Slide Deck Link (if hosted externally):** not hosted externally; see [docs/presentation.pdf](docs/presentation.pdf)
 
-**Live website:** https://35-168-27-143.sslip.io (dashboard: https://35-168-27-143.sslip.io/app). It runs the same
+**Live website:** https://tripwire-risk.duckdns.org (dashboard: https://tripwire-risk.duckdns.org/app). It runs the same
 `python -m tripwire demo` on an AWS server (deployed with [deploy/ec2_setup.sh](deploy/ec2_setup.sh)), including the
 Analyse page with the real models.
 
