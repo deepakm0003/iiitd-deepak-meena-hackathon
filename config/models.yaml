@@ -9,6 +9,12 @@ embedding:
 zero_shot:
   name: MoritzLaurer/deberta-v3-base-zeroshot-v2.0   # 184M params; fallback classifier for unseen classes
   hypothesis_template: "This financial news item is about {}."
+# Trained weights too large for git (GitHub's 100 MB file limit), published as GitHub release assets.
+# `python -m tripwire fetch-models` downloads them, checks the SHA-256 and unpacks them into models/.
+release:
+  sentiment_entity:
+    url: https://github.com/deepakm0003/iiitd-deepak-meena-hackathon/releases/download/models-v1/sentiment_entity.zip
+    sha256: PENDING
 ner:
   name: urchade/gliner_multi-v2.1   # zero-shot NER, Apache 2.0
   labels: [company, bank, regulator, government agency, country, money amount, credit rating agency, financial instrument]

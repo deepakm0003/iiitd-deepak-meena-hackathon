@@ -134,9 +134,17 @@ python -m tripwire demo
   - model trust and data sources.
 - **Analyse page** (your own article, headlines or portfolio, analysed by the real models):
   - needs the ML stack: `pip install -r requirements-research.txt`;
-  - the first run downloads the open-source models (about 2.5 GB) and loads them in a few minutes on CPU;
+  - `python -m tripwire fetch-models --base` downloads our fine-tuned entity-sentiment model (a GitHub release
+    asset, too large for git, checked by SHA-256) and the open-source base models (about 2.5 GB). Without it, the
+    first run downloads the base models itself and sentiment falls back to plain FinBERT;
+  - the models load in a few minutes on CPU;
   - without the ML stack, the rest of the product works and the page says what to install.
-- **Options:** `--port 8001`, `--reset` (start again from the snapshot), `--no-analyze`, `--no-browser`.
+- **Models in the repository:** the event head ([models/event_head.pkl](models/event_head.pkl)) and the Impact
+  calibration ([models/impact_model.json](models/impact_model.json)) are committed; the 418 MB sentiment model is
+  in the release; the base models come from Hugging Face. The code to retrain each one is in the repository
+  (`train-head`, `train-sentiment`, `calibrate`).
+- **Options:** `--port 8001`, `--host 0.0.0.0`, `--reset` (start again from the snapshot), `--no-analyze`,
+  `--no-browser`. A public deployment script for a cloud server is in [deploy/ec2_setup.sh](deploy/ec2_setup.sh).
 
 ### Running the live system (what the deployed server runs)
 

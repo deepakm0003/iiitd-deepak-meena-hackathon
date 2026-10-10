@@ -725,6 +725,54 @@ def cmd_status(_: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_fetch_models(args: argparse.Namespace) -> int:
+    """Download the trained models that are too large for git (GitHub release assets, checked by SHA-256) and, with
+    --base, the open-source base models from Hugging Face, so the first Analyse run does not wait for downloads."""
+    import hashlib
+    import io
+    import zipfile
+
+    import httpx
+
+    from tripwire.config import load_yaml
+
+    cfg = load_yaml("models.yaml")
+    models_dir = get_settings().data_dir.parent / "models"
+    for name, asset in cfg["release"].items():
+        target = models_dir / name
+        if (target / "config.json").exists() and not args.force:
+            print(f"{name}: already in models/{name}")
+            continue
+        print(f"{name}: downloading {asset['url']}")
+        try:
+            with httpx.stream("GET", asset["url"], follow_redirects=True, timeout=300) as r:
+                r.raise_for_status()
+                data = b"".join(r.iter_bytes())
+        except httpx.HTTPError as exc:
+            print(f"{name}: not available ({exc}); the code falls back to the base model")
+            continue
+        digest = hashlib.sha256(data).hexdigest()
+        if digest != asset["sha256"]:
+            print(f"{name}: checksum mismatch ({digest}), not installed")
+            return 1
+        zipfile.ZipFile(io.BytesIO(data)).extractall(models_dir)
+        print(f"{name}: installed in models/{name}")
+    if args.base:
+        import pickle
+
+        from huggingface_hub import snapshot_download
+
+        names = [cfg[k]["name"] for k in ("sentiment", "embedding", "zero_shot", "ner")]
+        head = models_dir / "event_head.pkl"
+        if head.exists():
+            with head.open("rb") as f:
+                names.append(pickle.load(f)["base_model"])  # the encoder the shipped event head was trained on
+        for name in names:
+            print(f"base model: {name}")
+            snapshot_download(name)
+    return 0
+
+
 def cmd_demo(args: argparse.Namespace) -> int:
     """The whole product on the committed demo snapshot (data/demo): website + API on one port, no server needed.
 
@@ -769,7 +817,7 @@ def cmd_demo(args: argparse.Namespace) -> int:
     if not args.no_browser:
         threading.Timer(2.5, lambda: webbrowser.open(url)).start()
     site = create_site(analyzer_preload=not args.no_analyze)
-    uvicorn.run(site, host="127.0.0.1", port=args.port, log_level="warning")
+    uvicorn.run(site, host=args.host, port=args.port, log_level="warning")
     return 0
 
 
@@ -889,8 +937,13 @@ def main(argv: list[str] | None = None) -> int:
     gold_cmd.set_defaults(func=cmd_gold)
 
     sub.add_parser("status", help="store counts and recent collector runs").set_defaults(func=cmd_status)
+    fetch = sub.add_parser("fetch-models", help="download the trained models that are too large for git")
+    fetch.add_argument("--base", action="store_true", help="also pre-download the open-source base models")
+    fetch.add_argument("--force", action="store_true", help="download again even if already present")
+    fetch.set_defaults(func=cmd_fetch_models)
     demo = sub.add_parser("demo", help="website + API on the committed demo snapshot (no server, GPU or keys)")
     demo.add_argument("--port", type=int, default=8000)
+    demo.add_argument("--host", default="127.0.0.1", help="0.0.0.0 to serve other machines (e.g. a cloud server)")
     demo.add_argument("--reset", action="store_true", help="start again from the committed snapshot")
     demo.add_argument("--no-analyze", action="store_true", help="skip loading the NLP models for the Analyse page")
     demo.add_argument("--no-browser", action="store_true")

@@ -15,6 +15,8 @@ dist/
 
 # Raw third-party data stays local (large files, and the Kaggle set includes card/PII-like columns).
 data/raw/
+# full gold export (local working file; the published label files are fresh*_labels.jsonl and human_check.jsonl)
+data/gold/gold.jsonl
 *.zip
 
 # Runtime state (SQLite database, logs, caches)
