@@ -14,7 +14,7 @@ zero_shot:
 release:
   sentiment_entity:
     url: https://github.com/deepakm0003/iiitd-deepak-meena-hackathon/releases/download/models-v1/sentiment_entity.zip
-    sha256: PENDING
+    sha256: 41edffd14a11cdc7d5efc58614824ff2e6990609a3dadd276b3a50e3f03f75db
 ner:
   name: urchade/gliner_multi-v2.1   # zero-shot NER, Apache 2.0
   labels: [company, bank, regulator, government agency, country, money amount, credit rating agency, financial instrument]

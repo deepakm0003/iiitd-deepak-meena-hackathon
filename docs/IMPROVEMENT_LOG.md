@@ -416,3 +416,15 @@ encoder, recipe v3 + human labels x3, PL/M&A bar 0.5 (`scripts/round3_experiment
 - Some filing texts lost curly quotes when decoded (shown as U+FFFD); fixing needs a re-fetch of those filings.
 - Large models (entity sentiment 418 MB, SetFit 87 MB) are not in git: publish as release assets with a download
   command.
+
+## Entity-sentiment model republished (2026-10-10)
+
+The fine-tuned FinBERT (`train-sentiment`, SEntFiN, same split, seed and settings) was retrained on a laptop CPU so the
+weights could be published as a GitHub release asset (`fetch-models`). Held-out SEntFiN test, n = 1,464: macro-F1
+0.888 (first training run: 0.888); headlines where two companies get opposite sentiment, n = 300: 0.843 (first run:
+0.867, inside the 95% CI 0.80-0.88). Plain FinBERT on the same sets: 0.662 and 0.437.
+`docs/results/sentiment_finetune.json` now describes the published weights.
+On the Western Alliance golden case the republished weights score the bank's statement +0.56 (first run +0.86).
+Both are positive, so the case still shows a reassuring tone on an adverse event. The golden fixture (Impact 7.43,
+CET1 11.59%) and the demo snapshot keep the values of the recorded run; re-scoring that filing with the published
+weights would lower the sentiment-magnitude factor (weight 0.15) and so the Impact score slightly.

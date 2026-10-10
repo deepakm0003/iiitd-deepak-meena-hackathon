@@ -192,7 +192,7 @@ On 1,003 SEC 8-K filings published after the calibration window:
 ### Sentiment
 Entity-level FinBERT, on the SEntFiN held-out test set:
 - macro-F1 **0.89**, against 0.66 for plain FinBERT;
-- **0.87 vs 0.44** on headlines where two companies get opposite sentiment.
+- **0.84 vs 0.44** on headlines where two companies get opposite sentiment.
 
 ### Domain impact
 - **One trace from source to capital.** Example: a Western Alliance 8-K during the 2023 regional-bank stress:
