@@ -6,7 +6,7 @@
 
 **College / Campus:** Indraprastha Institute of Information Technology Delhi (IIIT Delhi)
 
-**Demo Video Link:** _to be added (YouTube, unlisted)_
+**Demo Video Link:** https://youtu.be/cu9cIyt4K4s (YouTube, unlisted)
 
 **Slide Deck Link (if hosted externally):** not hosted externally; the deck is [docs/presentation.pdf](docs/presentation.pdf)
 
@@ -21,6 +21,7 @@
 | | |
 |---|---|
 | **Live website** | https://tripwire-risk.duckdns.org (dashboard: [/app](https://tripwire-risk.duckdns.org/app)) |
+| **Demo video** | https://youtu.be/cu9cIyt4K4s |
 | **Run it locally** | `pip install -r requirements.txt` then `python -m tripwire demo` (no GPU, no API keys) |
 | **Slide deck** | [docs/presentation.pdf](docs/presentation.pdf) (7 slides) |
 | **Trained models** | in [models/](models) and the [models-v1 release](https://github.com/deepakm0003/iiitd-deepak-meena-hackathon/releases/tag/models-v1) |
