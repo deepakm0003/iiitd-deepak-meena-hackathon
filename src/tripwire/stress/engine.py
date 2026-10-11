@@ -36,6 +36,13 @@ def _exposure(pos: dict) -> float:
     if pos["type"] == "swap":
         return float(pos["notional"])
     return float(pos.get("ead") or abs(pos.get("market_value", 0.0)))
+
+
+def _ratio(cet1: float, rwa: float) -> float:
+    """CET1 / RWA; 0 when nothing is risk-weighted (e.g. an uploaded book whose only equity is wiped out)."""
+    return round(cet1 / rwa, 5) if rwa > 0 else 0.0
+
+
 STAGE2_PD_MULTIPLE, STAGE2_PD_ABSOLUTE = 3.0, 0.20  # A-09: ECB-style SICR backstops
 
 
@@ -172,11 +179,13 @@ class StressEngine:
             mv, beta = pos["market_value"], self.betas.get(pos["issuer"], {})
             if channel and layer and (s := sc.shock(layer, "equity")):
                 sens = mv * (beta.get("beta_sector", 1.0) if layer == "sector" else 1.0)
-                add(channel[0], channel[1], f"{layer} equity move", s[0], "return", s[1], sens, sens * s[0])
+                # a long equity position cannot lose more than its value (high sector beta x severe shock)
+                add(channel[0], channel[1], f"{layer} equity move", s[0], "return", s[1], sens,
+                    max(sens * s[0], -mv))
             elif systemic and (s := sc.shock("systemic", "equity_market")):
                 sens = mv * beta.get("beta_market", 1.0)
                 add("market", f"{pos['id']}: market beta {beta.get('beta_market', 1.0):.2f}", "equity market",
-                    s[0], "return", s[1], sens, sens * s[0])
+                    s[0], "return", s[1], sens, max(sens * s[0], -mv))
         elif kind == "bond":
             mv, dur, conv = pos["market_value"], pos["duration"], pos["convexity"]
             dr = dsp = 0.0
@@ -318,9 +327,9 @@ class StressEngine:
             "capital": {
                 "cet1_before": round(cet1_0, 2), "cet1_after": round(cet1_1, 2),
                 "rwa_before": round(rwa_before, 2), "rwa_after": round(rwa_after, 2),
-                "cet1_ratio_before": round(cet1_0 / rwa_before, 5), "cet1_ratio_after": round(cet1_1 / rwa_after, 5),
+                "cet1_ratio_before": _ratio(cet1_0, rwa_before), "cet1_ratio_after": _ratio(cet1_1, rwa_after),
                 "delta": {"cet1": round(cet1_1 - cet1_0, 2), "rwa": round(rwa_after - rwa_before, 2),
-                          "cet1_ratio": round(cet1_1 / rwa_after - cet1_0 / rwa_before, 5)},
+                          "cet1_ratio": round(_ratio(cet1_1, rwa_after) - _ratio(cet1_0, rwa_before), 5)},
                 "reconciliation": {
                     "cet1": f"CET1 after = CET1 before + P&L x (1 - tax {tax:.0%}); A-12: losses reduce capital "
                             "net of tax",

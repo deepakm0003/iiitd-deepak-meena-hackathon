@@ -93,9 +93,15 @@ def watchlist(book: dict, signals: list[dict], now: datetime | None = None, cfg:
             "provenance": "MEASURED P(large move) x ASSUMPTION A-28 weights",
         })
     for pos in book["tranche1"]:
-        drivers = [{"source": "behavioural model", "weight": round(pos["risk_score"], 4),
-                    "detail": f"calibrated probability of a card-volume collapse next year (grade {pos['grade']}); "
-                              "a proxy event from card transactions, not a probability of default"}]
+        if "risk_score" in pos:
+            base = pos["risk_score"]
+            drivers = [{"source": "behavioural model", "weight": round(base, 4),
+                        "detail": f"calibrated probability of a card-volume collapse next year (grade {pos['grade']}); "
+                                  "a proxy event from card transactions, not a probability of default"}]
+        else:  # an uploaded SME loan has no card history: its grade's PD is the base risk (A-05)
+            base = pos["pd"]
+            drivers = [{"source": "grade PD", "weight": round(base, 4),
+                        "detail": f"one-year probability of default of grade {pos['grade']} (uploaded position)"}]
         for s, states in geo_events:
             if pos.get("state") in states:
                 age = _age_days(s, now)
@@ -103,7 +109,7 @@ def watchlist(book: dict, signals: list[dict], now: datetime | None = None, cfg:
                 drivers.append({"source": "event in home state", "event_id": s["event_id"],
                                 "headline": s.get("headline", "")[:140], "state": pos["state"],
                                 "age_days": round(age, 1), "weight": round(w, 4)})
-        score = _noisy_or([d["weight"] for d in drivers[1:]], base=pos["risk_score"])
+        score = _noisy_or([d["weight"] for d in drivers[1:]], base=base)
         rows.append({
             "name": pos["name"], "tranche": 1, "positions": [pos["id"]], "sector": pos.get("sector"),
             "state": pos.get("state"), "grade": pos["grade"], "exposure": round(position_exposure(pos), 2),

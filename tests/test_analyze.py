@@ -106,3 +106,24 @@ def test_portfolio_analysis_runs_live_signals_against_the_uploaded_book(analyzer
     assert r["stored"] is False and r["portfolio"]["n_positions"] == {"tranche1": 0, "tranche2": 1}
     assert r["events"]["checked"] == 0  # the test store has no signals
     assert store.list_stress_runs() == []
+
+
+def test_uploaded_sme_loans_get_a_watchlist_status_from_their_grade(analyzer):
+    r = analyzer.analyse_portfolio([{"type": "sme_loan", "issuer": "Delhi Auto Parts", "exposure": 2_000_000,
+                                     "grade": "B", "sector": "Consumer Discretionary"}])
+    row = next(w for w in r["watchlist"]["names"] if w["name"] == "Delhi Auto Parts")
+    assert row["drivers"][0]["source"] == "grade PD" and row["score"] > 0
+
+
+def test_a_long_equity_never_loses_more_than_its_value(store):
+    from tripwire.config import load_yaml
+    from tripwire.portfolio.upload import build_uploaded_book
+
+    universe = {c["ticker"]: c for c in load_yaml("universe.yaml")["companies"]}
+    base = StressService(store, Path(__file__).resolve().parents[1] / "data")
+    book = build_uploaded_book([{"type": "equity", "issuer": "TSLA", "exposure": 8_000_000}],
+                               base.book["market_snapshot"], universe)
+    svc = StressService(store, Path(__file__).resolve().parents[1] / "data", book=book)
+    run = svc.run_custom("Credit Event", 10, entity="TSLA")
+    assert run["pnl_total"] >= -8_000_000
+    assert run["capital"]["cet1_ratio_after"] >= 0
