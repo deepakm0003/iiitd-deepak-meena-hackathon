@@ -1,5 +1,8 @@
 # Tripwire - S&P Global & Crisil Campus Hackathon
 
+# 2nd runner up <img width="1080" height="1350" alt="Winner Badge" src="https://github.com/user-attachments/assets/4e6cf034-e442-47b2-8869-cceac428d5d3" />
+
+
 **Candidate Name:** Deepak Meena
 
 **College Email ID:** deepak23188@iiitd.ac.in
